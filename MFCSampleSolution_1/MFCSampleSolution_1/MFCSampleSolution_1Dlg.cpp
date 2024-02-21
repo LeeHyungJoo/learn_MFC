@@ -12,6 +12,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define LOG(msg, ...) LogInternal(__func__, msg, ##__VA_ARGS__)
+
 CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
 	, m_timerID(0U)
@@ -110,6 +112,22 @@ void CMFCSampleSolution1Dlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar &
 		return;
 
 	pScrollBar.SetScrollPos(pScrollBar.GetScrollPos() + delta);
+}
+
+void CMFCSampleSolution1Dlg::LogInternal(const char* functionName, const char* format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	CString context;
+	context.Format(TEXT("%s"), CString(format));
+	context.Format(context, args);
+
+	CString logmsg;
+	logmsg.Format(L"%s :: %s", (CString)functionName, (CString)context);
+	m_listbox_logs.AddString(logmsg);
+
+	va_end(args);
 }
 
 void CMFCSampleSolution1Dlg::UpdateHScrollBarVal()
@@ -299,13 +317,14 @@ void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
 void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
 {
 	UpdateData();
-
 	if (m_elapsed == 0)
 		m_elapsed = 100;
 
 	SetTimer(++m_timerID, m_elapsed, nullptr);
 
 	UpdateTimerElapsedVal();
+
+	LOG("Start Timer - Timer ID : %d", m_timerID);
 }
 
 void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()

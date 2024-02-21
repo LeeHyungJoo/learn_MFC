@@ -16,6 +16,7 @@ private:
 
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
+	void LogInternal(const char* functionName, const char* format, ...);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };

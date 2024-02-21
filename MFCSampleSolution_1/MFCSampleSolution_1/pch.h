@@ -11,5 +11,6 @@
 #include "framework.h"
 #include <vector>
 #include <list>
+#include <string>
 
 #endif //PCH_H
