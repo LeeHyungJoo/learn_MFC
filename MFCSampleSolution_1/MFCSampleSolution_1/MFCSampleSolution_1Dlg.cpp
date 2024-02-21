@@ -39,7 +39,7 @@ void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
 	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
 	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
-	DDX_Control(pDX, IDC_EDIT2, m_edit_interval);
+	DDX_Control(pDX, IDC_EDIT2, m_edit_elapsed);
 
 	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
 	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
@@ -56,6 +56,10 @@ BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BUTTON1, &CMFCSampleSolution1Dlg::OnBnClickedStartTimer)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMFCSampleSolution1Dlg::OnBnClickedStopTimer)
+	ON_BN_CLICKED(IDC_BUTTON3, &CMFCSampleSolution1Dlg::OnBnClickedResetTimer)
 END_MESSAGE_MAP()
 
 void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
@@ -127,12 +131,9 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	// Set the icon for this dialog.  The framework does this automatically
-	//  when the application's main window is not a dialog
-	SetIcon(m_hIcon, TRUE);			// Set big icon
-	SetIcon(m_hIcon, FALSE);		// Set small icon
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
 
-	// TODO: Add extra initialization here
 	m_combobox.AddString(TEXT("default"));
 	m_combobox.AddString(TEXT("foo"));
 	m_combobox.AddString(TEXT("boo"));
@@ -186,7 +187,6 @@ HCURSOR CMFCSampleSolution1Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
 
 void CMFCSampleSolution1Dlg::OnBnClickedCancel()
 {
@@ -268,4 +268,28 @@ void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 	{
 		CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
 	}
+}
+
+
+void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
+{
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+
+void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
+{
+	
+}
+
+
+void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()
+{
+	
+}
+
+
+void CMFCSampleSolution1Dlg::OnBnClickedResetTimer()
+{
+	
 }

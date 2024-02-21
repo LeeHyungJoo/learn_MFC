@@ -34,10 +34,17 @@ protected:
 public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedSub();
+
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
+
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedStartTimer();
+	afx_msg void OnBnClickedStopTimer();
+	afx_msg void OnBnClickedResetTimer();
 
 public:
 	CComboBox m_combobox;
@@ -56,7 +63,7 @@ public:
 	CListBox m_listbox_logs;
 
 	CStatic m_statictext_val;
-	CEdit m_edit_interval;
+	CEdit m_edit_elapsed;
 	CButton m_btn_start;
 	CButton m_btn_stop;
 	CButton m_bt_reset;
