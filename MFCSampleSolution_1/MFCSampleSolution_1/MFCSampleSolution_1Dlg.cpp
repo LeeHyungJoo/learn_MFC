@@ -191,6 +191,9 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(FALSE);
 		break;
+	default:
+		TRACE(L"INVALID IDC_ID\n");
+		break;
 	}
 }
 
