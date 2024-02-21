@@ -52,7 +52,6 @@ public:
 	CButton m_checkbox_opt3;
 	std::vector<CButton*> m_vec_optcb;
 	
-	CString m_str_opts;
 	CEdit m_edit_opts;
 
 	CListBox m_listbox_logs;

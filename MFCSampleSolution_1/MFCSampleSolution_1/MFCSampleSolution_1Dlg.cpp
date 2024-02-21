@@ -25,7 +25,7 @@ CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 
 void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 {
-	m_str_opts.Empty();
+	CString optnames;
 
 	for (const auto cb : m_vec_optcb)
 	{
@@ -34,12 +34,12 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 
 		CString optname;
 		cb->GetWindowTextW(optname);
-		if (!m_str_opts.IsEmpty())
-			m_str_opts.AppendChar(',');
-		m_str_opts.Append(optname);
+		if (!optnames.IsEmpty())
+			optnames.AppendChar(',');
+		optnames.Append(optname);
 	}
 
-	SetDlgItemText(IDC_EDIT1, m_str_opts);
+	SetDlgItemText(IDC_EDIT1, optnames);
 }
 
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
@@ -107,7 +107,6 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_vec_optcb.push_back(&m_checkbox_opt2);
 	m_vec_optcb.push_back(&m_checkbox_opt3);
 
-
 	//Update
 	UpdateOptionCheckBoxStr();
 
@@ -168,13 +167,29 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 	switch (idx)
 	{
 	case IDC_RADIO_ACTIVE:
-		TRACE(L"IDC_RADIO_ACTIVE (radio)\n");
+		for (const auto cb : m_vec_optcb)
+		{
+			cb->ShowWindow(SW_SHOWNORMAL);
+			cb->EnableWindow(TRUE);
+		}
+		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
+		m_edit_opts.EnableWindow(TRUE);
 		break;
 	case IDC_RADIO_HIDE:
-		TRACE(L"IDC_RADIO_HIDE (radio)\n");
+		for (const auto cb : m_vec_optcb)
+		{
+			cb->ShowWindow(SW_HIDE);
+		}
+		m_edit_opts.ShowWindow(SW_HIDE);
 		break;
 	case IDC_RADIO_DEACTIVE:
-		TRACE(L"IDC_RADIO_DEACTIVE (radio)\n");
+		for (const auto cb : m_vec_optcb)
+		{
+			cb->ShowWindow(SW_SHOWNORMAL);
+			cb->EnableWindow(FALSE);
+		}
+		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
+		m_edit_opts.EnableWindow(FALSE);
 		break;
 	}
 }
