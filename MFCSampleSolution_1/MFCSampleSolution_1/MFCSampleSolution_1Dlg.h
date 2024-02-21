@@ -1,16 +1,11 @@
 
-// MFCSampleSolution_1Dlg.h : header file
-//
-
 #pragma once
 
 
-// CMFCSampleSolution1Dlg dialog
 class CMFCSampleSolution1Dlg : public CDialogEx
 {
-// Construction
 public:
-	CMFCSampleSolution1Dlg(CWnd* pParent = nullptr);	// standard constructor
+	CMFCSampleSolution1Dlg(CWnd* pParent = nullptr);
 
 private:
 	void UpdateOptCheckBoxStr();
@@ -20,21 +15,17 @@ private:
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
 
-// Dialog Data
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };
 #endif
 
 protected:
 	virtual void DoDataExchange
-	(CDataExchange* pDX);	// DDX/DDV support
+	(CDataExchange* pDX);
 
-
-// Implementation
 protected:
 	HICON m_hIcon;
 
-	// Generated message map functions
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -60,10 +51,10 @@ public:
 	CButton m_checkbox_opt2;
 	CButton m_checkbox_opt3;
 	std::vector<CButton*> m_vec_optcb;
-	
 	CEdit m_edit_opts;
 
 	CListBox m_listbox_logs;
+
 	CStatic m_statictext_val;
 	CEdit m_edit_interval;
 	CButton m_btn_start;

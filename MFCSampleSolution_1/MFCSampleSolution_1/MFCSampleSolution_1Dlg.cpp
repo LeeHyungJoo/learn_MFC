@@ -21,7 +21,7 @@ CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	TRACE(L"DoDataExchange");
+
 	DDX_Control(pDX, IDC_COMBO2, m_combobox);
 
 	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
@@ -123,9 +123,6 @@ void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
 	SetDlgItemText(IDC_EDIT4, val);
 }
 
-
-// CMFCSampleSolution1Dlg message handlers
-
 BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -154,27 +151,22 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_vscrollbar.SetScrollRange(0, 255, FALSE);
 	m_vscrollbar.SetScrollPos(0);
 
-	//Update value
 	UpdateOptCheckBoxStr();
 	UpdateHScrollBarVal();
 	UpdateVScrollBarVal();
 
-	return TRUE;  // return TRUE  unless you set the focus to a control
+	return TRUE;
 }
 
-// If you add a minimize button to your dialog, you will need the code below
-//  to draw the icon.  For MFC applications using the document/view model,
-//  this is automatically done for you by the framework.
 
 void CMFCSampleSolution1Dlg::OnPaint()
 {
 	if (IsIconic())
 	{
-		CPaintDC dc(this); // device context for painting
+		CPaintDC dc(this);
 
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
-		// Center icon in client rectangle
 		int cxIcon = GetSystemMetrics(SM_CXICON);
 		int cyIcon = GetSystemMetrics(SM_CYICON);
 		CRect rect;
@@ -182,7 +174,6 @@ void CMFCSampleSolution1Dlg::OnPaint()
 		int x = (rect.Width() - cxIcon + 1) / 2;
 		int y = (rect.Height() - cyIcon + 1) / 2;
 
-		// Draw the icon
 		dc.DrawIcon(x, y, m_hIcon);
 	}
 	else
@@ -191,8 +182,6 @@ void CMFCSampleSolution1Dlg::OnPaint()
 	}
 }
 
-// The system calls this function to obtain the cursor to display while the user drags
-//  the minimized window.
 HCURSOR CMFCSampleSolution1Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
@@ -201,14 +190,13 @@ HCURSOR CMFCSampleSolution1Dlg::OnQueryDragIcon()
 
 void CMFCSampleSolution1Dlg::OnBnClickedCancel()
 {
-	// TODO: Add your control notification handler code here
 	CDialogEx::OnCancel();
 }
 
 
 void CMFCSampleSolution1Dlg::OnBnClickedSub()
 {
-	// TODO: Add your control notification handler code here
+
 }
 
 void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
@@ -239,9 +227,6 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 		}
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(FALSE);
-		break;
-	default:
-		TRACE(L"INVALID IDC_ID\n");
 		break;
 	}
 }
