@@ -27,20 +27,21 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 {
 	m_str_opts.Empty();
 
-	for (int cb_i = 0; cb_i < m_arr_optcb.GetCount(); cb_i)
+	for (const auto cb : m_vec_optcb)
 	{
-		//if (!m_arr_optcb[cb_i].GetCheck())
-		//	continue;
+		if (!cb->GetCheck())
+			continue;
 
-		//CString optstr;
-		//m_arr_optcb[cb_i].GetWindowTextW(optstr);
-		//m_str_opts.Append(optstr);
+		CString optname;
+		cb->GetWindowTextW(optname);
+		m_str_opts.Append(optname);
 	}
 }
 
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	//TRACE(L"DoDataExchange");
 	DDX_Control(pDX, IDC_COMBO2, m_combobox);
 
 	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
@@ -53,15 +54,18 @@ void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EDIT1, m_edit_opts);
 
 	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
-	DDX_Control(pDX, IDC_STATIC, m_static_val);
+
+	DDX_Control(pDX, IDC_TEXT, m_statictext_val);
 	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
 	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
 	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
 	DDX_Control(pDX, IDC_EDIT2, m_edit_interval);
+
 	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
 	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
 	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
 	DDX_Control(pDX, IDC_EDIT4, m_vscrollbar_val);
+
 }
 
 BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
@@ -93,13 +97,14 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_radio_idx = 0U;
 	m_radio_active.SetCheck(1);
 
-	m_arr_optcb.Add(m_checkbox_opt1);
-	m_arr_optcb.Add(m_checkbox_opt1);
-	m_arr_optcb.Add(m_checkbox_opt1);
-
 
 	// TEMP : Test
 	m_checkbox_opt2.SetCheck(1);
+
+	m_vec_optcb.clear();
+	m_vec_optcb.push_back(&m_checkbox_opt1);
+	m_vec_optcb.push_back(&m_checkbox_opt2);
+	m_vec_optcb.push_back(&m_checkbox_opt3);
 
 	UpdateOptionCheckBoxStr();
 	SetDlgItemText(IDC_EDIT1, m_str_opts);
@@ -162,13 +167,13 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 	switch (idx)
 	{
 	case IDC_RADIO_ACTIVE:
-		MessageBox(CString("active!!"), TEXT("radio btn"), MB_ICONINFORMATION);
+		TRACE(L"IDC_RADIO_ACTIVE (radio)");
 		break;
 	case IDC_RADIO_HIDE:
-		MessageBox(CString("hide!!"), TEXT("radio btn"), MB_ICONINFORMATION);
+		TRACE(L"IDC_RADIO_HIDE (radio)");
 		break;
 	case IDC_RADIO_DEACTIVE:
-		MessageBox(CString("deactive!!"), TEXT("radio btn"), MB_ICONINFORMATION);
+		TRACE(L"IDC_RADIO_DEACTIVE (radio)");
 		break;
 	}
 }

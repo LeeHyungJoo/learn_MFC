@@ -49,12 +49,12 @@ public:
 	CButton m_checkbox_opt1;
 	CButton m_checkbox_opt2;
 	CButton m_checkbox_opt3;
-	CArray<CButton> m_arr_optcb;
+	std::vector<CButton*> m_vec_optcb;
+	
 	CString m_str_opts;
 	CEdit m_edit_opts;
 
 	CListBox m_listbox_logs;
-	CStatic m_static_val;
 	CButton m_btn_start;
 	CButton m_btn_stop;
 	CButton m_bt_reset;
@@ -65,4 +65,5 @@ public:
 
 	CScrollBar m_vscrollbar;
 	CEdit m_vscrollbar_val;
+	CStatic m_statictext_val;
 };
