@@ -34,14 +34,18 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 
 		CString optname;
 		cb->GetWindowTextW(optname);
+		if (!m_str_opts.IsEmpty())
+			m_str_opts.AppendChar(',');
 		m_str_opts.Append(optname);
 	}
+
+	SetDlgItemText(IDC_EDIT1, m_str_opts);
 }
 
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	//TRACE(L"DoDataExchange");
+	TRACE(L"DoDataExchange");
 	DDX_Control(pDX, IDC_COMBO2, m_combobox);
 
 	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
@@ -74,6 +78,7 @@ BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedOk)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
+	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
 END_MESSAGE_MAP()
 
 
@@ -97,18 +102,14 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_radio_idx = 0U;
 	m_radio_active.SetCheck(1);
 
-
-	// TEMP : Test
-	m_checkbox_opt2.SetCheck(1);
-
 	m_vec_optcb.clear();
 	m_vec_optcb.push_back(&m_checkbox_opt1);
 	m_vec_optcb.push_back(&m_checkbox_opt2);
 	m_vec_optcb.push_back(&m_checkbox_opt3);
 
-	UpdateOptionCheckBoxStr();
-	SetDlgItemText(IDC_EDIT1, m_str_opts);
 
+	//Update
+	UpdateOptionCheckBoxStr();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -167,13 +168,19 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 	switch (idx)
 	{
 	case IDC_RADIO_ACTIVE:
-		TRACE(L"IDC_RADIO_ACTIVE (radio)");
+		TRACE(L"IDC_RADIO_ACTIVE (radio)\n");
 		break;
 	case IDC_RADIO_HIDE:
-		TRACE(L"IDC_RADIO_HIDE (radio)");
+		TRACE(L"IDC_RADIO_HIDE (radio)\n");
 		break;
 	case IDC_RADIO_DEACTIVE:
-		TRACE(L"IDC_RADIO_DEACTIVE (radio)");
+		TRACE(L"IDC_RADIO_DEACTIVE (radio)\n");
 		break;
 	}
+}
+
+void CMFCSampleSolution1Dlg::OnCbChanged(UINT idx)
+{
+	TRACE(L"OnCbChanged (checkbox)\n");
+	UpdateOptionCheckBoxStr();
 }

@@ -38,6 +38,7 @@ public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnRdBnClicked(UINT idx);
+	afx_msg void OnCbChanged(UINT idx);
 
 	CComboBox m_combobox;
 
@@ -55,15 +56,16 @@ public:
 	CEdit m_edit_opts;
 
 	CListBox m_listbox_logs;
+	CStatic m_statictext_val;
+	CEdit m_edit_interval;
 	CButton m_btn_start;
 	CButton m_btn_stop;
 	CButton m_bt_reset;
-	CEdit m_edit_interval;
 
 	CScrollBar m_hscrollbar;
 	CEdit m_edit_hscrollval;
 
 	CScrollBar m_vscrollbar;
 	CEdit m_vscrollbar_val;
-	CStatic m_statictext_val;
+
 };
