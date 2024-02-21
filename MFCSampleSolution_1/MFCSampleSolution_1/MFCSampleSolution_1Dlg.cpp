@@ -14,6 +14,9 @@
 
 CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
+	, m_timerID(0U)
+	, m_elapsed(100U)
+	, m_val(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -35,16 +38,14 @@ void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
 
-	DDX_Control(pDX, IDC_TEXT, m_statictext_val);
-	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
-	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
-	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
-	DDX_Control(pDX, IDC_EDIT2, m_edit_elapsed);
+	DDX_Text(pDX, IDC_TEXT, m_val);
+	DDX_Text(pDX, IDC_EDIT2, m_elapsed);
 
 	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
 	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
 	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
 	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
+
 }
 
 BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
@@ -75,7 +76,7 @@ void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
 		cb->GetWindowTextW(optname);
 
 		if (!optnames.IsEmpty()) 
-			optnames.AppendChar(',');
+			optnames.Append(TEXT(", "));
 		optnames.Append(optname);
 	}
 
@@ -127,6 +128,22 @@ void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
 	SetDlgItemText(IDC_EDIT4, val);
 }
 
+void CMFCSampleSolution1Dlg::UpdateTimerVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_val);
+
+	SetDlgItemText(IDC_TEXT, val);
+}
+
+void CMFCSampleSolution1Dlg::UpdateTimerElapsedVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_elapsed);
+
+	SetDlgItemText(IDC_EDIT2, val);
+}
+
 BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -155,6 +172,8 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	UpdateOptCheckBoxStr();
 	UpdateHScrollBarVal();
 	UpdateVScrollBarVal();
+	UpdateTimerVal();
+	UpdateTimerElapsedVal();
 
 	return TRUE;
 }
@@ -269,19 +288,36 @@ void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CDialogEx::OnTimer(nIDEvent);
+
+	if (m_timerID == nIDEvent)
+	{
+		m_val += 1;
+
+		UpdateTimerVal();
+	}
 }
 
 void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
 {
-	
+	UpdateData();
+
+	if (m_elapsed == 0)
+		m_elapsed = 100;
+
+	UpdateTimerElapsedVal();
+
+	SetTimer(++m_timerID, m_elapsed, nullptr);
 }
 
 void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()
 {
-	
+	KillTimer(m_timerID);
 }
 
 void CMFCSampleSolution1Dlg::OnBnClickedResetTimer()
 {
-	
+	KillTimer(m_timerID);
+	m_val = 0U;
+
+	UpdateTimerVal();
 }

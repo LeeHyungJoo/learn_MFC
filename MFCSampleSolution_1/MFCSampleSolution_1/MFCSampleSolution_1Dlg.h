@@ -11,6 +11,8 @@ private:
 	void UpdateOptCheckBoxStr();
 	void UpdateHScrollBarVal();
 	void UpdateVScrollBarVal();
+	void UpdateTimerVal();
+	void UpdateTimerElapsedVal();
 
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
@@ -62,11 +64,9 @@ public:
 
 	CListBox m_listbox_logs;
 
-	CStatic m_statictext_val;
-	CEdit m_edit_elapsed;
-	CButton m_btn_start;
-	CButton m_btn_stop;
-	CButton m_bt_reset;
+	UINT m_val;
+	UINT m_elapsed;
+	UINT m_timerID;
 
 	CScrollBar m_hscrollbar;
 	CEdit m_edit_hscrollval;
