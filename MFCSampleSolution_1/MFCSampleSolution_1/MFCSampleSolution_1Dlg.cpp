@@ -292,7 +292,6 @@ void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
 	if (m_timerID == nIDEvent)
 	{
 		m_val += 1;
-
 		UpdateTimerVal();
 	}
 }
@@ -304,9 +303,9 @@ void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
 	if (m_elapsed == 0)
 		m_elapsed = 100;
 
-	UpdateTimerElapsedVal();
-
 	SetTimer(++m_timerID, m_elapsed, nullptr);
+
+	UpdateTimerElapsedVal();
 }
 
 void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()
