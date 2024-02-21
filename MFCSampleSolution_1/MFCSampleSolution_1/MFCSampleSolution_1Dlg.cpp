@@ -12,18 +12,13 @@
 #define new DEBUG_NEW
 #endif
 
-
-// CMFCSampleSolution1Dlg dialog
-
-
-
 CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
+void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
 {
 	CString optnames;
 
@@ -34,7 +29,8 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 
 		CString optname;
 		cb->GetWindowTextW(optname);
-		if (!optnames.IsEmpty())
+
+		if (!optnames.IsEmpty()) 
 			optnames.AppendChar(',');
 		optnames.Append(optname);
 	}
@@ -42,20 +38,49 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 	SetDlgItemText(IDC_EDIT1, optnames);
 }
 
-void CMFCSampleSolution1Dlg::UpdateHScrollBar()
+void CMFCSampleSolution1Dlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar & pScrollBar)
+{
+	int delta = 0;
+
+	switch (nSBCode)
+	{
+	case SB_THUMBTRACK:
+		pScrollBar.SetScrollPos(nPos);
+		break;
+	case SB_LINEUP :	/* = SB_LINELEFT*/
+		delta -= 4;
+		break;
+	case SB_LINEDOWN:	/* = SB_LINERIGHT*/
+		delta += 4;
+		break;
+	case SB_PAGEUP:		/* = SB_PAGELEFT*/
+		delta -= 16;
+		break;
+	case SB_PAGEDOWN:	/* = SB_PAGERIGHT*/
+		delta += 16;
+		break;
+	}
+
+	if (delta == 0)
+		return;
+
+	pScrollBar.SetScrollPos(pScrollBar.GetScrollPos() + delta);
+}
+
+void CMFCSampleSolution1Dlg::UpdateHScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
 
-	SetDlgItemText(IDC_SCROLLBAR1, val);
+	SetDlgItemText(IDC_EDIT3, val);
 }
 
-void CMFCSampleSolution1Dlg::UpdateVScrollBar()
+void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
 
-	SetDlgItemText(IDC_SCROLLBAR2, val);
+	SetDlgItemText(IDC_EDIT4, val);
 }
 
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
@@ -92,12 +117,11 @@ BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedOk)
+	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedSub)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
-//	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR1, &CMFCSampleSolution1Dlg::OnNMThemeChangedScrollbar1)
-	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR2, &CMFCSampleSolution1Dlg::OnThemechangedVScrollbar)
-	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR1, &CMFCSampleSolution1Dlg::OnThemechangedHScrollbar)
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -126,13 +150,15 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_vec_optcb.push_back(&m_checkbox_opt2);
 	m_vec_optcb.push_back(&m_checkbox_opt3);
 
-	m_hscrollbar.SetScrollRange(0, 255);
-	m_vscrollbar.SetScrollRange(0, 255);
-	
-	//Update
-	UpdateOptionCheckBoxStr();
-	UpdateHScrollBar();
-	UpdateVScrollBar();
+	m_hscrollbar.SetScrollRange(0, 255, FALSE);
+	m_hscrollbar.SetScrollPos(0);
+	m_vscrollbar.SetScrollRange(0, 255, FALSE);
+	m_vscrollbar.SetScrollPos(0);
+
+	//Update value
+	UpdateOptCheckBoxStr();
+	UpdateHScrollBarVal();
+	UpdateVScrollBarVal();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -181,7 +207,7 @@ void CMFCSampleSolution1Dlg::OnBnClickedCancel()
 }
 
 
-void CMFCSampleSolution1Dlg::OnBnClickedOk()
+void CMFCSampleSolution1Dlg::OnBnClickedSub()
 {
 	// TODO: Add your control notification handler code here
 }
@@ -223,18 +249,39 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 
 void CMFCSampleSolution1Dlg::OnCbChanged(UINT idx)
 {
-	TRACE(L"OnCbChanged (checkbox)\n");
-	UpdateOptionCheckBoxStr();
+	UpdateOptCheckBoxStr();
 }
 
-void CMFCSampleSolution1Dlg::OnThemechangedHScrollbar(NMHDR *pNMHDR, LRESULT *pResult)
+
+void CMFCSampleSolution1Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	UpdateHScrollBar();
-	*pResult = 0;
+	if (pScrollBar != nullptr)
+	{
+		if (pScrollBar->GetSafeHwnd() == m_hscrollbar.GetSafeHwnd())
+		{
+			ScrollControl(nSBCode, nPos, *pScrollBar);
+			UpdateHScrollBarVal();
+		}
+	}
+	else
+	{
+		CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
+	}
 }
 
-void CMFCSampleSolution1Dlg::OnThemechangedVScrollbar(NMHDR *pNMHDR, LRESULT *pResult)
+
+void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
-	UpdateVScrollBar();
-	*pResult = 0;
+	if (pScrollBar != nullptr)
+	{
+		if (pScrollBar->GetSafeHwnd() == m_vscrollbar.GetSafeHwnd())
+		{
+			ScrollControl(nSBCode, nPos, *pScrollBar);
+			UpdateVScrollBarVal();
+		}
+	}
+	else
+	{
+		CDialogEx::OnVScroll(nSBCode, nPos, pScrollBar);
+	}
 }

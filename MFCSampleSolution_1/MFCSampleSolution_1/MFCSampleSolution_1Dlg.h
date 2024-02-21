@@ -13,16 +13,19 @@ public:
 	CMFCSampleSolution1Dlg(CWnd* pParent = nullptr);	// standard constructor
 
 private:
-	void UpdateOptionCheckBoxStr();
-	void UpdateHScrollBar();
-	void UpdateVScrollBar();
+	void UpdateOptCheckBoxStr();
+	void UpdateHScrollBarVal();
+	void UpdateVScrollBarVal();
+
+private:
+	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };
 #endif
 
-	protected:
+protected:
 	virtual void DoDataExchange
 	(CDataExchange* pDX);	// DDX/DDV support
 
@@ -36,14 +39,16 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
 public:
 	afx_msg void OnBnClickedCancel();
-	afx_msg void OnBnClickedOk();
+	afx_msg void OnBnClickedSub();
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
-	afx_msg void OnThemechangedVScrollbar(NMHDR *pNMHDR, LRESULT *pResult);
-	afx_msg void OnThemechangedHScrollbar(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 
+public:
 	CComboBox m_combobox;
 
 	CButton m_radio_active;
