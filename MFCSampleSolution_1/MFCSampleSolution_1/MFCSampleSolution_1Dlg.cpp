@@ -18,6 +18,46 @@ CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
+{
+	CDialogEx::DoDataExchange(pDX);
+	TRACE(L"DoDataExchange");
+	DDX_Control(pDX, IDC_COMBO2, m_combobox);
+
+	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
+	DDX_Control(pDX, IDC_RADIO_HIDE, m_radio_hide);
+	DDX_Control(pDX, IDC_RADIO_DEACTIVE, m_radio_deactive);
+
+	DDX_Control(pDX, IDC_CHECK1, m_checkbox_opt1);
+	DDX_Control(pDX, IDC_CHECK2, m_checkbox_opt2);
+	DDX_Control(pDX, IDC_CHECK3, m_checkbox_opt3);
+	DDX_Control(pDX, IDC_EDIT1, m_edit_opts);
+
+	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
+
+	DDX_Control(pDX, IDC_TEXT, m_statictext_val);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
+	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
+	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
+	DDX_Control(pDX, IDC_EDIT2, m_edit_interval);
+
+	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
+	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
+	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
+	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
+}
+
+BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
+	ON_WM_PAINT()
+	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedSub)
+	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
+	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
+END_MESSAGE_MAP()
+
 void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
 {
 	CString optnames;
@@ -82,47 +122,6 @@ void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
 
 	SetDlgItemText(IDC_EDIT4, val);
 }
-
-void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
-{
-	CDialogEx::DoDataExchange(pDX);
-	TRACE(L"DoDataExchange");
-	DDX_Control(pDX, IDC_COMBO2, m_combobox);
-
-	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
-	DDX_Control(pDX, IDC_RADIO_HIDE, m_radio_hide);
-	DDX_Control(pDX, IDC_RADIO_DEACTIVE, m_radio_deactive);
-
-	DDX_Control(pDX, IDC_CHECK1, m_checkbox_opt1);
-	DDX_Control(pDX, IDC_CHECK2, m_checkbox_opt2);
-	DDX_Control(pDX, IDC_CHECK3, m_checkbox_opt3);
-	DDX_Control(pDX, IDC_EDIT1, m_edit_opts);
-
-	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
-
-	DDX_Control(pDX, IDC_TEXT, m_statictext_val);
-	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
-	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
-	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
-	DDX_Control(pDX, IDC_EDIT2, m_edit_interval);
-
-	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
-	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
-	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
-	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
-
-}
-
-BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
-	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedSub)
-	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
-	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
-	ON_WM_HSCROLL()
-	ON_WM_VSCROLL()
-END_MESSAGE_MAP()
 
 
 // CMFCSampleSolution1Dlg message handlers
