@@ -159,7 +159,6 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	return TRUE;
 }
 
-
 void CMFCSampleSolution1Dlg::OnPaint()
 {
 	if (IsIconic())
@@ -192,7 +191,6 @@ void CMFCSampleSolution1Dlg::OnBnClickedCancel()
 {
 	CDialogEx::OnCancel();
 }
-
 
 void CMFCSampleSolution1Dlg::OnBnClickedSub()
 {
@@ -236,7 +234,6 @@ void CMFCSampleSolution1Dlg::OnCbChanged(UINT idx)
 	UpdateOptCheckBoxStr();
 }
 
-
 void CMFCSampleSolution1Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if (pScrollBar != nullptr)
@@ -252,7 +249,6 @@ void CMFCSampleSolution1Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 		CDialogEx::OnHScroll(nSBCode, nPos, pScrollBar);
 	}
 }
-
 
 void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
@@ -270,24 +266,20 @@ void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 	}
 }
 
-
 void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CDialogEx::OnTimer(nIDEvent);
 }
-
 
 void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
 {
 	
 }
 
-
 void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()
 {
 	
 }
-
 
 void CMFCSampleSolution1Dlg::OnBnClickedResetTimer()
 {
