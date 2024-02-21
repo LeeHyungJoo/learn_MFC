@@ -42,6 +42,22 @@ void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
 	SetDlgItemText(IDC_EDIT1, optnames);
 }
 
+void CMFCSampleSolution1Dlg::UpdateHScrollBar()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
+
+	SetDlgItemText(IDC_SCROLLBAR1, val);
+}
+
+void CMFCSampleSolution1Dlg::UpdateVScrollBar()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
+
+	SetDlgItemText(IDC_SCROLLBAR2, val);
+}
+
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
@@ -68,7 +84,7 @@ void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
 	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
 	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
-	DDX_Control(pDX, IDC_EDIT4, m_vscrollbar_val);
+	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
 
 }
 
@@ -79,6 +95,9 @@ BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedOk)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
+//	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR1, &CMFCSampleSolution1Dlg::OnNMThemeChangedScrollbar1)
+	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR2, &CMFCSampleSolution1Dlg::OnThemechangedVScrollbar)
+	ON_NOTIFY(NM_THEMECHANGED, IDC_SCROLLBAR1, &CMFCSampleSolution1Dlg::OnThemechangedHScrollbar)
 END_MESSAGE_MAP()
 
 
@@ -107,8 +126,13 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	m_vec_optcb.push_back(&m_checkbox_opt2);
 	m_vec_optcb.push_back(&m_checkbox_opt3);
 
+	m_hscrollbar.SetScrollRange(0, 255);
+	m_vscrollbar.SetScrollRange(0, 255);
+	
 	//Update
 	UpdateOptionCheckBoxStr();
+	UpdateHScrollBar();
+	UpdateVScrollBar();
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
@@ -201,4 +225,16 @@ void CMFCSampleSolution1Dlg::OnCbChanged(UINT idx)
 {
 	TRACE(L"OnCbChanged (checkbox)\n");
 	UpdateOptionCheckBoxStr();
+}
+
+void CMFCSampleSolution1Dlg::OnThemechangedHScrollbar(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateHScrollBar();
+	*pResult = 0;
+}
+
+void CMFCSampleSolution1Dlg::OnThemechangedVScrollbar(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	UpdateVScrollBar();
+	*pResult = 0;
 }

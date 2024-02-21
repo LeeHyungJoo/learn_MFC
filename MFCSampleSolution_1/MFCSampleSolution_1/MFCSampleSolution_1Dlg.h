@@ -14,6 +14,8 @@ public:
 
 private:
 	void UpdateOptionCheckBoxStr();
+	void UpdateHScrollBar();
+	void UpdateVScrollBar();
 
 // Dialog Data
 #ifdef AFX_DESIGN_TIME
@@ -39,6 +41,8 @@ public:
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
+	afx_msg void OnThemechangedVScrollbar(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnThemechangedHScrollbar(NMHDR *pNMHDR, LRESULT *pResult);
 
 	CComboBox m_combobox;
 
@@ -65,6 +69,5 @@ public:
 	CEdit m_edit_hscrollval;
 
 	CScrollBar m_vscrollbar;
-	CEdit m_vscrollbar_val;
-
+	CEdit m_edit_vscrollval;
 };
