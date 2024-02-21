@@ -23,24 +23,50 @@ CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
+void CMFCSampleSolution1Dlg::UpdateOptionCheckBoxStr()
+{
+	m_str_opts.Empty();
+
+	for (int cb_i = 0; cb_i < m_arr_optcb.GetCount(); cb_i)
+	{
+		//if (!m_arr_optcb[cb_i].GetCheck())
+		//	continue;
+
+		//CString optstr;
+		//m_arr_optcb[cb_i].GetWindowTextW(optstr);
+		//m_str_opts.Append(optstr);
+	}
+}
+
 void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_COMBO2, m_combobox);
+
 	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
 	DDX_Control(pDX, IDC_RADIO_HIDE, m_radio_hide);
 	DDX_Control(pDX, IDC_RADIO_DEACTIVE, m_radio_deactive);
+
 	DDX_Control(pDX, IDC_CHECK1, m_checkbox_opt1);
 	DDX_Control(pDX, IDC_CHECK2, m_checkbox_opt2);
 	DDX_Control(pDX, IDC_CHECK3, m_checkbox_opt3);
 	DDX_Control(pDX, IDC_EDIT1, m_edit_opts);
+
 	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
+	DDX_Control(pDX, IDC_STATIC, m_static_val);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
+	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
+	DDX_Control(pDX, IDC_BUTTON3, m_bt_reset);
+	DDX_Control(pDX, IDC_EDIT2, m_edit_interval);
+	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
+	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
+	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
+	DDX_Control(pDX, IDC_EDIT4, m_vscrollbar_val);
 }
 
 BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_EDIT1, &CMFCSampleSolution1Dlg::OnEnChangeEdit1)
 	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedOk)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
@@ -66,6 +92,17 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 
 	m_radio_idx = 0U;
 	m_radio_active.SetCheck(1);
+
+	m_arr_optcb.Add(m_checkbox_opt1);
+	m_arr_optcb.Add(m_checkbox_opt1);
+	m_arr_optcb.Add(m_checkbox_opt1);
+
+
+	// TEMP : Test
+	m_checkbox_opt2.SetCheck(1);
+
+	UpdateOptionCheckBoxStr();
+	SetDlgItemText(IDC_EDIT1, m_str_opts);
 
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
@@ -105,24 +142,6 @@ void CMFCSampleSolution1Dlg::OnPaint()
 HCURSOR CMFCSampleSolution1Dlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
-}
-
-
-
-void CMFCSampleSolution1Dlg::OnEnChangeEdit1()
-{
-	// TODO:  If this is a RICHEDIT control, the control will not
-	// send this notification unless you override the CDialogEx::OnInitDialog()
-	// function and call CRichEditCtrl().SetEventMask()
-	// with the ENM_CHANGE flag ORed into the mask.
-
-	// TODO:  Add your control notification handler code here
-}
-
-
-void CMFCSampleSolution1Dlg::OnBnClickedRadioDeactive()
-{
-	// TODO: Add your control notification handler code here
 }
 
 
