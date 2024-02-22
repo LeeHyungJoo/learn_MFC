@@ -1,33 +1,31 @@
 ﻿#pragma once
 
-
-// SubDlg 대화 상자
-
 class SubDlg : public CDialog
 {
 	DECLARE_DYNAMIC(SubDlg)
 
 public:
-	SubDlg(CWnd* pParent, DTO dto);   // 표준 생성자입니다.
+	SubDlg(CWnd* pParent, DTO dto);
 	virtual ~SubDlg();
+
+protected:
+	virtual void DoDataExchange
+	(CDataExchange* pDX);
+
+protected:
+	virtual BOOL OnInitDialog();
+	DECLARE_MESSAGE_MAP()
 
 public:
 	void RenderDTO();
 
-// 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_SubDlg };
 #endif
-protected:
-	virtual BOOL OnInitDialog();
 
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV 지원입니다.
-
-	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnBnClickedClose();
 	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedClose();
 
 public:
 	CWnd* m_pParent;

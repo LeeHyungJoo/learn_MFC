@@ -1,7 +1,3 @@
-
-// MFCSampleSolution_1Dlg.cpp : implementation file
-//
-
 #include "pch.h"
 #include "framework.h"
 #include "MFCSampleSolution_1.h"
@@ -15,7 +11,7 @@
 
 #define LOG(msg, ...) LogInternal(__FUNCTION__, msg, ##__VA_ARGS__)
 
-MainDlg::MainDlg(CWnd* pParent /*=nullptr*/)
+MainDlg::MainDlg(CWnd* pParent)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
 	, m_timerID(0U)
 	, m_elapsed(100U)
@@ -54,6 +50,68 @@ void MainDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
 }
 
+BOOL MainDlg::OnInitDialog()
+{
+	CDialogEx::OnInitDialog();
+
+	SetIcon(m_hIcon, TRUE);
+	SetIcon(m_hIcon, FALSE);
+
+	m_combobox.AddString(TEXT("default"));
+	m_combobox.AddString(TEXT("foo"));
+	m_combobox.AddString(TEXT("boo"));
+	m_combobox.SetCurSel(0);
+
+	m_radio_active.SetCheck(1);
+
+	m_vec_optcb.clear();
+	m_vec_optcb.push_back(&m_checkbox_opt1);
+	m_vec_optcb.push_back(&m_checkbox_opt2);
+	m_vec_optcb.push_back(&m_checkbox_opt3);
+
+	m_hscrollbar.SetScrollRange(0, 255, FALSE);
+	m_hscrollbar.SetScrollPos(0);
+	m_vscrollbar.SetScrollRange(0, 255, FALSE);
+	m_vscrollbar.SetScrollPos(0);
+
+	UpdateOptCheckBoxStr();
+	UpdateHScrollBarVal();
+	UpdateVScrollBarVal();
+	UpdateTimerVal();
+	UpdateTimerElapsedVal();
+
+	LOG("--Initialize Main Dlg");
+	return TRUE;
+}
+
+void MainDlg::OnPaint()
+{
+	if (IsIconic())
+	{
+		CPaintDC dc(this);
+
+		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
+
+		int cxIcon = GetSystemMetrics(SM_CXICON);
+		int cyIcon = GetSystemMetrics(SM_CYICON);
+		CRect rect;
+		GetClientRect(&rect);
+		int x = (rect.Width() - cxIcon + 1) / 2;
+		int y = (rect.Height() - cyIcon + 1) / 2;
+
+		dc.DrawIcon(x, y, m_hIcon);
+	}
+	else
+	{
+		CDialogEx::OnPaint();
+	}
+}
+
+HCURSOR MainDlg::OnQueryDragIcon()
+{
+	return static_cast<HCURSOR>(m_hIcon);
+}
+
 BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -89,6 +147,38 @@ void MainDlg::UpdateOptCheckBoxStr()
 	}
 
 	SetDlgItemText(IDC_EDIT1, optnames);
+}
+
+void MainDlg::UpdateTimerVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_val);
+
+	SetDlgItemText(IDC_TEXT, val);
+}
+
+void MainDlg::UpdateTimerElapsedVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_elapsed);
+
+	SetDlgItemText(IDC_EDIT2, val);
+}
+
+void MainDlg::UpdateHScrollBarVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
+
+	SetDlgItemText(IDC_EDIT3, val);
+}
+
+void MainDlg::UpdateVScrollBarVal()
+{
+	CString val;
+	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
+
+	SetDlgItemText(IDC_EDIT4, val);
 }
 
 void MainDlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar & pScrollBar)
@@ -165,119 +255,12 @@ void MainDlg::MakeDTO(OUT DTO * dto)
 	dto->vscroll_val = m_vscrollbar.GetScrollPos();
 }
 
-void MainDlg::UpdateHScrollBarVal()
+void MainDlg::OnSelchangeCombo()
 {
-	CString val;
-	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
+	CString s;
+	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
 
-	SetDlgItemText(IDC_EDIT3, val);
-}
-
-void MainDlg::UpdateVScrollBarVal()
-{
-	CString val;
-	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
-
-	SetDlgItemText(IDC_EDIT4, val);
-}
-
-void MainDlg::UpdateTimerVal()
-{
-	CString val;
-	val.Format(TEXT("%d"), m_val);
-
-	SetDlgItemText(IDC_TEXT, val);
-}
-
-void MainDlg::UpdateTimerElapsedVal()
-{
-	CString val;
-	val.Format(TEXT("%d"), m_elapsed);
-
-	SetDlgItemText(IDC_EDIT2, val);
-}
-
-BOOL MainDlg::OnInitDialog()
-{
-	CDialogEx::OnInitDialog();
-
-	SetIcon(m_hIcon, TRUE);
-	SetIcon(m_hIcon, FALSE);
-
-	m_combobox.AddString(TEXT("default"));
-	m_combobox.AddString(TEXT("foo"));
-	m_combobox.AddString(TEXT("boo"));
-	m_combobox.SetCurSel(0);
-
-	m_radio_active.SetCheck(1);
-
-	m_vec_optcb.clear();
-	m_vec_optcb.push_back(&m_checkbox_opt1);
-	m_vec_optcb.push_back(&m_checkbox_opt2);
-	m_vec_optcb.push_back(&m_checkbox_opt3);
-
-	m_hscrollbar.SetScrollRange(0, 255, FALSE);
-	m_hscrollbar.SetScrollPos(0);
-	m_vscrollbar.SetScrollRange(0, 255, FALSE);
-	m_vscrollbar.SetScrollPos(0);
-
-	UpdateOptCheckBoxStr();
-	UpdateHScrollBarVal();
-	UpdateVScrollBarVal();
-	UpdateTimerVal();
-	UpdateTimerElapsedVal();
-
-	LOG("--Initialize Main Dlg");
-
-	return TRUE;
-}
-
-void MainDlg::OnPaint()
-{
-	if (IsIconic())
-	{
-		CPaintDC dc(this);
-
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
-		CDialogEx::OnPaint();
-	}
-}
-
-HCURSOR MainDlg::OnQueryDragIcon()
-{
-	return static_cast<HCURSOR>(m_hIcon);
-}
-
-void MainDlg::OnBnClickedCancel()
-{
-	CDialogEx::OnCancel();
-}
-
-void MainDlg::OnBnClickedSub()
-{
-	if (m_pSubDlg != nullptr && IsWindow(m_pSubDlg->m_hWnd))
-		return;
-
-	DTO dto;
-	MakeDTO(&dto);
-
-	m_pSubDlg = new SubDlg(this, dto);
-	m_pSubDlg->Create(IDD_SubDlg, this);
-	m_pSubDlg->ShowWindow(SW_SHOW);
-
-	LOG("Button Open Sub Dlg");
+	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
 }
 
 void MainDlg::OnRdBnClicked(UINT idx)
@@ -342,7 +325,8 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateHScrollBarVal();
 
-			if(nSBCode == SB_ENDSCROLL) LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+			if(nSBCode == SB_ENDSCROLL) 
+				LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -360,7 +344,8 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateVScrollBarVal();
 
-			if (nSBCode == SB_ENDSCROLL) LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+			if (nSBCode == SB_ENDSCROLL) 
+				LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -425,15 +410,25 @@ void MainDlg::OnBnClickedResetTimer()
 	LOG("Reset Timer - Timer ID : %d", m_timerID);
 }
 
-
-void MainDlg::OnSelchangeCombo()
+void MainDlg::OnBnClickedCancel()
 {
-	CString s;
-	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
-
-	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
+	CDialogEx::OnCancel();
 }
 
+void MainDlg::OnBnClickedSub()
+{
+	if (m_pSubDlg != nullptr && IsWindow(m_pSubDlg->m_hWnd))
+		return;
+
+	DTO dto;
+	MakeDTO(&dto);
+
+	m_pSubDlg = new SubDlg(this, dto);
+	m_pSubDlg->Create(IDD_SubDlg, this);
+	m_pSubDlg->ShowWindow(SW_SHOW);
+
+	LOG("Button Open Sub Dlg");
+}
 
 void MainDlg::OnDestroy()
 {
