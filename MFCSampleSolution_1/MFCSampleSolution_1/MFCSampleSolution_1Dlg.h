@@ -1,8 +1,6 @@
-
 #pragma once
 
 class SubDlg;
-
 class MainDlg : public CDialogEx
 {
 public:
@@ -14,7 +12,6 @@ protected:
 
 protected:
 	HICON m_hIcon;
-
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -37,7 +34,6 @@ public:
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };
 #endif
-
 
 public:
 	afx_msg void OnSelchangeCombo();
