@@ -53,32 +53,32 @@ public:
 	afx_msg void OnDestroy();
 
 public:
-	CComboBox m_combobox;
+	CComboBox m_cmbx;
 
-	CButton m_radio_active;
-	CButton m_radio_hide;
-	CButton m_radio_deactive;
-	UINT m_radio_last_idx;
+	CButton m_rbtActive;
+	CButton m_rbtHide;
+	CButton m_rbtDeactive;
+	UINT	m_urbtActiveIdx;
 
-	CButton m_checkbox_opt1;
-	CButton m_checkbox_opt2;
-	CButton m_checkbox_opt3;
-	std::vector<CButton*> m_vec_optcb;
-	CEdit m_edit_opts;
+	CButton m_cbxOpt1;
+	CButton m_cbxOpt2;
+	CButton m_cbxOpt3;
+	std::vector<CButton*> m_vcbxOpt;
+	CEdit	m_edtOpt;
 
-	CListBox m_listbox_logs;
+	CListBox m_lstbLog;
 
-	UINT m_val;
-	UINT m_elapsed;
-	CButton m_btn_start;
-	CButton m_btn_stop;
-	UINT m_timerID;
-	BOOL m_b_timerrun;
+	UINT m_uCnt;
+	UINT m_uElapsed;
+	CButton m_btStartTimer;
+	CButton m_btStopTimer;
+	UINT m_uTimerID;
+	BOOL m_bTimerRun;
 
-	CScrollBar m_hscrollbar;
-	CEdit m_edit_hscrollval;
-	CScrollBar m_vscrollbar;
-	CEdit m_edit_vscrollval;
+	CScrollBar m_hsb;
+	CEdit m_edtHsb;
+	CScrollBar m_vsb;
+	CEdit m_edtVsb;
 
 	SubDlg* m_pSubDlg;
 };

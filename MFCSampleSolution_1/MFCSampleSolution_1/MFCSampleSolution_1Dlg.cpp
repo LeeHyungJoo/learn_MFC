@@ -13,10 +13,10 @@
 
 MainDlg::MainDlg(CWnd* pParent)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
-	, m_timerID(0U)
-	, m_elapsed(100U)
-	, m_val(0)
-	, m_b_timerrun(FALSE)
+	, m_uTimerID(0U)
+	, m_uElapsed(100U)
+	, m_uCnt(0)
+	, m_bTimerRun(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -25,29 +25,29 @@ void MainDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 
-	DDX_Control(pDX, IDC_COMBO2, m_combobox);
+	DDX_Control(pDX, IDC_COMBO2, m_cmbx);
 
-	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_radio_active);
-	DDX_Control(pDX, IDC_RADIO_HIDE, m_radio_hide);
-	DDX_Control(pDX, IDC_RADIO_DEACTIVE, m_radio_deactive);
+	DDX_Control(pDX, IDC_RADIO_ACTIVE, m_rbtActive);
+	DDX_Control(pDX, IDC_RADIO_HIDE, m_rbtHide);
+	DDX_Control(pDX, IDC_RADIO_DEACTIVE, m_rbtDeactive);
 
-	DDX_Control(pDX, IDC_CHECK1, m_checkbox_opt1);
-	DDX_Control(pDX, IDC_CHECK2, m_checkbox_opt2);
-	DDX_Control(pDX, IDC_CHECK3, m_checkbox_opt3);
-	DDX_Control(pDX, IDC_EDIT1, m_edit_opts);
+	DDX_Control(pDX, IDC_CHECK1, m_cbxOpt1);
+	DDX_Control(pDX, IDC_CHECK2, m_cbxOpt2);
+	DDX_Control(pDX, IDC_CHECK3, m_cbxOpt3);
+	DDX_Control(pDX, IDC_EDIT1, m_edtOpt);
 
-	DDX_Control(pDX, IDC_LIST1, m_listbox_logs);
+	DDX_Control(pDX, IDC_LIST1, m_lstbLog);
 
-	DDX_Text(pDX, IDC_TEXT, m_val);
-	DDX_Text(pDX, IDC_EDIT2, m_elapsed);
+	DDX_Text(pDX, IDC_TEXT, m_uCnt);
+	DDX_Text(pDX, IDC_EDIT2, m_uElapsed);
 
-	DDX_Control(pDX, IDC_SCROLLBAR1, m_hscrollbar);
-	DDX_Control(pDX, IDC_EDIT3, m_edit_hscrollval);
-	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
-	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
+	DDX_Control(pDX, IDC_SCROLLBAR1, m_hsb);
+	DDX_Control(pDX, IDC_EDIT3, m_edtHsb);
+	DDX_Control(pDX, IDC_SCROLLBAR2, m_vsb);
+	DDX_Control(pDX, IDC_EDIT4, m_edtVsb);
 
-	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
-	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
+	DDX_Control(pDX, IDC_BUTTON1, m_btStartTimer);
+	DDX_Control(pDX, IDC_BUTTON2, m_btStopTimer);
 }
 
 BOOL MainDlg::OnInitDialog()
@@ -57,22 +57,22 @@ BOOL MainDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);
 	SetIcon(m_hIcon, FALSE);
 
-	m_combobox.AddString(TEXT("default"));
-	m_combobox.AddString(TEXT("foo"));
-	m_combobox.AddString(TEXT("boo"));
-	m_combobox.SetCurSel(0);
+	m_cmbx.AddString(TEXT("default"));
+	m_cmbx.AddString(TEXT("foo"));
+	m_cmbx.AddString(TEXT("boo"));
+	m_cmbx.SetCurSel(0);
 
-	m_radio_active.SetCheck(1);
+	m_rbtActive.SetCheck(1);
 
-	m_vec_optcb.clear();
-	m_vec_optcb.push_back(&m_checkbox_opt1);
-	m_vec_optcb.push_back(&m_checkbox_opt2);
-	m_vec_optcb.push_back(&m_checkbox_opt3);
+	m_vcbxOpt.clear();
+	m_vcbxOpt.push_back(&m_cbxOpt1);
+	m_vcbxOpt.push_back(&m_cbxOpt2);
+	m_vcbxOpt.push_back(&m_cbxOpt3);
 
-	m_hscrollbar.SetScrollRange(0, 255, FALSE);
-	m_hscrollbar.SetScrollPos(0);
-	m_vscrollbar.SetScrollRange(0, 255, FALSE);
-	m_vscrollbar.SetScrollPos(0);
+	m_hsb.SetScrollRange(0, 255, FALSE);
+	m_hsb.SetScrollPos(0);
+	m_vsb.SetScrollRange(0, 255, FALSE);
+	m_vsb.SetScrollPos(0);
 
 	UpdateOptCheckBoxStr();
 	UpdateHScrollBarVal();
@@ -136,7 +136,7 @@ void MainDlg::UpdateOptCheckBoxStr()
 {
 	CString optnames;
 
-	for (const auto cb : m_vec_optcb)
+	for (const auto cb : m_vcbxOpt)
 	{
 		if (!cb->GetCheck())
 			continue;
@@ -155,7 +155,7 @@ void MainDlg::UpdateOptCheckBoxStr()
 void MainDlg::UpdateTimerVal()
 {
 	CString val;
-	val.Format(TEXT("%d"), m_val);
+	val.Format(TEXT("%d"), m_uCnt);
 
 	SetDlgItemText(IDC_TEXT, val);
 }
@@ -163,7 +163,7 @@ void MainDlg::UpdateTimerVal()
 void MainDlg::UpdateTimerElapsedVal()
 {
 	CString val;
-	val.Format(TEXT("%d"), m_elapsed);
+	val.Format(TEXT("%d"), m_uElapsed);
 
 	SetDlgItemText(IDC_EDIT2, val);
 }
@@ -171,7 +171,7 @@ void MainDlg::UpdateTimerElapsedVal()
 void MainDlg::UpdateHScrollBarVal()
 {
 	CString val;
-	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
+	val.Format(TEXT("%d"), m_hsb.GetScrollPos());
 
 	SetDlgItemText(IDC_EDIT3, val);
 }
@@ -179,7 +179,7 @@ void MainDlg::UpdateHScrollBarVal()
 void MainDlg::UpdateVScrollBarVal()
 {
 	CString val;
-	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
+	val.Format(TEXT("%d"), m_vsb.GetScrollPos());
 
 	SetDlgItemText(IDC_EDIT4, val);
 }
@@ -227,7 +227,7 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 	CString logmsg;
 	//logmsg.Format(L"%s - %s", (CString)functionName, CString(s.c_str()));
 	logmsg.Format(L"%s", CString(s.c_str()));
-	m_listbox_logs.AddString(logmsg);
+	m_lstbLog.AddString(logmsg);
 
 	va_end(args);
 }
@@ -235,78 +235,78 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 void MainDlg::MakeDTO(OUT DTO * dto)
 {
 	CString cbs;
-	m_combobox.GetLBText(m_combobox.GetCurSel(), cbs);
-	dto->combo = cbs;
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), cbs);
+	dto->sComboSelect = cbs;
 
 	CString rbs;
-	if (m_radio_active.GetCheck())
+	if (m_rbtActive.GetCheck())
 		rbs = "active";
-	else if (m_radio_deactive.GetCheck())
+	else if (m_rbtDeactive.GetCheck())
 		rbs = "deactive";
-	else if (m_radio_hide.GetCheck())
+	else if (m_rbtHide.GetCheck())
 		rbs = "hide";
-	dto->opttype = rbs;
+	dto->sOptionType = rbs;
 
 	CString opts;
-	m_edit_opts.GetWindowText(opts);
-	dto->opt = opts;
+	m_edtOpt.GetWindowText(opts);
+	dto->sOption = opts;
 
-	dto->val = m_val;
-	dto->elapse = m_elapsed;
+	dto->uCounter = m_uCnt;
+	dto->uElapsed = m_uElapsed;
 
-	dto->hscroll_val = m_hscrollbar.GetScrollPos();
-	dto->vscroll_val = m_vscrollbar.GetScrollPos();
+	dto->uHScrollbarPos = m_hsb.GetScrollPos();
+	dto->uVScrollbarPos = m_vsb.GetScrollPos();
 }
 
 void MainDlg::OnSelchangeCombo()
 {
 	CString s;
-	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), s);
 
-	LOG("ComboBox - %d, %ls", m_combobox.GetCurSel(), s);
+	LOG("ComboBox - %d, %ls", m_cmbx.GetCurSel(), s);
 }
 
 void MainDlg::OnRdBnClicked(UINT idx)
 {
-	if (m_radio_last_idx == idx)
+	if (m_urbtActiveIdx == idx)
 		return;
 
 	switch (idx)
 	{
 	case IDC_RADIO_ACTIVE:
-		for (const auto cb : m_vec_optcb)
+		for (const auto cb : m_vcbxOpt)
 		{
 			cb->ShowWindow(SW_SHOWNORMAL);
 			cb->EnableWindow(TRUE);
 		}
-		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
-		m_edit_opts.EnableWindow(TRUE);
+		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
+		m_edtOpt.EnableWindow(TRUE);
 
 		LOG("RadioBtn - Active");
 		break;
 	case IDC_RADIO_HIDE:
-		for (const auto cb : m_vec_optcb)
+		for (const auto cb : m_vcbxOpt)
 		{
 			cb->ShowWindow(SW_HIDE);
 		}
-		m_edit_opts.ShowWindow(SW_HIDE);
+		m_edtOpt.ShowWindow(SW_HIDE);
 
 		LOG("RadioBtn - Hide");
 		break;
 	case IDC_RADIO_DEACTIVE:
-		for (const auto cb : m_vec_optcb)
+		for (const auto cb : m_vcbxOpt)
 		{
 			cb->ShowWindow(SW_SHOWNORMAL);
 			cb->EnableWindow(FALSE);
 		}
-		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
-		m_edit_opts.EnableWindow(FALSE);
+		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
+		m_edtOpt.EnableWindow(FALSE);
 
 		LOG("RadioBtn - Deactive");
 		break;
 	}
 
-	m_radio_last_idx = idx;
+	m_urbtActiveIdx = idx;
 }
 
 void MainDlg::OnCbChanged(UINT idx)
@@ -314,7 +314,7 @@ void MainDlg::OnCbChanged(UINT idx)
 	UpdateOptCheckBoxStr();
 
 	CString s;
-	m_edit_opts.GetWindowText(s);
+	m_edtOpt.GetWindowText(s);
 
 	LOG("CheckBox - %ls", s.IsEmpty() ? L"n/a" : s);
 }
@@ -323,7 +323,7 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if (pScrollBar != nullptr)
 	{
-		if (pScrollBar->GetSafeHwnd() == m_hscrollbar.GetSafeHwnd())
+		if (pScrollBar->GetSafeHwnd() == m_hsb.GetSafeHwnd())
 		{
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateHScrollBarVal();
@@ -342,7 +342,7 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if (pScrollBar != nullptr)
 	{
-		if (pScrollBar->GetSafeHwnd() == m_vscrollbar.GetSafeHwnd())
+		if (pScrollBar->GetSafeHwnd() == m_vsb.GetSafeHwnd())
 		{
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateVScrollBarVal();
@@ -361,56 +361,56 @@ void MainDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CDialogEx::OnTimer(nIDEvent);
 
-	if (m_timerID == nIDEvent)
+	if (m_uTimerID == nIDEvent)
 	{
-		m_val += 1;
+		m_uCnt += 1;
 		UpdateTimerVal();
 	}
 }
 
 void MainDlg::OnBnClickedStartTimer()
 {
-	if (m_b_timerrun)
+	if (m_bTimerRun)
 		return;
 
 	UpdateData();
-	if (m_elapsed == 0)
-		m_elapsed = 100;
+	if (m_uElapsed == 0)
+		m_uElapsed = 100;
 
-	SetTimer(++m_timerID, m_elapsed, nullptr);
+	SetTimer(++m_uTimerID, m_uElapsed, nullptr);
 	UpdateTimerElapsedVal();
 
-	m_btn_start.EnableWindow(FALSE);
-	m_btn_stop.EnableWindow(TRUE);
-	m_b_timerrun = TRUE;
+	m_btStartTimer.EnableWindow(FALSE);
+	m_btStopTimer.EnableWindow(TRUE);
+	m_bTimerRun = TRUE;
 
-	LOG("Start Timer - ID : %d, Elapsed : %d", m_timerID, m_elapsed);
+	LOG("Start Timer - ID : %d, Elapsed : %d", m_uTimerID, m_uElapsed);
 }
 
 void MainDlg::OnBnClickedStopTimer()
 {
-	if (!m_b_timerrun)
+	if (!m_bTimerRun)
 		return;
 
-	KillTimer(m_timerID);
-	m_btn_start.EnableWindow(TRUE);
-	m_btn_stop.EnableWindow(FALSE);
-	m_b_timerrun = FALSE;
+	KillTimer(m_uTimerID);
+	m_btStartTimer.EnableWindow(TRUE);
+	m_btStopTimer.EnableWindow(FALSE);
+	m_bTimerRun = FALSE;
 
-	LOG("Stop Timer - ID : %d", m_timerID);
+	LOG("Stop Timer - ID : %d", m_uTimerID);
 }
 
 void MainDlg::OnBnClickedResetTimer()
 {
-	KillTimer(m_timerID);
-	m_val = 0U;
+	KillTimer(m_uTimerID);
+	m_uCnt = 0U;
 
 	UpdateTimerVal();
-	m_btn_start.EnableWindow(TRUE);
-	m_btn_stop.EnableWindow(FALSE);
-	m_b_timerrun = FALSE;
+	m_btStartTimer.EnableWindow(TRUE);
+	m_btStopTimer.EnableWindow(FALSE);
+	m_bTimerRun = FALSE;
 
-	LOG("Reset Timer - ID : %d", m_timerID);
+	LOG("Reset Timer - ID : %d", m_uTimerID);
 }
 
 void MainDlg::OnBnClickedCancel()

@@ -30,5 +30,5 @@ public:
 public:
 	CWnd* m_pParent;
 	DTO m_dto;
-	CListBox m_listbox;
+	CListBox m_lstbSpec;
 };

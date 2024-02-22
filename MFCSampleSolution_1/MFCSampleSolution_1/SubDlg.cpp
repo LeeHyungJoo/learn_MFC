@@ -21,7 +21,7 @@ SubDlg::~SubDlg()
 void SubDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_LIST1, m_listbox);
+	DDX_Control(pDX, IDC_LIST1, m_lstbSpec);
 }
 
 BOOL SubDlg::OnInitDialog()
@@ -39,41 +39,41 @@ END_MESSAGE_MAP()
 
 void SubDlg::RenderDTO()
 {
-	m_listbox.ResetContent();
+	m_lstbSpec.ResetContent();
 	{
 		CString s;
-		s.Format(L"combo [%s]", m_dto.combo);
-		m_listbox.AddString(s);
+		s.Format(L"combo [%s]", m_dto.sComboSelect);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"radio [%s]", m_dto.opttype);
-		m_listbox.AddString(s);
+		s.Format(L"radio [%s]", m_dto.sOptionType);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"checkbox [%s]", m_dto.opt);
-		m_listbox.AddString(s);
+		s.Format(L"checkbox [%s]", m_dto.sOption);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"timer value [%d]", m_dto.val);
-		m_listbox.AddString(s);
+		s.Format(L"timer value [%d]", m_dto.uCounter);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"timer elapsed [%d]", m_dto.elapse);
-		m_listbox.AddString(s);
+		s.Format(L"timer elapsed [%d]", m_dto.uElapsed);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"horizontal scroll [%d]", m_dto.hscroll_val);
-		m_listbox.AddString(s);
+		s.Format(L"horizontal scroll [%d]", m_dto.uHScrollbarPos);
+		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"vertical scroll [%d]", m_dto.vscroll_val);
-		m_listbox.AddString(s);
+		s.Format(L"vertical scroll [%d]", m_dto.uVScrollbarPos);
+		m_lstbSpec.AddString(s);
 	}
 }
 

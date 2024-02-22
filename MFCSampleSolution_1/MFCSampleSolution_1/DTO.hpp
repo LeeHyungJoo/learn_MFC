@@ -2,14 +2,13 @@
 
 #include "pch.h"
 
-
 struct DTO
 {
-	CString combo;
-	CString opt;
-	CString opttype;
-	UINT val;
-	UINT elapse;
-	UINT hscroll_val;
-	UINT vscroll_val;
+	CString sComboSelect;
+	CString sOption;
+	CString sOptionType;
+	UINT uCounter;
+	UINT uElapsed;
+	UINT uHScrollbarPos;
+	UINT uVScrollbarPos;
 };
