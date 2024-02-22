@@ -55,6 +55,8 @@ public:
 	afx_msg void OnBnClickedStopTimer();
 	afx_msg void OnBnClickedResetTimer();
 
+	afx_msg void OnDestroy();
+
 public:
 	CComboBox m_combobox;
 

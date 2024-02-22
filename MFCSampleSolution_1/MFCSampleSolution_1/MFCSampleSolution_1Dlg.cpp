@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON2, &MainDlg::OnBnClickedStopTimer)
 	ON_BN_CLICKED(IDC_BUTTON3, &MainDlg::OnBnClickedResetTimer)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &MainDlg::OnSelchangeCombo)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 void MainDlg::UpdateOptCheckBoxStr()
@@ -426,4 +427,11 @@ void MainDlg::OnSelchangeCombo()
 	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
 
 	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
+}
+
+
+void MainDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+	delete m_pSubDlg;
 }
