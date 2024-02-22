@@ -66,17 +66,17 @@ public:
 
 	CListBox m_lstbLog;
 
-	UINT m_uCnt;
-	UINT m_uElapsed;
+	UINT	m_uCnt;
+	UINT	m_uElapsed;
 	CButton m_btStartTimer;
 	CButton m_btStopTimer;
-	UINT m_uTimerID;
-	BOOL m_bTimerRun;
+	UINT	m_uTimerID;
+	BOOL	m_bTimerRun;
 
 	CScrollBar m_hsb;
-	CEdit m_edtHsb;
+	CEdit	m_edtHsb;
 	CScrollBar m_vsb;
-	CEdit m_edtVsb;
+	CEdit	m_edtVsb;
 
 	SubDlg* m_pSubDlg;
 };

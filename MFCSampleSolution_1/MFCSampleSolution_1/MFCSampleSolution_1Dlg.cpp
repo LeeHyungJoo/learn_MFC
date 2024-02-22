@@ -401,6 +401,9 @@ void MainDlg::OnBnClickedSub()
 
 	m_pSubDlg = new SubDlg(this, dto);
 	m_pSubDlg->Create(IDD_SubDlg, this);
+	CRect mainRect;
+	this->GetWindowRect(&mainRect);
+	m_pSubDlg->SetWindowPos(nullptr, mainRect.right, mainRect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);
 	m_pSubDlg->ShowWindow(SW_SHOW);
 
 	LOG("Button - Open Sub Dlg");

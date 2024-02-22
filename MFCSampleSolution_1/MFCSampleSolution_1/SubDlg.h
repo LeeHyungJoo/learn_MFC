@@ -28,7 +28,7 @@ public:
 	afx_msg void OnBnClickedClose();
 
 public:
-	CWnd* m_pParent;
-	DTO m_dto;
+	CWnd*	m_pParent;
+	DTO		m_dto;
 	CListBox m_lstbSpec;
 };
