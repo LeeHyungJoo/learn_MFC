@@ -260,7 +260,7 @@ void MainDlg::OnSelchangeCombo()
 	CString s;
 	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
 
-	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
+	LOG("ComboBox - %d, %ls", m_combobox.GetCurSel(), s);
 }
 
 void MainDlg::OnRdBnClicked(UINT idx)
@@ -279,7 +279,7 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(TRUE);
 
-		LOG("RadioBtn Change to Active");
+		LOG("RadioBtn - Active");
 		break;
 	case IDC_RADIO_HIDE:
 		for (const auto cb : m_vec_optcb)
@@ -288,7 +288,7 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		}
 		m_edit_opts.ShowWindow(SW_HIDE);
 
-		LOG("RadioBtn Change to Hide");
+		LOG("RadioBtn - Hide");
 		break;
 	case IDC_RADIO_DEACTIVE:
 		for (const auto cb : m_vec_optcb)
@@ -299,7 +299,7 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(FALSE);
 
-		LOG("RadioBtn Change to Deactive");
+		LOG("RadioBtn - Deactive");
 		break;
 	}
 
@@ -313,7 +313,7 @@ void MainDlg::OnCbChanged(UINT idx)
 	CString s;
 	m_edit_opts.GetWindowText(s);
 
-	LOG("CheckBox Change - %ls", s.IsEmpty() ? L"n/a" : s);
+	LOG("CheckBox - %ls", s.IsEmpty() ? L"n/a" : s);
 }
 
 void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -326,7 +326,7 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			UpdateHScrollBarVal();
 
 			if(nSBCode == SB_ENDSCROLL) 
-				LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+				LOG("Horizontal Scroll - pos : %d", pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -345,7 +345,7 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			UpdateVScrollBarVal();
 
 			if (nSBCode == SB_ENDSCROLL) 
-				LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+				LOG("Vertical Scroll - pos : %d", pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -381,7 +381,7 @@ void MainDlg::OnBnClickedStartTimer()
 	m_btn_stop.EnableWindow(TRUE);
 	m_b_timerrun = TRUE;
 
-	LOG("Start Timer - Timer ID  : %d, Elapsed : %d", m_timerID, m_elapsed);
+	LOG("Start Timer - ID : %d, Elapsed : %d", m_timerID, m_elapsed);
 }
 
 void MainDlg::OnBnClickedStopTimer()
@@ -394,7 +394,7 @@ void MainDlg::OnBnClickedStopTimer()
 	m_btn_stop.EnableWindow(FALSE);
 	m_b_timerrun = FALSE;
 
-	LOG("Stop Timer - Timer ID : %d", m_timerID);
+	LOG("Stop Timer - ID : %d", m_timerID);
 }
 
 void MainDlg::OnBnClickedResetTimer()
@@ -407,7 +407,7 @@ void MainDlg::OnBnClickedResetTimer()
 	m_btn_stop.EnableWindow(FALSE);
 	m_b_timerrun = FALSE;
 
-	LOG("Reset Timer - Timer ID : %d", m_timerID);
+	LOG("Reset Timer - ID : %d", m_timerID);
 }
 
 void MainDlg::OnBnClickedCancel()
@@ -427,7 +427,7 @@ void MainDlg::OnBnClickedSub()
 	m_pSubDlg->Create(IDD_SubDlg, this);
 	m_pSubDlg->ShowWindow(SW_SHOW);
 
-	LOG("Button Open Sub Dlg");
+	LOG("Button - Open Sub Dlg");
 }
 
 void MainDlg::OnDestroy()

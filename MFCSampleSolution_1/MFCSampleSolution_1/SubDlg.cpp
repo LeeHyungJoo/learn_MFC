@@ -7,7 +7,9 @@
 IMPLEMENT_DYNAMIC(SubDlg, CDialog)
 
 SubDlg::SubDlg(CWnd* pParent, DTO dto)
-	: CDialog(IDD_SubDlg, pParent), m_pParent(pParent), m_dto(dto)
+	: CDialog(IDD_SubDlg, pParent)
+	, m_pParent(pParent)
+	, m_dto(dto)
 {
 }
 
