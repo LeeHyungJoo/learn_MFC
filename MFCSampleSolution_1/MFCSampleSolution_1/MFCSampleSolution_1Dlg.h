@@ -11,10 +11,8 @@ protected:
 	(CDataExchange* pDX);
 
 protected:
-	HICON m_hIcon;
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
-	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
 private:
