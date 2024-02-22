@@ -26,6 +26,7 @@ public:
 public:
 	afx_msg void OnBnClickedReload();
 	afx_msg void OnBnClickedClose();
+	afx_msg void OnDestroy();
 
 public:
 	CWnd*	m_pParent;

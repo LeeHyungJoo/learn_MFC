@@ -15,7 +15,7 @@ SubDlg::SubDlg(CWnd* pParent, DTO dto)
 
 SubDlg::~SubDlg()
 {
-	delete m_pParent;
+
 }
 
 void SubDlg::DoDataExchange(CDataExchange* pDX)
@@ -35,6 +35,7 @@ BOOL SubDlg::OnInitDialog()
 BEGIN_MESSAGE_MAP(SubDlg, CDialog)
 	ON_BN_CLICKED(IDCLOSE, &SubDlg::OnBnClickedClose)
 	ON_BN_CLICKED(IDC_BUTTON1, &SubDlg::OnBnClickedReload)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 void SubDlg::RenderDTO()
@@ -67,4 +68,9 @@ void SubDlg::OnBnClickedReload()
 void SubDlg::OnBnClickedClose()
 {
 	CDialog::DestroyWindow();
+}
+
+void SubDlg::OnDestroy()
+{
+	CDialog::OnDestroy();
 }
