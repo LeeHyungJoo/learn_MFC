@@ -2,10 +2,10 @@
 #pragma once
 
 
-class CMFCSampleSolution1Dlg : public CDialogEx
+class MainDlg : public CDialogEx
 {
 public:
-	CMFCSampleSolution1Dlg(CWnd* pParent = nullptr);
+	MainDlg(CWnd* pParent = nullptr);
 
 private:
 	void UpdateOptCheckBoxStr();
@@ -67,7 +67,10 @@ public:
 
 	UINT m_val;
 	UINT m_elapsed;
+	CButton m_btn_start;
+	CButton m_btn_stop;
 	UINT m_timerID;
+
 
 	CScrollBar m_hscrollbar;
 	CEdit m_edit_hscrollval;

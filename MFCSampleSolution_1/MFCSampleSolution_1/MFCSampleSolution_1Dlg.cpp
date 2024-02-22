@@ -12,9 +12,9 @@
 #define new DEBUG_NEW
 #endif
 
-#define LOG(msg, ...) LogInternal(__func__, msg, ##__VA_ARGS__)
+#define LOG(msg, ...) LogInternal(__FUNCTION__, msg, ##__VA_ARGS__)
 
-CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
+MainDlg::MainDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
 	, m_timerID(0U)
 	, m_elapsed(100U)
@@ -23,7 +23,7 @@ CMFCSampleSolution1Dlg::CMFCSampleSolution1Dlg(CWnd* pParent /*=nullptr*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
+void MainDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 
@@ -48,24 +48,26 @@ void CMFCSampleSolution1Dlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SCROLLBAR2, m_vscrollbar);
 	DDX_Control(pDX, IDC_EDIT4, m_edit_vscrollval);
 
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_start);
+	DDX_Control(pDX, IDC_BUTTON2, m_btn_stop);
 }
 
-BEGIN_MESSAGE_MAP(CMFCSampleSolution1Dlg, CDialogEx)
+BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDCANCEL, &CMFCSampleSolution1Dlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDOK, &CMFCSampleSolution1Dlg::OnBnClickedSub)
+	ON_BN_CLICKED(IDCANCEL, &MainDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDOK, &MainDlg::OnBnClickedSub)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
 	ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_BUTTON1, &CMFCSampleSolution1Dlg::OnBnClickedStartTimer)
-	ON_BN_CLICKED(IDC_BUTTON2, &CMFCSampleSolution1Dlg::OnBnClickedStopTimer)
-	ON_BN_CLICKED(IDC_BUTTON3, &CMFCSampleSolution1Dlg::OnBnClickedResetTimer)
+	ON_BN_CLICKED(IDC_BUTTON1, &MainDlg::OnBnClickedStartTimer)
+	ON_BN_CLICKED(IDC_BUTTON2, &MainDlg::OnBnClickedStopTimer)
+	ON_BN_CLICKED(IDC_BUTTON3, &MainDlg::OnBnClickedResetTimer)
 END_MESSAGE_MAP()
 
-void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
+void MainDlg::UpdateOptCheckBoxStr()
 {
 	CString optnames;
 
@@ -85,7 +87,7 @@ void CMFCSampleSolution1Dlg::UpdateOptCheckBoxStr()
 	SetDlgItemText(IDC_EDIT1, optnames);
 }
 
-void CMFCSampleSolution1Dlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar & pScrollBar)
+void MainDlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar & pScrollBar)
 {
 	int delta = 0;
 
@@ -114,23 +116,26 @@ void CMFCSampleSolution1Dlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar &
 	pScrollBar.SetScrollPos(pScrollBar.GetScrollPos() + delta);
 }
 
-void CMFCSampleSolution1Dlg::LogInternal(const char* functionName, const char* format, ...)
+void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-
-	CString context;
-	context.Format(TEXT("%s"), CString(format));
-	context.Format(context, args);
-
+	
+	std::string s;
+	int len = vsnprintf(nullptr, 0, format, args);
+	s.resize(len + 1);
+	vsnprintf(&s[0], len + 1, format, args);
+	s.resize(len);
+	
 	CString logmsg;
-	logmsg.Format(L"%s :: %s", (CString)functionName, (CString)context);
+	//logmsg.Format(L"%s - %s", (CString)functionName, CString(s.c_str()));
+	logmsg.Format(L"%s", CString(s.c_str()));
 	m_listbox_logs.AddString(logmsg);
 
 	va_end(args);
 }
 
-void CMFCSampleSolution1Dlg::UpdateHScrollBarVal()
+void MainDlg::UpdateHScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_hscrollbar.GetScrollPos());
@@ -138,7 +143,7 @@ void CMFCSampleSolution1Dlg::UpdateHScrollBarVal()
 	SetDlgItemText(IDC_EDIT3, val);
 }
 
-void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
+void MainDlg::UpdateVScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_vscrollbar.GetScrollPos());
@@ -146,7 +151,7 @@ void CMFCSampleSolution1Dlg::UpdateVScrollBarVal()
 	SetDlgItemText(IDC_EDIT4, val);
 }
 
-void CMFCSampleSolution1Dlg::UpdateTimerVal()
+void MainDlg::UpdateTimerVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_val);
@@ -154,7 +159,7 @@ void CMFCSampleSolution1Dlg::UpdateTimerVal()
 	SetDlgItemText(IDC_TEXT, val);
 }
 
-void CMFCSampleSolution1Dlg::UpdateTimerElapsedVal()
+void MainDlg::UpdateTimerElapsedVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_elapsed);
@@ -162,7 +167,7 @@ void CMFCSampleSolution1Dlg::UpdateTimerElapsedVal()
 	SetDlgItemText(IDC_EDIT2, val);
 }
 
-BOOL CMFCSampleSolution1Dlg::OnInitDialog()
+BOOL MainDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -196,7 +201,7 @@ BOOL CMFCSampleSolution1Dlg::OnInitDialog()
 	return TRUE;
 }
 
-void CMFCSampleSolution1Dlg::OnPaint()
+void MainDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -219,22 +224,22 @@ void CMFCSampleSolution1Dlg::OnPaint()
 	}
 }
 
-HCURSOR CMFCSampleSolution1Dlg::OnQueryDragIcon()
+HCURSOR MainDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
-void CMFCSampleSolution1Dlg::OnBnClickedCancel()
+void MainDlg::OnBnClickedCancel()
 {
 	CDialogEx::OnCancel();
 }
 
-void CMFCSampleSolution1Dlg::OnBnClickedSub()
+void MainDlg::OnBnClickedSub()
 {
 
 }
 
-void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
+void MainDlg::OnRdBnClicked(UINT idx)
 {
 	switch (idx)
 	{
@@ -266,12 +271,12 @@ void CMFCSampleSolution1Dlg::OnRdBnClicked(UINT idx)
 	}
 }
 
-void CMFCSampleSolution1Dlg::OnCbChanged(UINT idx)
+void MainDlg::OnCbChanged(UINT idx)
 {
 	UpdateOptCheckBoxStr();
 }
 
-void CMFCSampleSolution1Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if (pScrollBar != nullptr)
 	{
@@ -287,7 +292,7 @@ void CMFCSampleSolution1Dlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 	}
 }
 
-void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 {
 	if (pScrollBar != nullptr)
 	{
@@ -303,7 +308,7 @@ void CMFCSampleSolution1Dlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScr
 	}
 }
 
-void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
+void MainDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CDialogEx::OnTimer(nIDEvent);
 
@@ -314,28 +319,34 @@ void CMFCSampleSolution1Dlg::OnTimer(UINT_PTR nIDEvent)
 	}
 }
 
-void CMFCSampleSolution1Dlg::OnBnClickedStartTimer()
+void MainDlg::OnBnClickedStartTimer()
 {
 	UpdateData();
 	if (m_elapsed == 0)
 		m_elapsed = 100;
 
 	SetTimer(++m_timerID, m_elapsed, nullptr);
-
 	UpdateTimerElapsedVal();
+	m_btn_start.EnableWindow(FALSE);
 
-	LOG("Start Timer - Timer ID : %d", m_timerID);
+	LOG("Start Timer - Timer ID  : %d, Elapsed : %d", m_timerID, m_elapsed);
 }
 
-void CMFCSampleSolution1Dlg::OnBnClickedStopTimer()
+void MainDlg::OnBnClickedStopTimer()
 {
 	KillTimer(m_timerID);
+	m_btn_start.EnableWindow(TRUE);
+
+	LOG("Stop Timer - Timer ID : %d", m_timerID);
 }
 
-void CMFCSampleSolution1Dlg::OnBnClickedResetTimer()
+void MainDlg::OnBnClickedResetTimer()
 {
 	KillTimer(m_timerID);
 	m_val = 0U;
 
 	UpdateTimerVal();
+	m_btn_start.EnableWindow(TRUE);
+
+	LOG("Reset Timer - Timer ID : %d", m_timerID);
 }
