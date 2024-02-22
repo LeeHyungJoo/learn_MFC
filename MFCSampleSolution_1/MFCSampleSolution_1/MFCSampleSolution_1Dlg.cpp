@@ -287,6 +287,7 @@ void MainDlg::OnCbChanged(UINT idx)
 
 	CString s;
 	m_edit_opts.GetWindowText(s);
+
 	LOG("CheckBox Change - %ls", s.IsEmpty() ? L"n/a" : s);
 }
 
@@ -387,5 +388,6 @@ void MainDlg::OnSelchangeCombo()
 {
 	CString s;
 	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
+
 	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
 }
