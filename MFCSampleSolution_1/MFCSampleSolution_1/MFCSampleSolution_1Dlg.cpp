@@ -107,7 +107,6 @@ END_MESSAGE_MAP()
 void MainDlg::UpdateOptCheckBoxStr()
 {
 	CString optnames;
-
 	for (const auto cb : m_vcbxOpt)
 	{
 		if (!cb->GetCheck())
@@ -120,7 +119,6 @@ void MainDlg::UpdateOptCheckBoxStr()
 			optnames.Append(TEXT(", "));
 		optnames.Append(optname);
 	}
-
 	SetDlgItemText(IDC_EDIT1, optnames);
 }
 
@@ -128,7 +126,6 @@ void MainDlg::UpdateTimerVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_uCnt);
-
 	SetDlgItemText(IDC_TEXT, val);
 }
 
@@ -136,7 +133,6 @@ void MainDlg::UpdateTimerElapsedVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_uElapsed);
-
 	SetDlgItemText(IDC_EDIT2, val);
 }
 
@@ -144,7 +140,6 @@ void MainDlg::UpdateHScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_hsb.GetScrollPos());
-
 	SetDlgItemText(IDC_EDIT3, val);
 }
 
@@ -152,7 +147,6 @@ void MainDlg::UpdateVScrollBarVal()
 {
 	CString val;
 	val.Format(TEXT("%d"), m_vsb.GetScrollPos());
-
 	SetDlgItemText(IDC_EDIT4, val);
 }
 
@@ -234,7 +228,6 @@ void MainDlg::OnSelchangeCombo()
 {
 	CString s;
 	m_cmbx.GetLBText(m_cmbx.GetCurSel(), s);
-
 	LOG("ComboBox - %d, %ls", m_cmbx.GetCurSel(), s);
 }
 
@@ -287,7 +280,6 @@ void MainDlg::OnCbChanged(UINT idx)
 
 	CString s;
 	m_edtOpt.GetWindowText(s);
-
 	LOG("CheckBox - %ls", s.IsEmpty() ? L"n/a" : s);
 }
 
@@ -348,7 +340,6 @@ void MainDlg::OnBnClickedStartTimer()
 	UpdateData();
 	if (m_uElapsed == 0)
 		m_uElapsed = 100;
-
 	SetTimer(++m_uTimerID, m_uElapsed, nullptr);
 	UpdateTimerElapsedVal();
 
@@ -376,8 +367,8 @@ void MainDlg::OnBnClickedResetTimer()
 {
 	KillTimer(m_uTimerID);
 	m_uCnt = 0U;
-
 	UpdateTimerVal();
+
 	m_btStartTimer.EnableWindow(TRUE);
 	m_btStopTimer.EnableWindow(FALSE);
 	m_bTimerRun = FALSE;
@@ -400,6 +391,7 @@ void MainDlg::OnBnClickedSub()
 
 	m_pSubDlg = new SubDlg(this, dto);
 	m_pSubDlg->Create(IDD_SubDlg, this);
+
 	CRect mainRect;
 	this->GetWindowRect(&mainRect);
 	m_pSubDlg->SetWindowPos(nullptr, mainRect.right, mainRect.top, 0, 0, SWP_NOSIZE | SWP_NOZORDER);

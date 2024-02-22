@@ -15,7 +15,6 @@ SubDlg::SubDlg(CWnd* pParent, DTO dto)
 
 SubDlg::~SubDlg()
 {
-
 }
 
 void SubDlg::DoDataExchange(CDataExchange* pDX)
