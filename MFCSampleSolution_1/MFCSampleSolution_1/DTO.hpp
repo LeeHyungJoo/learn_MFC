@@ -2,6 +2,7 @@
 
 #include "pch.h"
 
+
 struct DTO
 {
 	CString combo;

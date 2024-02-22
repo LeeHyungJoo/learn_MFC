@@ -24,8 +24,41 @@ SubDlg::~SubDlg()
 void SubDlg::RenderDTO()
 {
 	m_listbox.ResetContent();
-
-	m_listbox.AddString(m_dto.combo);
+	{
+		CString s;
+		s.Format(L"combo [%s]", m_dto.combo);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"radio [%s]", m_dto.opttype);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"checkbox [%s]", m_dto.opt);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"timer value [%d]", m_dto.val);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"timer elapsed [%d]", m_dto.elapse);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"horizontal scroll [%d]", m_dto.hscroll_val);
+		m_listbox.AddString(s);
+	}
+	{
+		CString s;
+		s.Format(L"vertical scroll [%d]", m_dto.vscroll_val);
+		m_listbox.AddString(s);
+	}
 }
 
 BOOL SubDlg::OnInitDialog()
@@ -33,7 +66,6 @@ BOOL SubDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	RenderDTO();
-
 	return TRUE;
 }
 
@@ -61,8 +93,7 @@ void SubDlg::OnBnClickedClose()
 
 void SubDlg::OnBnClickedButton1()
 {
-	auto maindlg = (MainDlg*)(m_pParent);
-	maindlg->MakeDTO(&m_dto);
+	dynamic_cast<MainDlg*>(m_pParent)->MakeDTO(&m_dto);
 	RenderDTO();
 }
 
