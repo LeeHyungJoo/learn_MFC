@@ -70,6 +70,7 @@ public:
 	CButton m_btn_start;
 	CButton m_btn_stop;
 	UINT m_timerID;
+	BOOL m_b_timerrun;
 
 
 	CScrollBar m_hscrollbar;

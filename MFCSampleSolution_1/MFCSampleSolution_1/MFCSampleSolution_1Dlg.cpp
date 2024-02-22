@@ -19,6 +19,7 @@ MainDlg::MainDlg(CWnd* pParent /*=nullptr*/)
 	, m_timerID(0U)
 	, m_elapsed(100U)
 	, m_val(0)
+	, m_b_timerrun(FALSE)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -321,21 +322,32 @@ void MainDlg::OnTimer(UINT_PTR nIDEvent)
 
 void MainDlg::OnBnClickedStartTimer()
 {
+	if (m_b_timerrun)
+		return;
+
 	UpdateData();
 	if (m_elapsed == 0)
 		m_elapsed = 100;
 
 	SetTimer(++m_timerID, m_elapsed, nullptr);
 	UpdateTimerElapsedVal();
+
 	m_btn_start.EnableWindow(FALSE);
+	m_btn_stop.EnableWindow(TRUE);
+	m_b_timerrun = TRUE;
 
 	LOG("Start Timer - Timer ID  : %d, Elapsed : %d", m_timerID, m_elapsed);
 }
 
 void MainDlg::OnBnClickedStopTimer()
 {
+	if (!m_b_timerrun)
+		return;
+
 	KillTimer(m_timerID);
 	m_btn_start.EnableWindow(TRUE);
+	m_btn_stop.EnableWindow(FALSE);
+	m_b_timerrun = FALSE;
 
 	LOG("Stop Timer - Timer ID : %d", m_timerID);
 }
@@ -347,6 +359,8 @@ void MainDlg::OnBnClickedResetTimer()
 
 	UpdateTimerVal();
 	m_btn_start.EnableWindow(TRUE);
+	m_btn_stop.EnableWindow(FALSE);
+	m_b_timerrun = FALSE;
 
 	LOG("Reset Timer - Timer ID : %d", m_timerID);
 }
