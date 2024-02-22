@@ -66,6 +66,7 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &MainDlg::OnBnClickedStartTimer)
 	ON_BN_CLICKED(IDC_BUTTON2, &MainDlg::OnBnClickedStopTimer)
 	ON_BN_CLICKED(IDC_BUTTON3, &MainDlg::OnBnClickedResetTimer)
+	ON_CBN_SELCHANGE(IDC_COMBO2, &MainDlg::OnSelchangeCombo)
 END_MESSAGE_MAP()
 
 void MainDlg::UpdateOptCheckBoxStr()
@@ -199,6 +200,8 @@ BOOL MainDlg::OnInitDialog()
 	UpdateTimerVal();
 	UpdateTimerElapsedVal();
 
+	LOG("--Initialize Main Dlg");
+
 	return TRUE;
 }
 
@@ -237,7 +240,7 @@ void MainDlg::OnBnClickedCancel()
 
 void MainDlg::OnBnClickedSub()
 {
-
+	LOG("Button Open Sub Dlg");
 }
 
 void MainDlg::OnRdBnClicked(UINT idx)
@@ -252,6 +255,8 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		}
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(TRUE);
+
+		LOG("RadioBtn Change to Active");
 		break;
 	case IDC_RADIO_HIDE:
 		for (const auto cb : m_vec_optcb)
@@ -259,6 +264,8 @@ void MainDlg::OnRdBnClicked(UINT idx)
 			cb->ShowWindow(SW_HIDE);
 		}
 		m_edit_opts.ShowWindow(SW_HIDE);
+
+		LOG("RadioBtn Change to Hide");
 		break;
 	case IDC_RADIO_DEACTIVE:
 		for (const auto cb : m_vec_optcb)
@@ -268,6 +275,8 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		}
 		m_edit_opts.ShowWindow(SW_SHOWNORMAL);
 		m_edit_opts.EnableWindow(FALSE);
+
+		LOG("RadioBtn Change to Deactive");
 		break;
 	}
 }
@@ -275,6 +284,10 @@ void MainDlg::OnRdBnClicked(UINT idx)
 void MainDlg::OnCbChanged(UINT idx)
 {
 	UpdateOptCheckBoxStr();
+
+	CString s;
+	m_edit_opts.GetWindowText(s);
+	LOG("CheckBox Change - %ls", s.IsEmpty() ? L"n/a" : s);
 }
 
 void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
@@ -285,6 +298,8 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		{
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateHScrollBarVal();
+
+			LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -301,6 +316,8 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 		{
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateVScrollBarVal();
+
+			LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -363,4 +380,12 @@ void MainDlg::OnBnClickedResetTimer()
 	m_b_timerrun = FALSE;
 
 	LOG("Reset Timer - Timer ID : %d", m_timerID);
+}
+
+
+void MainDlg::OnSelchangeCombo()
+{
+	CString s;
+	m_combobox.GetLBText(m_combobox.GetCurSel(), s);
+	LOG("ComboBox Change - select : %d,  %ls", m_combobox.GetCurSel(), s);
 }
