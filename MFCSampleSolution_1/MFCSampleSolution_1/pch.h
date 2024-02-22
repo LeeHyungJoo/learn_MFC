@@ -9,8 +9,10 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include "DTO.hpp"
 #include <vector>
 #include <list>
 #include <string>
+#include <afxwin.h>
 
 #endif //PCH_H

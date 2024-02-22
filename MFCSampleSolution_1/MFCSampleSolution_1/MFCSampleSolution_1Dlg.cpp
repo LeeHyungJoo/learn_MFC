@@ -7,6 +7,7 @@
 #include "MFCSampleSolution_1.h"
 #include "MFCSampleSolution_1Dlg.h"
 #include "afxdialogex.h"
+#include "SubDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -57,7 +58,7 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDCANCEL, &MainDlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDOK, &MainDlg::OnBnClickedSub)
+	ON_BN_CLICKED(IDSUB, &MainDlg::OnBnClickedSub)
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
 	ON_WM_HSCROLL()
@@ -137,6 +138,32 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 	va_end(args);
 }
 
+void MainDlg::MakeDTO(OUT DTO * dto)
+{
+	CString cbs;
+	m_combobox.GetLBText(m_combobox.GetCurSel(), cbs);
+	dto->combo = cbs;
+
+	CString rbs;
+	if (m_radio_active.GetCheck())
+		rbs = "active";
+	else if (m_radio_deactive.GetCheck())
+		rbs = "deactive";
+	else if (m_radio_hide.GetCheck())
+		rbs = "hide";
+	dto->opttype = rbs;
+
+	CString opts;
+	m_edit_opts.GetWindowText(opts);
+	dto->opt = opts;
+
+	dto->val = m_val;
+	dto->elapse = m_elapsed;
+
+	dto->hscroll_val = m_hscrollbar.GetScrollPos();
+	dto->vscroll_val = m_vscrollbar.GetScrollPos();
+}
+
 void MainDlg::UpdateHScrollBarVal()
 {
 	CString val;
@@ -181,7 +208,6 @@ BOOL MainDlg::OnInitDialog()
 	m_combobox.AddString(TEXT("boo"));
 	m_combobox.SetCurSel(0);
 
-	m_radio_idx = 0U;
 	m_radio_active.SetCheck(1);
 
 	m_vec_optcb.clear();
@@ -240,6 +266,16 @@ void MainDlg::OnBnClickedCancel()
 
 void MainDlg::OnBnClickedSub()
 {
+	if (m_pSubDlg != nullptr && IsWindow(m_pSubDlg->m_hWnd))
+		return;
+
+	DTO dto;
+	MakeDTO(&dto);
+
+	m_pSubDlg = new SubDlg(this, dto);
+	m_pSubDlg->Create(IDD_SubDlg, this);
+	m_pSubDlg->ShowWindow(SW_SHOW);
+
 	LOG("Button Open Sub Dlg");
 }
 

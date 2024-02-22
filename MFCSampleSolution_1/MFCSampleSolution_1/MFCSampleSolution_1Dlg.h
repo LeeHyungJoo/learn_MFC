@@ -1,6 +1,7 @@
 
 #pragma once
 
+class SubDlg;
 
 class MainDlg : public CDialogEx
 {
@@ -17,6 +18,9 @@ private:
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
 	void LogInternal(const char* functionName, const char* format, ...);
+
+public:
+	void MakeDTO(OUT DTO* dto);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };
@@ -57,7 +61,6 @@ public:
 	CButton m_radio_active;
 	CButton m_radio_hide;
 	CButton m_radio_deactive;
-	UINT m_radio_idx;
 
 	CButton m_checkbox_opt1;
 	CButton m_checkbox_opt2;
@@ -80,4 +83,6 @@ public:
 
 	CScrollBar m_vscrollbar;
 	CEdit m_edit_vscrollval;
+
+	SubDlg* m_pSubDlg;
 };
