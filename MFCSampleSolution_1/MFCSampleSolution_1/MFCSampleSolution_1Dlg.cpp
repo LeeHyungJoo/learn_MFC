@@ -91,8 +91,10 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
 	ON_WM_TIMER()
+
 	ON_COMMAND_RANGE(IDC_RADIO_ACTIVE, IDC_RADIO_DEACTIVE, OnRdBnClicked)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
+
 	ON_BN_CLICKED(IDCANCEL,		&MainDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDSUB,		&MainDlg::OnBnClickedSub)
 	ON_BN_CLICKED(IDC_BUTTON1,	&MainDlg::OnBnClickedStartTimer)
@@ -198,7 +200,7 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 	//logmsg.Format(L"%s - %s", (CString)functionName, CString(s.c_str()));
 	logmsg.Format(L"%s", CString(s.c_str()));
 	m_lstbLog.AddString(logmsg);
-
+	m_lstbLog.SetCurSel(m_lstbLog.GetCount() - 1);
 	va_end(args);
 }
 

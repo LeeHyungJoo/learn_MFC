@@ -40,41 +40,22 @@ END_MESSAGE_MAP()
 void SubDlg::RenderDTO()
 {
 	m_lstbSpec.ResetContent();
-	{
-		CString s;
-		s.Format(L"combo select [%s]", m_dto.sComboSelect);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"option type [%s]", m_dto.sOptionType);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"options [%s]", m_dto.sOption);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"counter [%d]", m_dto.uCounter);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"timer elapsed [%d]", m_dto.uElapsed);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"horizontal scroll [%d]", m_dto.uHScrollbarPos);
-		m_lstbSpec.AddString(s);
-	}
-	{
-		CString s;
-		s.Format(L"vertical scroll [%d]", m_dto.uVScrollbarPos);
-		m_lstbSpec.AddString(s);
-	}
+
+	CString s;
+	s.Format(L"combo select [%s]", m_dto.sComboSelect);
+	m_lstbSpec.AddString(s);
+	s.Format(L"option type [%s]", m_dto.sOptionType);
+	m_lstbSpec.AddString(s);
+	s.Format(L"options [%s]", m_dto.sOption);
+	m_lstbSpec.AddString(s);
+	s.Format(L"counter [%d]", m_dto.uCounter);
+	m_lstbSpec.AddString(s);
+	s.Format(L"timer elapsed [%d]", m_dto.uElapsed);
+	m_lstbSpec.AddString(s);
+	s.Format(L"horizontal scroll [%d]", m_dto.uHScrollbarPos);
+	m_lstbSpec.AddString(s);
+	s.Format(L"vertical scroll [%d]", m_dto.uVScrollbarPos);
+	m_lstbSpec.AddString(s);
 }
 
 void SubDlg::OnBnClickedReload()
