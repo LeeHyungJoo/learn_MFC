@@ -34,7 +34,7 @@ BOOL SubDlg::OnInitDialog()
 
 BEGIN_MESSAGE_MAP(SubDlg, CDialog)
 	ON_BN_CLICKED(IDCLOSE, &SubDlg::OnBnClickedClose)
-	ON_BN_CLICKED(IDC_BUTTON1, &SubDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON1, &SubDlg::OnBnClickedReload)
 END_MESSAGE_MAP()
 
 void SubDlg::RenderDTO()
@@ -77,7 +77,7 @@ void SubDlg::RenderDTO()
 	}
 }
 
-void SubDlg::OnBnClickedButton1()
+void SubDlg::OnBnClickedReload()
 {
 	dynamic_cast<MainDlg*>(m_pParent)->MakeDTO(&m_dto);
 	RenderDTO();
