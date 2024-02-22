@@ -24,7 +24,7 @@ public:
 #endif
 
 public:
-	afx_msg void OnBnClickedButton1();
+	afx_msg void OnBnClickedReload();
 	afx_msg void OnBnClickedClose();
 
 public:
