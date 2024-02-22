@@ -42,22 +42,22 @@ void SubDlg::RenderDTO()
 	m_lstbSpec.ResetContent();
 	{
 		CString s;
-		s.Format(L"combo [%s]", m_dto.sComboSelect);
+		s.Format(L"combo select [%s]", m_dto.sComboSelect);
 		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"radio [%s]", m_dto.sOptionType);
+		s.Format(L"option type [%s]", m_dto.sOptionType);
 		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"checkbox [%s]", m_dto.sOption);
+		s.Format(L"options [%s]", m_dto.sOption);
 		m_lstbSpec.AddString(s);
 	}
 	{
 		CString s;
-		s.Format(L"timer value [%d]", m_dto.uCounter);
+		s.Format(L"counter [%d]", m_dto.uCounter);
 		m_lstbSpec.AddString(s);
 	}
 	{
