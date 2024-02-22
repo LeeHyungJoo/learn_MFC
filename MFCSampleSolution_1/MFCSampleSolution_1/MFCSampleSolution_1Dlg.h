@@ -10,10 +10,10 @@ public:
 
 private:
 	void UpdateOptCheckBoxStr();
-	void UpdateHScrollBarVal();
-	void UpdateVScrollBarVal();
 	void UpdateTimerVal();
 	void UpdateTimerElapsedVal();
+	void UpdateHScrollBarVal();
+	void UpdateVScrollBarVal();
 
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
@@ -40,10 +40,6 @@ protected:
 
 public:
 	afx_msg void OnSelchangeCombo();
-
-	afx_msg void OnBnClickedCancel();
-	afx_msg void OnBnClickedSub();
-
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
 
@@ -55,6 +51,8 @@ public:
 	afx_msg void OnBnClickedStopTimer();
 	afx_msg void OnBnClickedResetTimer();
 
+	afx_msg void OnBnClickedCancel();
+	afx_msg void OnBnClickedSub();
 	afx_msg void OnDestroy();
 
 public:
@@ -63,6 +61,7 @@ public:
 	CButton m_radio_active;
 	CButton m_radio_hide;
 	CButton m_radio_deactive;
+	UINT m_radio_last_idx;
 
 	CButton m_checkbox_opt1;
 	CButton m_checkbox_opt2;
@@ -79,10 +78,8 @@ public:
 	UINT m_timerID;
 	BOOL m_b_timerrun;
 
-
 	CScrollBar m_hscrollbar;
 	CEdit m_edit_hscrollval;
-
 	CScrollBar m_vscrollbar;
 	CEdit m_edit_vscrollval;
 

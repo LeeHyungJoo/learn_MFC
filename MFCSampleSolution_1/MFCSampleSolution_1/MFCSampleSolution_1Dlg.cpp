@@ -282,6 +282,9 @@ void MainDlg::OnBnClickedSub()
 
 void MainDlg::OnRdBnClicked(UINT idx)
 {
+	if (m_radio_last_idx == idx)
+		return;
+
 	switch (idx)
 	{
 	case IDC_RADIO_ACTIVE:
@@ -316,6 +319,8 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		LOG("RadioBtn Change to Deactive");
 		break;
 	}
+
+	m_radio_last_idx = idx;
 }
 
 void MainDlg::OnCbChanged(UINT idx)
@@ -337,7 +342,7 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateHScrollBarVal();
 
-			LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+			if(nSBCode == SB_ENDSCROLL) LOG("Horizontal Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
@@ -355,7 +360,7 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateVScrollBarVal();
 
-			LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
+			if (nSBCode == SB_ENDSCROLL) LOG("Vertical Scroll - SB: %d, pos : %d", nSBCode, pScrollBar->GetScrollPos());
 		}
 	}
 	else
