@@ -47,6 +47,8 @@ void MainDlg::DoDataExchange(CDataExchange* pDX)
 
 	DDX_Control(pDX, IDC_BUTTON1, m_btStartTimer);
 	DDX_Control(pDX, IDC_BUTTON2, m_btStopTimer);
+	DDX_Control(pDX, IDC_BUTTON_SAVE, m_btSave);
+	DDX_Control(pDX, IDC_BUTTON_DEL, m_btDelete);
 }
 
 BOOL MainDlg::OnInitDialog()
@@ -102,6 +104,7 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3,	&MainDlg::OnBnClickedResetTimer)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &MainDlg::OnSelchangeCombo)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_SAVE, &MainDlg::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
 
 void MainDlg::UpdateOptCheckBoxStr()
@@ -403,4 +406,20 @@ void MainDlg::OnBnClickedSub()
 void MainDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+}
+
+void MainDlg::OnBnClickedButtonSave()
+{
+	CString settingName;
+	CString filePath;
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), settingName);
+	filePath.Format(L"\\_setting_data\\%s", settingName);
+
+	CFile file;
+	CFileException ex;
+	file.Open(settingName, CFile::modeCreate, &ex);
+
+	CString testStr("Test Value blar blar \n blar blllll!!");
+	file.Write(testStr, testStr.GetLength());
+
 }

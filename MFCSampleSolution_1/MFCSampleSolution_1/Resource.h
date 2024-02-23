@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++¿¡¼­ »ı¼ºÇÑ Æ÷ÇÔ ÆÄÀÏÀÔ´Ï´Ù.
-// MFCSampleSolution1.rc¿¡¼­ »ç¿ëµÇ°í ÀÖ½À´Ï´Ù.
+// Microsoft Visual C++ì—ì„œ ìƒì„±í•œ í¬í•¨ íŒŒì¼ì…ë‹ˆë‹¤.
+// MFCSampleSolution1.rcì—ì„œ ì‚¬ìš©ë˜ê³  ìˆìŠµë‹ˆë‹¤.
 //
 #define IDD_MFCSAMPLESOLUTION_1_DIALOG  102
 #define IDD_SubDlg                      103
@@ -26,6 +26,8 @@
 #define IDC_TEXT                        1018
 #define IDSUB                           1019
 #define IDC_BUTTON4                     1020
+#define IDC_BUTTON_SAVE                 1020
+#define IDC_BUTTON_DEL                  1021
 
 // Next default values for new objects
 // 

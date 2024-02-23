@@ -52,6 +52,8 @@ public:
 
 public:
 	CComboBox m_cmbx;
+	CButton   m_btSave;
+	CButton   m_btDelete;
 
 	CButton m_rbtActive;
 	CButton m_rbtHide;
@@ -79,4 +81,5 @@ public:
 	CEdit	m_edtVsb;
 
 	SubDlg* m_pSubDlg;
+	afx_msg void OnBnClickedButtonSave();
 };
