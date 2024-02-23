@@ -410,16 +410,36 @@ void MainDlg::OnDestroy()
 
 void MainDlg::OnBnClickedButtonSave()
 {
+	//TEST Serialize TEST
+
 	CString settingName;
 	CString filePath;
 	m_cmbx.GetLBText(m_cmbx.GetCurSel(), settingName);
-	filePath.Format(L"\\_setting_data\\%s", settingName);
+	filePath.Format(TEXT("%s.data"), settingName);
 
-	CFile file;
-	CFileException ex;
-	file.Open(settingName, CFile::modeCreate, &ex);
+	//Write
+	{
+		CFile file;
+		CFileException ex;
 
-	CString testStr("Test Value blar blar \n blar blllll!!");
-	file.Write(testStr, testStr.GetLength());
+		file.Open(filePath, CFile::modeCreate | CFile::modeWrite, &ex);
 
+		CArchive ar(&file, CArchive::store);
+		DAO dao;
+		dao.m_urbtActiveIdx = m_urbtActiveIdx;
+		dao.Serialize(ar);
+	}
+
+	//Read
+	{
+		CFile file;
+		CFileException ex;
+
+		file.Open(filePath, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeRead, &ex);
+
+		CArchive ar(&file, CArchive::load);
+		DAO dao;
+		dao.Serialize(ar);
+		auto t = dao.m_urbtActiveIdx;
+	}
 }

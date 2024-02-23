@@ -39,6 +39,9 @@
     <ClInclude Include="DTO.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DAO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFCSampleSolution_1.cpp">
@@ -51,6 +54,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SubDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DAO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

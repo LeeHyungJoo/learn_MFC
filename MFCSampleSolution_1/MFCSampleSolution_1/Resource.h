@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++에서 생성한 포함 파일입니다.
-// MFCSampleSolution1.rc에서 사용되고 있습니다.
+// Microsoft Visual C++ generated include file.
+// Used by MFCSampleSolution1.rc
 //
 #define IDD_MFCSAMPLESOLUTION_1_DIALOG  102
 #define IDD_SubDlg                      103
