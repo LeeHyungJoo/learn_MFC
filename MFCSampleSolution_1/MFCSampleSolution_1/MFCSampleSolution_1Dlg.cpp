@@ -403,6 +403,4 @@ void MainDlg::OnBnClickedSub()
 void MainDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-	m_pSubDlg->DestroyWindow();
-	delete m_pSubDlg;
 }
