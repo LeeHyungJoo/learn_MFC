@@ -18,10 +18,20 @@ void DAO::Serialize(CArchive & ar)
 
 	if (ar.IsStoring())
 	{
-		ar << m_urbtActiveIdx;
+		ar	<< m_urbtActiveIdx 
+			<< m_ubitOptIdx
+			<< m_uCnt
+			<< m_uElapsed
+			<< m_uhsbPos
+			<< m_uvsbPos;
 	}
 	else
 	{
-		ar >> m_urbtActiveIdx;
+		ar	>> m_urbtActiveIdx
+			>> m_ubitOptIdx
+			>> m_uCnt
+			>> m_uElapsed
+			>> m_uhsbPos
+			>> m_uvsbPos;
 	}
 }

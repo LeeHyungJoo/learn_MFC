@@ -16,6 +16,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 private:
+	void UpdateValueUI();
 	void UpdateOptCheckBoxStr();
 	void UpdateTimerVal();
 	void UpdateTimerElapsedVal();
@@ -37,6 +38,7 @@ public:
 	afx_msg void OnSelchangeCombo();
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
+	afx_msg void OnBnClickedButtonSave();
 
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -81,5 +83,4 @@ public:
 	CEdit	m_edtVsb;
 
 	SubDlg* m_pSubDlg;
-	afx_msg void OnBnClickedButtonSave();
 };
