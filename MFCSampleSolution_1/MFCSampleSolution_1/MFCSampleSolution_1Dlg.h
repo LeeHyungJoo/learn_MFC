@@ -29,6 +29,8 @@ private:
 
 public:
 	void MakeDTO(OUT DTO* dto);
+	BOOL MakeDataFromDAO(const CString& filePath);
+	BOOL MakeDataToDAO(const CString& filePath);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };
@@ -36,9 +38,9 @@ public:
 
 public:
 	afx_msg void OnSelchangeCombo();
+	afx_msg void OnBnClickedButtonSave();
 	afx_msg void OnRdBnClicked(UINT idx);
 	afx_msg void OnCbChanged(UINT idx);
-	afx_msg void OnBnClickedButtonSave();
 
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
@@ -52,10 +54,11 @@ public:
 	afx_msg void OnBnClickedSub();
 	afx_msg void OnDestroy();
 
-public:
+private:
 	CComboBox m_cmbx;
 	CButton   m_btSave;
 	CButton   m_btDelete;
+	CString	  m_strDataPath;
 
 	CButton m_rbtActive;
 	CButton m_rbtHide;

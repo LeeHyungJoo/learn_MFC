@@ -3,6 +3,7 @@
 
 
 DAO::DAO()
+	: m_urbtActiveIdx(0U), m_ubitOptIdx(0U), m_uCnt(0U), m_uElapsed(0U), m_uhsbPos(0U), m_uvsbPos(0U)
 {
 }
 

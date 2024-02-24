@@ -18,6 +18,14 @@ MainDlg::MainDlg(CWnd* pParent)
 	, m_uCnt(0)
 	, m_bTimerRun(FALSE)
 {
+	TCHAR szPath[MAX_PATH];
+	::GetModuleFileName(NULL, szPath, MAX_PATH);
+	CString exeDir = szPath;
+	exeDir = exeDir.Left(exeDir.ReverseFind('\\'));
+	m_strDataPath = CString(exeDir + L"\\Data\\");
+	
+	if (!JUtill::DirectoryExist(m_strDataPath))
+		CreateDirectory(m_strDataPath, NULL);
 }
 
 void MainDlg::DoDataExchange(CDataExchange* pDX)
@@ -56,11 +64,7 @@ BOOL MainDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	m_cmbx.AddString(TEXT("default"));
-	m_cmbx.AddString(TEXT("foo"));
-	m_cmbx.AddString(TEXT("boo"));
 	m_cmbx.SetCurSel(0);
-
-	m_rbtActive.SetCheck(1);
 
 	m_vcbxOpt.clear();
 	m_vcbxOpt.push_back(&m_cbxOpt1);
@@ -68,13 +72,15 @@ BOOL MainDlg::OnInitDialog()
 	m_vcbxOpt.push_back(&m_cbxOpt3);
 
 	m_hsb.SetScrollRange(0, 255, FALSE);
-	m_hsb.SetScrollPos(0);
 	m_vsb.SetScrollRange(0, 255, FALSE);
-	m_vsb.SetScrollPos(0);
+
+	CString filename;
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filename);
+	BOOL bInit = MakeDataFromDAO(filename);
 
 	UpdateValueUI();
 
-	LOG("--Initialize Main Dlg");
+	LOG("--Initialize Main Dlg, load [%s]", bInit ? "success" : "fail");
 	return TRUE;
 }
 
@@ -102,6 +108,43 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &MainDlg::OnBnClickedButtonSave)
 END_MESSAGE_MAP()
+
+BOOL MainDlg::MakeDataFromDAO(const CString& filePath)
+{
+	DAO setting;
+	if (!JUtill::LoadDAO(m_strDataPath + filePath, &setting))
+		return FALSE;
+
+	m_urbtActiveIdx = setting.m_urbtActiveIdx;
+	for (int i = 0; i < m_vcbxOpt.size(); i++)
+		m_vcbxOpt[i]->SetCheck(setting.m_ubitOptIdx & (1 << i));
+	m_uCnt = setting.m_uCnt;
+	m_uElapsed = setting.m_uElapsed;
+	m_hsb.SetScrollPos(setting.m_uhsbPos);
+	m_vsb.SetScrollPos(setting.m_uvsbPos);
+
+	return TRUE;
+}
+
+BOOL MainDlg::MakeDataToDAO(const CString & filePath)
+{
+	DAO setting;
+	setting.m_urbtActiveIdx = m_urbtActiveIdx;
+	UINT bit = 0U;
+	for (int i = 0; i < m_vcbxOpt.size(); i++)
+		if (m_vcbxOpt[i]->GetCheck())
+			bit |= (1 << i);
+	setting.m_ubitOptIdx = bit;
+	setting.m_uCnt = m_uCnt;
+	setting.m_uElapsed = m_uElapsed;
+	setting.m_uhsbPos = m_hsb.GetScrollPos();
+	setting.m_uvsbPos = m_vsb.GetScrollPos();
+
+	if (!JUtill::SaveDAO(m_strDataPath + filePath, &setting))
+		return FALSE;
+
+	return TRUE;
+}
 
 void MainDlg::UpdateValueUI()
 {
@@ -234,36 +277,26 @@ void MainDlg::MakeDTO(OUT DTO * dto)
 
 void MainDlg::OnSelchangeCombo()
 {
-	CString settingName;
-	m_cmbx.GetLBText(m_cmbx.GetCurSel(), settingName);
+	CString filename;
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filename);
 
-	CFile file;
-	CFileException ex;
+	BOOL bLoad = MakeDataFromDAO(filename);
+	if (bLoad) 
+		UpdateValueUI();
 
-	file.Open(settingName, CFile::modeCreate | CFile::modeNoTruncate | CFile::modeRead, &ex);
-
-	CArchive ar(&file, CArchive::load);
-
-	DAO dao;
-	dao.Serialize(ar);
-	m_urbtActiveIdx = dao.m_urbtActiveIdx;
-	for (int i = 0; i < m_vcbxOpt.size(); i++)
-		m_vcbxOpt[i]->SetCheck(dao.m_ubitOptIdx & (1 << i));
-
-	m_uCnt = dao.m_uCnt;
-	m_uElapsed = dao.m_uElapsed;
-	KillTimer(m_uTimerID);
-	m_btStartTimer.EnableWindow(TRUE);
-	m_btStopTimer.EnableWindow(FALSE);
-	m_bTimerRun = FALSE;
-
-	m_hsb.SetScrollPos(dao.m_uhsbPos);
-	m_vsb.SetScrollPos(dao.m_uvsbPos);
-
-	UpdateValueUI();
-
-	LOG("ComboBox - %d, %ls", m_cmbx.GetCurSel(), settingName);
+	LOG("ComboBox - %d, %ls, load [%s]", m_cmbx.GetCurSel(), filename, bLoad ? "success" : "fail");
 }
+
+
+void MainDlg::OnBnClickedButtonSave()
+{
+	CString filePath;
+	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filePath);
+
+
+
+}
+
 
 void MainDlg::OnRdBnClicked(UINT idx)
 {
@@ -437,32 +470,4 @@ void MainDlg::OnBnClickedSub()
 void MainDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-}
-
-void MainDlg::OnBnClickedButtonSave()
-{
-	CString settingName;
-	CString filePath;
-	m_cmbx.GetLBText(m_cmbx.GetCurSel(), settingName);
-	filePath.Format(TEXT("%s"), settingName);
-
-	CFile file;
-	CFileException ex;
-
-	file.Open(filePath, CFile::modeCreate | CFile::modeWrite, &ex);
-
-	DAO dao;
-	dao.m_urbtActiveIdx = m_urbtActiveIdx;
-	UINT bit = 0U;
-	for (int i = 0; i < m_vcbxOpt.size(); i++)
-		if (m_vcbxOpt[i]->GetCheck())
-			bit |= (1 << i);
-	dao.m_ubitOptIdx = bit;
-	dao.m_uCnt = m_uCnt;
-	dao.m_uElapsed = m_uElapsed;
-	dao.m_uhsbPos = m_hsb.GetScrollPos();
-	dao.m_uvsbPos = m_vsb.GetScrollPos();
-
-	CArchive ar(&file, CArchive::store);
-	dao.Serialize(ar);
 }

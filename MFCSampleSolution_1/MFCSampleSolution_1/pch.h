@@ -11,6 +11,7 @@
 #include "framework.h"
 #include "DTO.hpp"
 #include "DAO.h"
+#include "JUtill.h"
 #include <vector>
 #include <list>
 #include <string>

@@ -190,6 +190,7 @@
     <ClInclude Include="DAO.h" />
     <ClInclude Include="DTO.hpp" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="JUtill.h" />
     <ClInclude Include="MFCSampleSolution_1.h" />
     <ClInclude Include="MFCSampleSolution_1Dlg.h" />
     <ClInclude Include="pch.h" />
@@ -199,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DAO.cpp" />
+    <ClCompile Include="JUtill.cpp" />
     <ClCompile Include="MFCSampleSolution_1.cpp" />
     <ClCompile Include="MFCSampleSolution_1Dlg.cpp" />
     <ClCompile Include="pch.cpp">
