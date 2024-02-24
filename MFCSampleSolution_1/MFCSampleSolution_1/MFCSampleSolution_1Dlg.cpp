@@ -66,6 +66,7 @@ BOOL MainDlg::OnInitDialog()
 	m_cmbx.AddString(TEXT("default"));
 	m_cmbx.SetCurSel(0);
 
+	m_urbtActiveIdx = (UINT)m_rbtActive.GetDlgCtrlID();
 	m_vcbxOpt.clear();
 	m_vcbxOpt.push_back(&m_cbxOpt1);
 	m_vcbxOpt.push_back(&m_cbxOpt2);
@@ -112,7 +113,7 @@ END_MESSAGE_MAP()
 BOOL MainDlg::MakeDataFromDAO(const CString& filePath)
 {
 	DAO setting;
-	if (!JUtill::LoadDAO(m_strDataPath + filePath, &setting))
+	if (!JUtill::LoadDAO(m_strDataPath + filePath + CString(".data"), &setting))
 		return FALSE;
 
 	m_urbtActiveIdx = setting.m_urbtActiveIdx;
@@ -140,7 +141,7 @@ BOOL MainDlg::MakeDataToDAO(const CString & filePath)
 	setting.m_uhsbPos = m_hsb.GetScrollPos();
 	setting.m_uvsbPos = m_vsb.GetScrollPos();
 
-	if (!JUtill::SaveDAO(m_strDataPath + filePath, &setting))
+	if (!JUtill::SaveDAO(m_strDataPath + filePath + CString(".data"), &setting))
 		return FALSE;
 
 	return TRUE;
@@ -149,10 +150,34 @@ BOOL MainDlg::MakeDataToDAO(const CString & filePath)
 void MainDlg::UpdateValueUI()
 {
 	UpdateOptCheckBoxStr();
+	UpdateRbtSel();
 	UpdateTimerVal();
 	UpdateTimerElapsedVal();
 	UpdateHScrollBarVal();
 	UpdateVScrollBarVal();
+}
+
+void MainDlg::UpdateRbtSel()
+{
+	m_rbtActive.SetCheck(FALSE);
+	m_rbtHide.SetCheck(FALSE);
+	m_rbtDeactive.SetCheck(FALSE);
+
+	switch (m_urbtActiveIdx)
+	{
+	default:
+	case IDC_RADIO_ACTIVE:
+		m_rbtActive.SetCheck(TRUE);
+		break;
+	case IDC_RADIO_HIDE:
+		m_rbtHide.SetCheck(TRUE);
+		break;
+	case IDC_RADIO_DEACTIVE:
+		m_rbtDeactive.SetCheck(TRUE);
+		break;
+	}
+
+	OptionControlByRbt(m_urbtActiveIdx);
 }
 
 void MainDlg::UpdateOptCheckBoxStr()
@@ -249,6 +274,44 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 	va_end(args);
 }
 
+void MainDlg::OptionControlByRbt(UINT idx)
+{
+	switch (idx)
+	{
+	case IDC_RADIO_ACTIVE:
+		for (const auto cb : m_vcbxOpt)
+		{
+			cb->ShowWindow(SW_SHOWNORMAL);
+			cb->EnableWindow(TRUE);
+		}
+		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
+		m_edtOpt.EnableWindow(TRUE);
+
+		LOG("RadioBtn - Active");
+		break;
+	case IDC_RADIO_HIDE:
+		for (const auto cb : m_vcbxOpt)
+		{
+			cb->ShowWindow(SW_HIDE);
+		}
+		m_edtOpt.ShowWindow(SW_HIDE);
+
+		LOG("RadioBtn - Hide");
+		break;
+	case IDC_RADIO_DEACTIVE:
+		for (const auto cb : m_vcbxOpt)
+		{
+			cb->ShowWindow(SW_SHOWNORMAL);
+			cb->EnableWindow(FALSE);
+		}
+		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
+		m_edtOpt.EnableWindow(FALSE);
+
+		LOG("RadioBtn - Deactive");
+		break;
+	}
+}
+
 void MainDlg::MakeDTO(OUT DTO * dto)
 {
 	CString cbs;
@@ -290,11 +353,29 @@ void MainDlg::OnSelchangeCombo()
 
 void MainDlg::OnBnClickedButtonSave()
 {
-	CString filePath;
-	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filePath);
+	CString currentFileName;
+	m_cmbx.GetWindowText(currentFileName);
 
+	BOOL bNewSetting = FALSE;
+	for (int i = 0 ; i < m_cmbx.GetCount() ; i++)
+	{
+		CString filename;
+		m_cmbx.GetLBText(i, filename);
+		if (currentFileName.Compare(filename) == 0)
+		{
+			bNewSetting = TRUE;
+			break;
+		}
+	}
 
+	if (!bNewSetting)
+	{
+		m_cmbx.AddString(currentFileName);
+		m_cmbx.SetCurSel(m_cmbx.GetCount() - 1);
+	}
 
+	BOOL bSave = MakeDataToDAO(currentFileName);
+	LOG("Button Save Setting - %d, %ls, save [%s]", m_cmbx.GetCurSel(), currentFileName, bSave ? "success" : "fail");
 }
 
 
@@ -303,41 +384,7 @@ void MainDlg::OnRdBnClicked(UINT idx)
 	if (m_urbtActiveIdx == idx)
 		return;
 
-	switch (idx)
-	{
-	case IDC_RADIO_ACTIVE:
-		for (const auto cb : m_vcbxOpt)
-		{
-			cb->ShowWindow(SW_SHOWNORMAL);
-			cb->EnableWindow(TRUE);
-		}
-		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
-		m_edtOpt.EnableWindow(TRUE);
-
-		LOG("RadioBtn - Active");
-		break;
-	case IDC_RADIO_HIDE:
-		for (const auto cb : m_vcbxOpt)
-		{
-			cb->ShowWindow(SW_HIDE);
-		}
-		m_edtOpt.ShowWindow(SW_HIDE);
-
-		LOG("RadioBtn - Hide");
-		break;
-	case IDC_RADIO_DEACTIVE:
-		for (const auto cb : m_vcbxOpt)
-		{
-			cb->ShowWindow(SW_SHOWNORMAL);
-			cb->EnableWindow(FALSE);
-		}
-		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
-		m_edtOpt.EnableWindow(FALSE);
-
-		LOG("RadioBtn - Deactive");
-		break;
-	}
-
+	OptionControlByRbt(idx);
 	m_urbtActiveIdx = idx;
 }
 

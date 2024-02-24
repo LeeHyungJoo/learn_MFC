@@ -17,6 +17,7 @@ protected:
 
 private:
 	void UpdateValueUI();
+	void UpdateRbtSel();
 	void UpdateOptCheckBoxStr();
 	void UpdateTimerVal();
 	void UpdateTimerElapsedVal();
@@ -26,6 +27,7 @@ private:
 private:
 	void ScrollControl(UINT nSBCode, UINT nPos, CScrollBar& pScrollBar);
 	void LogInternal(const char* functionName, const char* format, ...);
+	void OptionControlByRbt(UINT idx);
 
 public:
 	void MakeDTO(OUT DTO* dto);
