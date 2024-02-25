@@ -42,7 +42,7 @@ void SubDlg::RenderDTO()
 	m_lstbSpec.ResetContent();
 
 	CString s;
-	s.Format(L"combo select [%s]", m_dto.sComboSelect);
+	s.Format(L"combo select [%s] %s", m_dto.sComboSelect, m_dto.bComboSave ? CString("") : CString(" (*no save)"));
 	m_lstbSpec.AddString(s);
 	s.Format(L"option type [%s]", m_dto.sOptionType);
 	m_lstbSpec.AddString(s);

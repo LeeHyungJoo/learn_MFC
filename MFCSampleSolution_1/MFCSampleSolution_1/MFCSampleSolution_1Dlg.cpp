@@ -22,7 +22,7 @@ MainDlg::MainDlg(CWnd* pParent)
 	::GetModuleFileName(NULL, szPath, MAX_PATH);
 	CString exeDir = szPath;
 	exeDir = exeDir.Left(exeDir.ReverseFind('\\'));
-	m_strDataPath = CString(exeDir + L"\\Data\\");
+	m_strDataPath = CString(exeDir + CString("\\Data\\"));
 	
 	if (!JUtill::DirectoryExist(m_strDataPath))
 		CreateDirectory(m_strDataPath, NULL);
@@ -332,7 +332,18 @@ void MainDlg::OptionControlByRbt(UINT idx)
 void MainDlg::MakeDTO(OUT DTO * dto)
 {
 	CString cbs;
-	m_cmbx.GetLBText(m_cmbx.GetCurSel(), cbs);
+	auto curSelIdx = m_cmbx.GetCurSel();
+	if (curSelIdx < 0)
+	{
+		m_cmbx.GetWindowText(cbs);
+		dto->bComboSave = FALSE;
+	}
+	else
+	{
+		m_cmbx.GetLBText(curSelIdx, cbs);
+		dto->bComboSave = TRUE;
+	}
+
 	dto->sComboSelect = cbs;
 
 	CString rbs;

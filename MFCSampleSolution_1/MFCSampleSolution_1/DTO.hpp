@@ -5,6 +5,7 @@
 struct DTO
 {
 	CString sComboSelect;
+	BOOL bComboSave;
 	CString sOption;
 	CString sOptionType;
 	UINT uCounter;
