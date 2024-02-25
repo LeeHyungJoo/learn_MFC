@@ -88,4 +88,6 @@ private:
 	CEdit	m_edtVsb;
 
 	SubDlg* m_pSubDlg;
+public:
+	afx_msg void OnBnClickedButtonDel();
 };

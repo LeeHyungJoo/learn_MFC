@@ -13,7 +13,7 @@
 #include "DAO.h"
 #include "JUtill.h"
 #include <vector>
-#include <list>
+#include <set>
 #include <string>
 #include <afxwin.h>
 

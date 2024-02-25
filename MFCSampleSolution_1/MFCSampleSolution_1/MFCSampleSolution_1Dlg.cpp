@@ -63,7 +63,21 @@ BOOL MainDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	m_cmbx.AddString(TEXT("default"));
+	CFileFind finder;
+	std::set<CString> filenames;
+	filenames.insert(CString("default"));
+	BOOL bWorking = finder.FindFile(m_strDataPath + L"\\*.data");
+	while (bWorking) {
+		bWorking = finder.FindNextFile();
+		if (finder.IsDots() || finder.IsDirectory())
+			continue;
+
+		filenames.insert(finder.GetFileTitle());
+	}
+	finder.Close();
+
+	for(const auto& fn : filenames)
+		m_cmbx.AddString(fn);
 	m_cmbx.SetCurSel(0);
 
 	m_urbtActiveIdx = (UINT)m_rbtActive.GetDlgCtrlID();
@@ -108,6 +122,7 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &MainDlg::OnSelchangeCombo)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &MainDlg::OnBnClickedButtonSave)
+	ON_BN_CLICKED(IDC_BUTTON_DEL, &MainDlg::OnBnClickedButtonDel)
 END_MESSAGE_MAP()
 
 BOOL MainDlg::MakeDataFromDAO(const CString& filePath)
@@ -155,6 +170,7 @@ void MainDlg::UpdateValueUI()
 	UpdateTimerElapsedVal();
 	UpdateHScrollBarVal();
 	UpdateVScrollBarVal();
+	UpdateData();
 }
 
 void MainDlg::UpdateRbtSel()
@@ -286,8 +302,6 @@ void MainDlg::OptionControlByRbt(UINT idx)
 		}
 		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
 		m_edtOpt.EnableWindow(TRUE);
-
-		LOG("RadioBtn - Active");
 		break;
 	case IDC_RADIO_HIDE:
 		for (const auto cb : m_vcbxOpt)
@@ -295,8 +309,6 @@ void MainDlg::OptionControlByRbt(UINT idx)
 			cb->ShowWindow(SW_HIDE);
 		}
 		m_edtOpt.ShowWindow(SW_HIDE);
-
-		LOG("RadioBtn - Hide");
 		break;
 	case IDC_RADIO_DEACTIVE:
 		for (const auto cb : m_vcbxOpt)
@@ -306,8 +318,6 @@ void MainDlg::OptionControlByRbt(UINT idx)
 		}
 		m_edtOpt.ShowWindow(SW_SHOWNORMAL);
 		m_edtOpt.EnableWindow(FALSE);
-
-		LOG("RadioBtn - Deactive");
 		break;
 	}
 }
@@ -385,6 +395,20 @@ void MainDlg::OnRdBnClicked(UINT idx)
 		return;
 
 	OptionControlByRbt(idx);
+
+	switch (idx)
+	{
+	case IDC_RADIO_ACTIVE:
+		LOG("RadioBtn - Active");
+		break;
+	case IDC_RADIO_HIDE:
+		LOG("RadioBtn - Hide");
+		break;
+	case IDC_RADIO_DEACTIVE:
+		LOG("RadioBtn - Deactive");
+		break;
+	}
+
 	m_urbtActiveIdx = idx;
 }
 
@@ -517,4 +541,11 @@ void MainDlg::OnBnClickedSub()
 void MainDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
+}
+
+
+void MainDlg::OnBnClickedButtonDel()
+{
+	UpdateData();
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
