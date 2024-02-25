@@ -216,6 +216,13 @@ void MainDlg::UpdateOptCheckBoxStr()
 
 void MainDlg::UpdateTimerVal()
 {
+	if (!m_bTimerRun)
+	{
+		KillTimer(m_uTimerID);
+		m_btStartTimer.EnableWindow(TRUE);
+		m_btStopTimer.EnableWindow(FALSE);
+	}
+
 	CString val;
 	val.Format(TEXT("%d"), m_uCnt);
 	SetDlgItemText(IDC_TEXT, val);
@@ -354,12 +361,12 @@ void MainDlg::OnSelchangeCombo()
 	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filename);
 
 	BOOL bLoad = MakeDataFromDAO(filename);
+	m_bTimerRun = FALSE;
 	if (bLoad) 
 		UpdateValueUI();
 
 	LOG("ComboBox - %d, %ls, load [%s]", m_cmbx.GetCurSel(), filename, bLoad ? "success" : "fail");
 }
-
 
 void MainDlg::OnBnClickedButtonSave()
 {
@@ -385,9 +392,64 @@ void MainDlg::OnBnClickedButtonSave()
 	}
 
 	BOOL bSave = MakeDataToDAO(currentFileName);
+	m_bTimerRun = FALSE;
+	if (bSave)
+		UpdateValueUI();
+
+	if (bSave)
+		AfxMessageBox(_T("Save Success"), MB_ICONINFORMATION);
+	else
+		AfxMessageBox(_T("Save Failed!"), MB_ICONERROR | MB_OK);
+
 	LOG("Button Save Setting - %d, %ls, save [%s]", m_cmbx.GetCurSel(), currentFileName, bSave ? "success" : "fail");
 }
 
+void MainDlg::OnBnClickedButtonDel()
+{
+	UpdateData();
+	if (m_cmbx.GetCurSel() == 0)
+	{
+		AfxMessageBox(_T("Can't Erase \"default\" Setting"), MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	CString currentFileName;
+	m_cmbx.GetWindowText(currentFileName);
+
+	BOOL bFound = FALSE;
+	int idx = 0;
+	for (int i = 0; i < m_cmbx.GetCount(); i++)
+	{
+		CString filename;
+		m_cmbx.GetLBText(i, filename);
+		if (currentFileName.Compare(filename) == 0)
+		{
+			idx = i;
+			bFound = TRUE;
+			break;
+		}
+	}
+
+	if (!bFound)
+	{
+		AfxMessageBox(_T("Invalid Setting Name !"), MB_ICONERROR | MB_OK);
+		return;
+	}
+
+	CFile::Remove(m_strDataPath + currentFileName + CString(".data"));
+	m_cmbx.DeleteString(idx);
+	m_cmbx.SetCurSel(idx - 1);
+
+	CString filename;
+	m_cmbx.GetLBText(idx - 1, filename);
+	MakeDataFromDAO(filename);
+	m_bTimerRun = FALSE;
+	UpdateValueUI();
+
+	AfxMessageBox(_T("Delete Setting Success"), MB_ICONINFORMATION);
+
+	LOG("Button Delete Setting - %d, %ls", m_cmbx.GetCurSel(), currentFileName);
+}
 
 void MainDlg::OnRdBnClicked(UINT idx)
 {
@@ -541,11 +603,4 @@ void MainDlg::OnBnClickedSub()
 void MainDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
-}
-
-
-void MainDlg::OnBnClickedButtonDel()
-{
-	UpdateData();
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
