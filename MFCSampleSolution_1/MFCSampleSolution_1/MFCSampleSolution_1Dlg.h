@@ -58,6 +58,7 @@ public:
 
 private:
 	CComboBox m_cmbx;
+	DWORD	  m_uRegCmbxIdx;
 	CButton   m_btSave;
 	CButton   m_btDelete;
 	CString	  m_strDataPath;

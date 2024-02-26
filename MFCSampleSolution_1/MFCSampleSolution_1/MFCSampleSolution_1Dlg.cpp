@@ -13,6 +13,7 @@
 
 MainDlg::MainDlg(CWnd* pParent)
 	: CDialogEx(IDD_MFCSAMPLESOLUTION_1_DIALOG, pParent)
+	, m_uRegCmbxIdx(0UL)
 	, m_uTimerID(0U)
 	, m_uElapsed(100U)
 	, m_uCnt(0)
@@ -23,29 +24,40 @@ MainDlg::MainDlg(CWnd* pParent)
 	CString exeDir = szPath;
 	exeDir = exeDir.Left(exeDir.ReverseFind('\\'));
 	m_strDataPath = CString(exeDir + CString("\\Data\\"));
-	
+
 	if (!JUtill::DirectoryExist(m_strDataPath))
 		CreateDirectory(m_strDataPath, NULL);
 
-	HKEY result;
-	LSTATUS status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, REG_SET, NULL, NULL, &result);
-	if (status == ERROR_FILE_NOT_FOUND)
+	HKEY hKey = NULL;
+	REGSAM regsam = KEY_SET_VALUE | KEY_QUERY_VALUE;
+	LSTATUS openStatus = RegOpenKeyEx(HKEY_CURRENT_USER, REG_SET, NULL, regsam, &hKey);
+	if (openStatus == ERROR_FILE_NOT_FOUND)
 	{
-		DWORD fileResult =0;
-		auto rr = RegCreateKeyExW(
-			HKEY_LOCAL_MACHINE,
-			REG_SET, 
-			NULL, 
-			L"ttt",
-			REG_OPTION_NON_VOLATILE,
-			KEY_CREATE_SUB_KEY | KEY_WRITE | KEY_READ,
-			NULL,
-			&result,
-			&fileResult
-		);
-
-		int k = 0;
+		DWORD dwDisposition;
+		if (RegCreateKeyEx(
+			HKEY_CURRENT_USER, REG_SET, 0, NULL,
+			REG_OPTION_NON_VOLATILE, regsam, NULL,
+			&hKey, &dwDisposition) == ERROR_SUCCESS
+			)
+		{
+			if (RegSetValueEx(
+				hKey, REG_SET_KEY, 0,
+				REG_DWORD, (const BYTE*)(&m_uRegCmbxIdx), sizeof(m_uRegCmbxIdx)) != ERROR_SUCCESS)
+			{
+				AfxMessageBox(_T("Regist Key Set Failed !"), MB_ICONERROR | MB_OK);
+			}
+		}
+		else
+		{
+			AfxMessageBox(_T("Regist Key Create Failed !"), MB_ICONERROR | MB_OK);
+		}
 	}
+
+	DWORD valueSize = sizeof(m_uRegCmbxIdx);
+	if (RegQueryValueEx(hKey, REG_SET_KEY, NULL, NULL, (LPBYTE)&m_uRegCmbxIdx, &valueSize) != ERROR_SUCCESS)
+		AfxMessageBox(_T("Regist Key Query Failed !"), MB_ICONERROR | MB_OK);
+
+	RegCloseKey(hKey);
 }
 
 void MainDlg::DoDataExchange(CDataExchange* pDX)
@@ -96,9 +108,11 @@ BOOL MainDlg::OnInitDialog()
 	}
 	finder.Close();
 
-	for(const auto& fn : filenames)
+	for (const auto& fn : filenames)
 		m_cmbx.AddString(fn);
-	m_cmbx.SetCurSel(0);
+
+	if (m_cmbx.SetCurSel(m_uRegCmbxIdx) == CB_ERR)
+		m_cmbx.SetCurSel(0);
 
 	m_urbtActiveIdx = (UINT)m_rbtActive.GetDlgCtrlID();
 	m_vcbxOpt.clear();
@@ -136,19 +150,17 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_COMMAND_RANGE(IDC_CHECK1, IDC_CHECK3, OnCbChanged)
 	ON_CBN_SELCHANGE(IDC_COMBO2, &MainDlg::OnSelchangeCombo)
 
-	ON_BN_CLICKED(IDCANCEL,		&MainDlg::OnBnClickedCancel)
-	ON_BN_CLICKED(IDSUB,		&MainDlg::OnBnClickedSub)
-	ON_BN_CLICKED(IDC_BUTTON1,	&MainDlg::OnBnClickedStartTimer)
-	ON_BN_CLICKED(IDC_BUTTON2,	&MainDlg::OnBnClickedStopTimer)
-	ON_BN_CLICKED(IDC_BUTTON3,	&MainDlg::OnBnClickedResetTimer)
+	ON_BN_CLICKED(IDCANCEL, &MainDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDSUB, &MainDlg::OnBnClickedSub)
+	ON_BN_CLICKED(IDC_BUTTON1, &MainDlg::OnBnClickedStartTimer)
+	ON_BN_CLICKED(IDC_BUTTON2, &MainDlg::OnBnClickedStopTimer)
+	ON_BN_CLICKED(IDC_BUTTON3, &MainDlg::OnBnClickedResetTimer)
 	ON_BN_CLICKED(IDC_BUTTON_SAVE, &MainDlg::OnBnClickedButtonSave)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, &MainDlg::OnBnClickedButtonDel)
 END_MESSAGE_MAP()
 
 BOOL MainDlg::Deserialize(const CString& filePath)
 {
-
-
 	DAO setting;
 	if (!JUtill::LoadDAO(m_strDataPath + filePath + CString(".data"), &setting))
 		return FALSE;
@@ -166,7 +178,6 @@ BOOL MainDlg::Deserialize(const CString& filePath)
 
 BOOL MainDlg::Serialize(const CString & filePath)
 {
-
 
 	DAO setting;
 	setting.m_urbtActiveIdx = m_urbtActiveIdx;
@@ -231,7 +242,7 @@ void MainDlg::UpdateOptCheckBoxStr()
 		CString optname;
 		cb->GetWindowTextW(optname);
 
-		if (!optnames.IsEmpty()) 
+		if (!optnames.IsEmpty())
 			optnames.Append(TEXT(", "));
 		optnames.Append(optname);
 	}
@@ -282,7 +293,7 @@ void MainDlg::ScrollControl(UINT nSBCode, UINT nPos, CScrollBar & pScrollBar)
 	case SB_THUMBTRACK:
 		pScrollBar.SetScrollPos(nPos);
 		break;
-	case SB_LINEUP :	/* = SB_LINELEFT*/
+	case SB_LINEUP:	/* = SB_LINELEFT*/
 		delta -= 4;
 		break;
 	case SB_LINEDOWN:	/* = SB_LINERIGHT*/
@@ -306,13 +317,13 @@ void MainDlg::LogInternal(const char* functionName, const char* format, ...)
 {
 	va_list args;
 	va_start(args, format);
-	
+
 	std::string s;
 	int len = vsnprintf(nullptr, 0, format, args);
 	s.resize(len + 1);
 	vsnprintf(&s[0], len + 1, format, args);
 	s.resize(len);
-	
+
 	CString logmsg;
 	//logmsg.Format(L"%s - %s", (CString)functionName, CString(s.c_str()));
 	logmsg.Format(L"%s", CString(s.c_str()));
@@ -397,8 +408,11 @@ void MainDlg::OnSelchangeCombo()
 
 	BOOL bLoad = Deserialize(filename);
 	m_bTimerRun = FALSE;
-	if (bLoad) 
+	if (bLoad)
+	{
 		UpdateValueUI();
+		m_uRegCmbxIdx = m_cmbx.GetCurSel();
+	}
 
 	LOG("ComboBox - %d, %ls, load [%s]", m_cmbx.GetCurSel(), filename, bLoad ? "success" : "fail");
 }
@@ -409,7 +423,7 @@ void MainDlg::OnBnClickedButtonSave()
 	m_cmbx.GetWindowText(currentFileName);
 
 	BOOL bNewSetting = FALSE;
-	for (int i = 0 ; i < m_cmbx.GetCount() ; i++)
+	for (int i = 0; i < m_cmbx.GetCount(); i++)
 	{
 		CString filename;
 		m_cmbx.GetLBText(i, filename);
@@ -429,7 +443,10 @@ void MainDlg::OnBnClickedButtonSave()
 	BOOL bSave = Serialize(currentFileName);
 	m_bTimerRun = FALSE;
 	if (bSave)
+	{
+		m_uRegCmbxIdx = m_cmbx.GetCurSel();
 		UpdateValueUI();
+	}
 
 	if (bSave)
 		AfxMessageBox(_T("Save Success"), MB_ICONINFORMATION);
@@ -527,7 +544,7 @@ void MainDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateHScrollBarVal();
 
-			if(nSBCode == SB_ENDSCROLL) 
+			if (nSBCode == SB_ENDSCROLL)
 				LOG("Horizontal Scroll - pos : %d", pScrollBar->GetScrollPos());
 		}
 	}
@@ -546,7 +563,7 @@ void MainDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
 			ScrollControl(nSBCode, nPos, *pScrollBar);
 			UpdateVScrollBarVal();
 
-			if (nSBCode == SB_ENDSCROLL) 
+			if (nSBCode == SB_ENDSCROLL)
 				LOG("Vertical Scroll - pos : %d", pScrollBar->GetScrollPos());
 		}
 	}
@@ -637,5 +654,8 @@ void MainDlg::OnBnClickedSub()
 
 void MainDlg::OnDestroy()
 {
+	HKEY hKey = NULL;
+	RegOpenKeyEx(HKEY_CURRENT_USER, REG_SET, NULL, KEY_SET_VALUE, &hKey);
+	RegSetValueEx(hKey, REG_SET_KEY, 0, REG_DWORD, (const BYTE*)(&m_uRegCmbxIdx), sizeof(m_uRegCmbxIdx));
 	CDialogEx::OnDestroy();
 }

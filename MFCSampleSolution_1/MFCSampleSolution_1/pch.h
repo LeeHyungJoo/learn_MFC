@@ -18,5 +18,6 @@
 #include <afxwin.h>
 
 #define REG_SET L"SOFTWARE\\MFC_Tutorial_Set"
+#define REG_SET_KEY L"SettingIndex"
 
 #endif //PCH_H
