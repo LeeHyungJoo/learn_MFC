@@ -31,8 +31,8 @@ private:
 
 public:
 	void MakeDTO(OUT DTO* dto);
-	BOOL MakeDataFromDAO(const CString& filePath);
-	BOOL MakeDataToDAO(const CString& filePath);
+	BOOL Deserialize(const CString& filePath);
+	BOOL Serialize(const CString& filePath);
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCSAMPLESOLUTION_1_DIALOG };

@@ -4,7 +4,8 @@
 
 
 DAO::DAO()
-	: m_urbtActiveIdx(IDC_RADIO_ACTIVE), m_ubitOptIdx(0U), m_uCnt(0U), m_uElapsed(0U), m_uhsbPos(0U), m_uvsbPos(0U)
+	: m_urbtActiveIdx(IDC_RADIO_ACTIVE), m_ubitOptIdx(0U)
+	, m_uCnt(0U), m_uElapsed(0U), m_uhsbPos(0U), m_uvsbPos(0U)
 {
 }
 
@@ -20,7 +21,7 @@ void DAO::Serialize(CArchive & ar)
 
 	if (ar.IsStoring())
 	{
-		ar	<< m_urbtActiveIdx 
+		ar	<< m_urbtActiveIdx
 			<< m_ubitOptIdx
 			<< m_uCnt
 			<< m_uElapsed

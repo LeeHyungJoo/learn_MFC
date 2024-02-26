@@ -26,6 +26,26 @@ MainDlg::MainDlg(CWnd* pParent)
 	
 	if (!JUtill::DirectoryExist(m_strDataPath))
 		CreateDirectory(m_strDataPath, NULL);
+
+	HKEY result;
+	LSTATUS status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, REG_SET, NULL, NULL, &result);
+	if (status == ERROR_FILE_NOT_FOUND)
+	{
+		DWORD fileResult =0;
+		auto rr = RegCreateKeyExW(
+			HKEY_LOCAL_MACHINE,
+			REG_SET, 
+			NULL, 
+			L"ttt",
+			REG_OPTION_NON_VOLATILE,
+			KEY_CREATE_SUB_KEY | KEY_WRITE | KEY_READ,
+			NULL,
+			&result,
+			&fileResult
+		);
+
+		int k = 0;
+	}
 }
 
 void MainDlg::DoDataExchange(CDataExchange* pDX)
@@ -91,7 +111,7 @@ BOOL MainDlg::OnInitDialog()
 
 	CString filename;
 	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filename);
-	BOOL bInit = MakeDataFromDAO(filename);
+	BOOL bInit = Deserialize(filename);
 
 	UpdateValueUI();
 
@@ -125,8 +145,10 @@ BEGIN_MESSAGE_MAP(MainDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_DEL, &MainDlg::OnBnClickedButtonDel)
 END_MESSAGE_MAP()
 
-BOOL MainDlg::MakeDataFromDAO(const CString& filePath)
+BOOL MainDlg::Deserialize(const CString& filePath)
 {
+
+
 	DAO setting;
 	if (!JUtill::LoadDAO(m_strDataPath + filePath + CString(".data"), &setting))
 		return FALSE;
@@ -142,8 +164,10 @@ BOOL MainDlg::MakeDataFromDAO(const CString& filePath)
 	return TRUE;
 }
 
-BOOL MainDlg::MakeDataToDAO(const CString & filePath)
+BOOL MainDlg::Serialize(const CString & filePath)
 {
+
+
 	DAO setting;
 	setting.m_urbtActiveIdx = m_urbtActiveIdx;
 	UINT bit = 0U;
@@ -371,7 +395,7 @@ void MainDlg::OnSelchangeCombo()
 	CString filename;
 	m_cmbx.GetLBText(m_cmbx.GetCurSel(), filename);
 
-	BOOL bLoad = MakeDataFromDAO(filename);
+	BOOL bLoad = Deserialize(filename);
 	m_bTimerRun = FALSE;
 	if (bLoad) 
 		UpdateValueUI();
@@ -402,7 +426,7 @@ void MainDlg::OnBnClickedButtonSave()
 		m_cmbx.SetCurSel(m_cmbx.GetCount() - 1);
 	}
 
-	BOOL bSave = MakeDataToDAO(currentFileName);
+	BOOL bSave = Serialize(currentFileName);
 	m_bTimerRun = FALSE;
 	if (bSave)
 		UpdateValueUI();
@@ -453,7 +477,7 @@ void MainDlg::OnBnClickedButtonDel()
 
 	CString filename;
 	m_cmbx.GetLBText(idx - 1, filename);
-	MakeDataFromDAO(filename);
+	Deserialize(filename);
 	m_bTimerRun = FALSE;
 	UpdateValueUI();
 

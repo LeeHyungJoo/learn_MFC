@@ -17,4 +17,6 @@
 #include <string>
 #include <afxwin.h>
 
+#define REG_SET L"SOFTWARE\\MFC_Tutorial_Set"
+
 #endif //PCH_H
