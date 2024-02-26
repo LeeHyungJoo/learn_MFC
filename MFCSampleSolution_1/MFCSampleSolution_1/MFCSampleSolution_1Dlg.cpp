@@ -178,7 +178,6 @@ BOOL MainDlg::Deserialize(const CString& filePath)
 
 BOOL MainDlg::Serialize(const CString & filePath)
 {
-
 	DAO setting;
 	setting.m_urbtActiveIdx = m_urbtActiveIdx;
 	UINT bit = 0U;
