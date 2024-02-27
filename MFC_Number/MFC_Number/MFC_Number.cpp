@@ -25,7 +25,7 @@ CMFCNumberApp::CMFCNumberApp()
 {
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
-
+	std::srand((unsigned int)(time(NULL)));
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
 }

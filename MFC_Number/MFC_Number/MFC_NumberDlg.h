@@ -18,6 +18,11 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	void CalculateAverage(DOUBLE* pVals, UINT cnt, OUT DOUBLE* average);
+	void CalculateStandardDeviation(DOUBLE* pVals, UINT cnt, OUT DOUBLE* SD);
+	void GetMinMax(DOUBLE* pVals, UINT cnt, OUT DOUBLE* average);
+
+public:
 	afx_msg void OnBnClickedButtonGen();
 
 	afx_msg void OnBnClickedButtonAvg();
@@ -26,10 +31,8 @@ public:
 
 public:
 	CListBox m_lsbNums;
-	DOUBLE* m_pVals;
 	BOOL m_bSet;
 
-	CEdit m_editCnt;
 	UINT m_uCnt;
 
 	CEdit m_editAvg;
