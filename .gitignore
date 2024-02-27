@@ -7,8 +7,7 @@
 *.lo
 *.o
 *.obj
-Data/
-x64/
+
 
 # Precompiled Headers
 *.gch
@@ -35,13 +34,9 @@ x64/
 *.app
 *.tlog
 *.log
-HelloSDK/.vs/HelloSDK/v15/Browse.VC.db
-HelloSDK/.vs/HelloSDK/v15/.suo
-HelloSDK/.vs/HelloSDK/v15/Browse.VC.opendb
-MFCSampleSolution_1/.vs/MFCSampleSolution_1/v15/.suo
-MFCSampleSolution_1/.vs/MFCSampleSolution_1/v15/Browse.VC.db
-MFCSampleSolution_1/.vs/MFCSampleSolution_1/v15/ipch/d27bbeaf76a372d1.ipch
-MFCSampleSolution_1/.vs/MFCSampleSolution_1/v15/Browse.VC.opendb
-MFCSampleSolution_1/MFCSampleSolution_1/Debug/vc141.idb
-MFCSampleSolution_1/MFCSampleSolution_1/Debug/vc141.pdb
-MFCSampleSolution_1/.vs/MFCSampleSolution_1/v15/ipch/2c82e4069c7a34be.ipch
+
+# Folder
+.vs/
+Debug/
+Data/
+x64/
