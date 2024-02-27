@@ -18,8 +18,21 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	CListBox m_lsbNums;
-	CEdit m_editCnt;
+	afx_msg void OnBnClickedButtonGen();
 
-	std::vector<CString> m_data;
+	afx_msg void OnBnClickedButtonAvg();
+	afx_msg void OnBnClickedButtonSd();
+	afx_msg void OnBnClickedButtonMnx();
+
+public:
+	CListBox m_lsbNums;
+	DOUBLE* m_pVals;
+	BOOL m_bSet;
+
+	CEdit m_editCnt;
+	UINT m_uCnt;
+
+	CEdit m_editAvg;
+	CEdit m_editSd;
+	CEdit m_editMnx;
 };

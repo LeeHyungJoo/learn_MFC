@@ -10,5 +10,5 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include <vector>
-
+#define MAX_LIST_CNT 10000000
 #endif //PCH_H
