@@ -196,7 +196,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MFC_Number.cpp" />
-    <ClCompile Include="MFC_NumberDlg.cpp" />
+    <ClCompile Include="MFC_NumberDlg.cpp">
+      <UseUnicodeForAssemblerListing Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</UseUnicodeForAssemblerListing>
+    </ClCompile>
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
