@@ -3,6 +3,6 @@
 class Utill
 {
 public:
-	static DOUBLE GetRandomDouble();
+	static DOUBLE GetRandomFloat();
 	static FLOAT GetRandomTest();
 };

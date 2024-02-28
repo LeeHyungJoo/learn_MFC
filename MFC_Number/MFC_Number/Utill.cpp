@@ -2,18 +2,17 @@
 #include "Utill.h"
 
 
-DOUBLE Utill::GetRandomDouble()
+DOUBLE Utill::GetRandomFloat()
 {
 	std::random_device rd;
 	std::default_random_engine  gen(rd());
 
-	std::uniform_real<DOUBLE> dis(
-		//(std::numeric_limits<DOUBLE>::lowest)(),
-		(std::numeric_limits<DOUBLE>::min)(),
-		(std::numeric_limits<DOUBLE>::max)()
+	std::uniform_real<FLOAT> dis(
+		-(100000 - DBL_EPSILON),
+		100000 - DBL_EPSILON
 	);
 
-	return dis(gen) * (rand() & 1 ? -1 : 1);
+	return dis(gen);
 }
 
 FLOAT Utill::GetRandomTest()

@@ -95,7 +95,7 @@ void CMFCNumberDlg::OnBnClickedButtonGen()
 	int maxv = -1;
 	for (UINT cnt = 0; cnt < m_uCnt; cnt++)
 	{
-		auto val = Utill::GetRandomTest();
+		auto val = Utill::GetRandomFloat();
 		//auto val = Utill::GetRandomDouble();
 		CString valStr;
 		valStr.Format(L"%.3lf", val);
