@@ -9,6 +9,14 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
+#include "Utill.h"
 #include <vector>
-#define MAX_LIST_CNT 10000000
+#include <math.h>
+#include <algorithm>
+#include <numeric>
+#include <random>
+#include <time.h>
+#define MAX_LIST_CNT 500000
+
+
 #endif //PCH_H

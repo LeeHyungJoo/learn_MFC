@@ -18,21 +18,25 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnBnClickedButtonGen();
+	void MakeValArr(OUT DOUBLE* pVals, UINT cnt);
+	void CalculateAverage(DOUBLE* pVals, UINT cnt, OUT DOUBLE* average);
+	void CalculateStandardDeviation(DOUBLE* pVals, UINT cnt, OUT DOUBLE* SD);
+	void GetMinMax(DOUBLE* pVals, UINT cnt, OUT DOUBLE* minv, OUT DOUBLE* maxv);
 
+public:
+	afx_msg void OnBnClickedButtonGen();
 	afx_msg void OnBnClickedButtonAvg();
 	afx_msg void OnBnClickedButtonSd();
 	afx_msg void OnBnClickedButtonMnx();
+	afx_msg void OnBnClickedButtonSave();
+	afx_msg void OnBnClickedButtonReset();
 
 public:
 	CListBox m_lsbNums;
-	DOUBLE* m_pVals;
 	BOOL m_bSet;
-
-	CEdit m_editCnt;
 	UINT m_uCnt;
-
 	CEdit m_editAvg;
 	CEdit m_editSd;
 	CEdit m_editMnx;
+
 };
