@@ -27,6 +27,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_MOUSEHOVER()
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -66,3 +67,7 @@ HCURSOR CAaronMathViewerDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+void CAaronMathViewerDlg::OnMouseHover(UINT nFlags, CPoint point)
+{
+	CDialogEx::OnMouseHover(nFlags, point);
+}
