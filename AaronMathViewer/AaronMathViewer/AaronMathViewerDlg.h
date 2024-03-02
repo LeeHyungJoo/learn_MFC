@@ -15,15 +15,10 @@ protected:
 
 
 protected:
-	HICON m_hIcon;
-
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
-	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 
 public:
-	afx_msg void OnMouseHover(UINT nFlags, CPoint point);
-
-public:
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 };

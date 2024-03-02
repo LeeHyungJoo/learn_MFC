@@ -15,7 +15,6 @@
 CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_AARONMATHVIEWER_DIALOG, pParent)
 {
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
 void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
@@ -26,48 +25,26 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
-	ON_WM_QUERYDRAGICON()
-	ON_WM_MOUSEHOVER()
+	ON_WM_MOUSEMOVE()
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
-	SetIcon(m_hIcon, TRUE);
 
 	return TRUE;
 }
 
 void CAaronMathViewerDlg::OnPaint()
 {
-	if (IsIconic())
-	{
-		CPaintDC dc(this);
-
-		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
-
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		dc.DrawIcon(x, y, m_hIcon);
-	}
-	else
-	{
-		CDialogEx::OnPaint();
-	}
+	CDialogEx::OnPaint();
 }
 
-HCURSOR CAaronMathViewerDlg::OnQueryDragIcon()
-{
-	return static_cast<HCURSOR>(m_hIcon);
-}
 
-void CAaronMathViewerDlg::OnMouseHover(UINT nFlags, CPoint point)
+void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
-	CDialogEx::OnMouseHover(nFlags, point);
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	CDialogEx::OnMouseMove(nFlags, point);
 }
