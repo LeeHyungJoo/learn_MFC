@@ -16,6 +16,11 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_AARONMATHVIEWER_DIALOG, pParent)
 	, m_lastMethodRadioID(0U)
 {
+	m_mPickedCoordCount[IDC_RADIO_PPC] = 3U;
+	m_mPickedCoordCount[IDC_RADIO2] = -1;
+	m_mPickedCoordCount[IDC_RADIO3] = -1;
+	m_mPickedCoordCount[IDC_RADIO4] = -1;
+	m_mPickedCoordCount[IDC_RADIO5] = -1;
 }
 
 void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
@@ -40,9 +45,34 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 	if (m_lastMethodRadioID == ID)
 		return;
 
-	m_vecCoords.clear();
-
 	m_lastMethodRadioID = ID;
+
+	m_vecCoord.clear();
+
+	for (int i = 0; i < m_vecCoordEdits.size(); i++)
+	{
+		m_vecCoordEdits[i]->SetWindowText(L"");
+		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && itr->second > i);
+	}
+}
+
+void CAaronMathViewerDlg::UpdatePickCoords()
+{
+	for (int i = 0 ; i < m_vecCoord.size() ; i++)
+	{
+		CString strCoord;
+		strCoord.Format(_T("(%d, %d)"), m_vecCoord[i].x, m_vecCoord[i].y);
+		m_vecCoordEdits[i]->SetWindowText(strCoord);
+	}
+
+	//Temp Code
+	CClientDC dc(&m_pcBoard);
+	if (m_vecCoord.size() == 2)
+	{
+		dc.MoveTo(m_vecCoord[0]);
+		dc.LineTo(m_vecCoord[1]);
+	}
 }
 
 BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
@@ -56,6 +86,9 @@ END_MESSAGE_MAP()
 BOOL CAaronMathViewerDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
+
+	for (auto editID = IDC_EDIT_PICK1; editID <= IDC_EDIT_PICK6; editID++)
+		m_vecCoordEdits.push_back((CEdit*)(GetDlgItem(editID)));
 
 	return TRUE;
 }
@@ -98,7 +131,16 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	if (IsScreenPointInRect(screenPoint, wRect))
 	{
 		screenPoint.Offset(-wRect.left, -wRect.top);
-		m_vecCoords.push_back(screenPoint);
+		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+		if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < itr->second)
+		{
+			m_vecCoord.push_back(screenPoint);
+			UpdatePickCoords();
+		}
+		else
+		{
+			AfxMessageBox(_T("Already Picked MAX Coords"), MB_ICONWARNING | MB_OK);
+		}
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);

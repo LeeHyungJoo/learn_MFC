@@ -20,6 +20,7 @@ protected:
 public:
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
 	void OnMethodRadioChanged(UINT ID);
+	void UpdatePickCoords();
 
 public:
 	afx_msg void OnPaint();
@@ -27,8 +28,11 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 
 public:
-	UINT m_lastMethodRadioIdx;
-	std::vector<CPoint> m_vecCoords;
+	UINT m_lastMethodRadioID;
+	std::vector<CPoint> m_vecCoord;
+	std::vector<CEdit*> m_vecCoordEdits;
+	std::unordered_map<UINT, INT> m_mPickedCoordCount;
+
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
 };

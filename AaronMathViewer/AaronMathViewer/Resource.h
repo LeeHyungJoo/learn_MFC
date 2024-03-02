@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ì—ì„œ ìƒì„±í•œ í¬í•¨ íŒŒì¼ì…ë‹ˆë‹¤.
-// AaronMathViewer.rcì—ì„œ ì‚¬ìš©ë˜ê³  ìˆìŠµë‹ˆë‹¤.
+// Microsoft Visual C++¿¡¼­ »ı¼ºÇÑ Æ÷ÇÔ ÆÄÀÏÀÔ´Ï´Ù.
+// AaronMathViewer.rc¿¡¼­ »ç¿ëµÇ°í ÀÖ½À´Ï´Ù.
 //
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_AARONMATHVIEWER_DIALOG      102
@@ -8,13 +8,13 @@
 #define IDC_PICCONTROL                  1000
 #define IDC_LIST_VIEW                   1001
 #define IDC_EDIT_PICK1                  1002
-#define IDC_RADIO_PPC                   1003
-#define IDC_EDIT_PICK2                  1004
-#define IDC_EDIT_PICK3                  1005
-#define IDC_EDIT_PICK4                  1006
-#define IDC_EDIT_PICK5                  1007
-#define IDC_EDIT_PICK6                  1008
+#define IDC_EDIT_PICK2                  1003
+#define IDC_EDIT_PICK3                  1004
+#define IDC_EDIT_PICK4                  1005
+#define IDC_EDIT_PICK5                  1006
+#define IDC_EDIT_PICK6                  1007
 #define IDC_STATIC_PNTCOORD             1009
+#define IDC_RADIO_PPC                   1013
 #define IDC_RADIO2                      1014
 #define IDC_RADIO3                      1015
 #define IDC_RADIO4                      1016
