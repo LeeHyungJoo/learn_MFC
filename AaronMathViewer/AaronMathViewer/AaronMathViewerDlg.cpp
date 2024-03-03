@@ -7,6 +7,7 @@
 #include "AaronMathViewer.h"
 #include "AaronMathViewerDlg.h"
 #include "afxdialogex.h"
+#include "Fraction.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -31,6 +32,14 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
 }
 
+void CAaronMathViewerDlg::ResetContentBoard()
+{
+	CClientDC dc(&m_pcBoard);
+	CRect cRect;
+	m_pcBoard.GetClientRect(&cRect);
+	dc.FillSolidRect(cRect, RGB(255, 255, 255));
+}
+
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
 {
 	BOOL bIn = true;
@@ -50,6 +59,7 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 
 	m_vecCoord.clear();
 	m_lbxExpr.ResetContent();
+	ResetContentBoard();
 
 	for (int i = 0; i < m_vecCoordEdits.size(); i++)
 	{
@@ -77,13 +87,28 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		{
 			dc.MoveTo(m_vecCoord[0]);
 			dc.LineTo(m_vecCoord[1]);
-			std:
-			int m = (m_vecCoord[1].y - m_vecCoord[0].y) / (m_vecCoord[1].x - m_vecCoord[0].x);
-			D3DMATRIX matrix;
 
-			CString strCoord;
-			strCoord.Format(_T("(y = %d, %d)"), m_vecCoord[i].x, m_vecCoord[i].y);
-			m_vecCoordEdits[i]->SetWindowText(strCoord);
+			//TODO : Fraction Output..;;;;
+			auto m = Fraction(m_vecCoord[1].x - m_vecCoord[0].x, m_vecCoord[1].y - m_vecCoord[0].y);
+			CString expr;
+			if (m.IsInteger())
+				expr.Format(_T("y = %dx + (%d)"), m.GetNumerator(), m.GetNumerator() * m_vecCoord[0].x + m_vecCoord[0].y);
+			else
+			{
+				auto x = Fraction(m_vecCoord[0].x);
+				x = x * m * -1;
+				x = x + m_vecCoord[0].y;
+				
+				if (x.IsInteger())
+				{
+					expr.Format(_T("y = %d/%dx + (%d)"), m.GetNumerator(), m.GetDenomiator(), x.GetNumerator());
+				}
+				else
+				{
+					expr.Format(_T("y = %d/%dx + (%d/%d)"), m.GetNumerator(), m.GetDenomiator(), x.GetNumerator(), x.GetDenomiator());
+				}
+			}
+			m_lbxExpr.AddString(expr);
 		}
 		else if (m_vecCoord.size() == 3)
 		{
@@ -118,7 +143,6 @@ void CAaronMathViewerDlg::OnPaint()
 	CDialogEx::OnPaint();
 }
 
-
 void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CPoint screenPoint = point;
@@ -138,7 +162,6 @@ void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	CDialogEx::OnMouseMove(nFlags, point);
 }
-
 
 void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {

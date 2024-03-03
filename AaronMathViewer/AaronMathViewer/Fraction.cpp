@@ -1,10 +1,16 @@
 #include "pch.h"
 #include "Fraction.h"
 
-Fraction::Fraction(int num, int denom) 
+Fraction::Fraction(int num)
+	: numerator(num), denominator(1)
+{
+}
+
+Fraction::Fraction(int num, int denom)
 	: numerator(num), denominator(denom) 
 {
-	if (denominator < 0) {
+	if (denominator < 0) 
+	{
 		numerator = -numerator;
 		denominator = -denominator;
 	}
@@ -12,6 +18,21 @@ Fraction::Fraction(int num, int denom)
 	int factor = gcd(abs(numerator), denominator);
 	numerator /= factor;
 	denominator /= factor;
+}
+
+bool Fraction::IsInteger() const
+{
+	return denominator == 1;
+}
+
+int Fraction::GetNumerator() const
+{
+	return numerator;
+}
+
+int Fraction::GetDenomiator() const
+{
+	return denominator;
 }
 
 Fraction Fraction::operator+(const Fraction & other) const

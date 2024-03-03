@@ -3,8 +3,14 @@
 class Fraction 
 {
 public:
+	Fraction(int num);
 	Fraction(int num, int denom);
 
+	bool IsInteger() const;
+	int GetNumerator() const;
+	int GetDenomiator() const;
+
+public:
 	Fraction operator+(const Fraction& other) const;
 	Fraction operator-(const Fraction& other) const;
 	Fraction operator*(const Fraction& other) const;

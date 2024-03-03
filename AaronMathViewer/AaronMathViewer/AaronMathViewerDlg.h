@@ -18,6 +18,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
+	void ResetContentBoard();
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
 	void OnMethodRadioChanged(UINT ID);
 	void UpdatePickCoords();
