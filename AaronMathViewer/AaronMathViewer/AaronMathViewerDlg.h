@@ -35,4 +35,5 @@ public:
 
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
+	CListBox m_lbxExpr;
 };

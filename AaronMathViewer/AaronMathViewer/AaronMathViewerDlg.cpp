@@ -28,6 +28,7 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_PICCONTROL, m_pcBoard);
 	DDX_Control(pDX, IDC_STATIC_PNTCOORD, m_stCoord);
+	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
 }
 
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
@@ -48,6 +49,7 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 	m_lastMethodRadioID = ID;
 
 	m_vecCoord.clear();
+	m_lbxExpr.ResetContent();
 
 	for (int i = 0; i < m_vecCoordEdits.size(); i++)
 	{
@@ -66,13 +68,31 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		m_vecCoordEdits[i]->SetWindowText(strCoord);
 	}
 
-	//Temp Code
 	CClientDC dc(&m_pcBoard);
-	if (m_vecCoord.size() == 2)
+	switch (m_lastMethodRadioID)
 	{
-		dc.MoveTo(m_vecCoord[0]);
-		dc.LineTo(m_vecCoord[1]);
+	case IDC_RADIO_PPC:
+	{
+		if (m_vecCoord.size() == 2)
+		{
+			dc.MoveTo(m_vecCoord[0]);
+			dc.LineTo(m_vecCoord[1]);
+			std:
+			int m = (m_vecCoord[1].y - m_vecCoord[0].y) / (m_vecCoord[1].x - m_vecCoord[0].x);
+			D3DMATRIX matrix;
+
+			CString strCoord;
+			strCoord.Format(_T("(y = %d, %d)"), m_vecCoord[i].x, m_vecCoord[i].y);
+			m_vecCoordEdits[i]->SetWindowText(strCoord);
+		}
+		else if (m_vecCoord.size() == 3)
+		{
+			
+		}
+		break;
 	}
+	}
+
 }
 
 BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
