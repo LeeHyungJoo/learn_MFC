@@ -1,13 +1,13 @@
 #include "pch.h"
 #include "Fraction.h"
 
-Fraction::Fraction(int num)
+Fraction::Fraction(DOUBLE num)
 	: numerator(num), denominator(1)
 {
 }
 
-Fraction::Fraction(int num, int denom)
-	: numerator(num), denominator(denom) 
+Fraction::Fraction(DOUBLE num, DOUBLE denom)
+	: numerator(static_cast<LONG>(num)), denominator(static_cast<LONG>(denom))
 {
 	if (denominator < 0) 
 	{
@@ -15,24 +15,40 @@ Fraction::Fraction(int num, int denom)
 		denominator = -denominator;
 	}
 
-	int factor = gcd(abs(numerator), denominator);
+	LONG factor = gcd(static_cast<LONG>(abs(numerator)), static_cast<LONG>(denominator));
 	numerator /= factor;
 	denominator /= factor;
 }
 
-bool Fraction::IsInteger() const
+Fraction::Fraction(const Fraction & numFrac, const Fraction & denomFrac)
+{
+	auto frac = Fraction(
+		numFrac.GetNumerator() * denomFrac.GetDenomiator(),
+		numFrac.GetDenomiator() * denomFrac.GetNumerator()
+	);
+
+	numerator = frac.numerator;
+	denominator = frac.denominator;
+}
+
+BOOL Fraction::IsInteger() const
 {
 	return denominator == 1;
 }
 
-int Fraction::GetNumerator() const
+LONG Fraction::GetNumerator() const
 {
-	return numerator;
+	return static_cast<LONG>(numerator);
 }
 
-int Fraction::GetDenomiator() const
+LONG Fraction::GetDenomiator() const
 {
-	return denominator;
+	return static_cast<LONG>(denominator);
+}
+
+DOUBLE Fraction::GetValue() const
+{
+	return numerator / denominator;
 }
 
 Fraction Fraction::operator+(const Fraction & other) const

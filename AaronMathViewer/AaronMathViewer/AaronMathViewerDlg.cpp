@@ -61,17 +61,17 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 	m_lbxExpr.ResetContent();
 	ResetContentBoard();
 
-	for (int i = 0; i < m_vecCoordEdits.size(); i++)
+	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
 	{
 		m_vecCoordEdits[i]->SetWindowText(L"");
 		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
-		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && itr->second > i);
+		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
 	}
 }
 
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
-	for (int i = 0 ; i < m_vecCoord.size() ; i++)
+	for (size_t i = 0 ; i < m_vecCoord.size() ; i++)
 	{
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), m_vecCoord[i].x, m_vecCoord[i].y);
@@ -87,19 +87,28 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		{
 			dc.MoveTo(m_vecCoord[0]);
 			dc.LineTo(m_vecCoord[1]);
+			
 
 			//TODO : Fraction Output..;;;;
 			auto m = Fraction(m_vecCoord[1].x - m_vecCoord[0].x, m_vecCoord[1].y - m_vecCoord[0].y);
+			auto c = m * m_vecCoord[0].x * -1;
+			c = c + m_vecCoord[0].y;
+
 			CString expr;
+
 			if (m.IsInteger())
 			{
-				expr.Format(_T("직선 방정식 : y = %+dx %+d"), m.GetNumerator(), (-m.GetNumerator()) * m_vecCoord[0].x + m_vecCoord[0].y);
+				if (c.IsInteger())
+				{
+					expr.Format(_T("직선 방정식 : y = %+dx %+d"), m.GetNumerator(), c.GetNumerator());
+				}
+				else
+				{
+					expr.Format(_T("직선 방정식 : y = %+dx %+d/%d"), m.GetNumerator(), c.GetNumerator(), c.GetDenomiator());
+				}
 			}
 			else
 			{
-				auto c = Fraction(-m_vecCoord[0].x) * m;
-				c = c + m_vecCoord[0].y;
-				
 				if (c.IsInteger())
 				{
 					expr.Format(_T("직선 방정식 : y = %+d/%dx %+d"), m.GetNumerator(), m.GetDenomiator(), c.GetNumerator());
@@ -113,28 +122,76 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		}
 		else if (m_vecCoord.size() == 3)
 		{
-			auto m = Fraction(- (m_vecCoord[1].y - m_vecCoord[0].y) , m_vecCoord[1].x - m_vecCoord[0].x);
-			CString expr;
-			if (m.IsInteger())
-			{
-				expr.Format(_T("수선 방정식 : y = %+dx %+d"), m.GetNumerator(), (-m.GetNumerator()) * m_vecCoord[2].x + m_vecCoord[2].y);
-			}
-			else
-			{
-				auto c = Fraction(-m_vecCoord[2].x) * m;
-				c = c + m_vecCoord[2].y;
+			auto m = Fraction(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+			auto c = Fraction(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
-				if (c.IsInteger())
+			auto im = Fraction(-m.GetDenomiator(), m.GetNumerator());
+			auto ic = Fraction(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+
+			CString expr;
+
+			if (im.IsInteger())
+			{
+				if (ic.IsInteger())
 				{
-					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d)"), m.GetNumerator(), m.GetDenomiator(), c.GetNumerator());
+					expr.Format(_T("수선 방정식 : y = %+dx %+d"), im.GetNumerator(), ic.GetNumerator());
 				}
 				else
 				{
-					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d/%d"), m.GetNumerator(), m.GetDenomiator(), c.GetNumerator(), c.GetDenomiator());
+					expr.Format(_T("수선 방정식 : y = %+dx %+d/%d"), im.GetNumerator(), ic.GetNumerator(), ic.GetDenomiator());
+				}
+			}
+			else
+			{
+				if (ic.IsInteger())
+				{
+					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d"), im.GetNumerator(), im.GetDenomiator(), ic.GetNumerator());
+				}
+				else
+				{
+					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d/%d"), im.GetNumerator(), im.GetDenomiator(), ic.GetNumerator(), ic.GetDenomiator());
 				}
 			}
 			m_lbxExpr.AddString(expr);
+
+
+			CString strCoord;
+			auto inter_x = Fraction(ic - c, m - im);
+			auto inter_y = m * inter_x + c;
+
+			if (inter_x.IsInteger())
+			{
+				if (inter_y.IsInteger())
+				{
+					strCoord.Format(_T("교점 : ( %+d, %+d )"), inter_x.GetNumerator(), inter_y.GetNumerator());
+				}
+				else
+				{
+					strCoord.Format(_T("교점 : ( %+d, %+d/%d )"), inter_x.GetNumerator(), inter_y.GetNumerator(), inter_y.GetDenomiator());
+				}
+			}
+			else
+			{
+				if (inter_y.IsInteger())
+				{
+					strCoord.Format(_T("교점 : ( %+d/%d, %+d )"), inter_x.GetNumerator(), inter_x.GetDenomiator(), inter_y.GetNumerator());
+				}
+				else
+				{
+					strCoord.Format(_T("교점 : ( %+d/%d, %+d/%d )"), inter_x.GetNumerator(), inter_y.GetNumerator(), inter_y.GetDenomiator());
+				}
+			}
+
+			dc.MoveTo(m_vecCoord[2]);
+			POINT tar;
+			tar.x = static_cast<LONG>(inter_x.GetValue());
+			tar.y = static_cast<LONG>(inter_y.GetValue());
+			dc.LineTo(CPoint(tar));
+
+
+			m_lbxExpr.AddString(strCoord);
 		}
+
 		break;
 	}
 	}
@@ -196,7 +253,7 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		screenPoint.Offset(-wRect.left, -wRect.top);
 		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
-		if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < itr->second)
+		if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < (size_t)itr->second)
 		{
 			m_vecCoord.push_back(screenPoint);
 			UpdatePickCoords();

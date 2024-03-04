@@ -3,12 +3,15 @@
 class Fraction 
 {
 public:
-	Fraction(int num);
-	Fraction(int num, int denom);
+	Fraction(DOUBLE num);
+	Fraction(DOUBLE num, DOUBLE denom);
+	Fraction(const Fraction& numFrac, const Fraction& denomFrac);
 
-	bool IsInteger() const;
-	int GetNumerator() const;
-	int GetDenomiator() const;
+	BOOL IsInteger() const;
+	LONG GetNumerator() const;
+	LONG GetDenomiator() const;
+
+	DOUBLE GetValue() const;
 
 public:
 	Fraction operator+(const Fraction& other) const;
@@ -17,7 +20,7 @@ public:
 	Fraction operator/(const Fraction& other) const;
 
 private:
-	int gcd(int a, int b) {
+	LONG gcd(LONG a, LONG b) {
 		while (b != 0) {
 			int temp = a % b;
 			a = b;
@@ -27,6 +30,6 @@ private:
 	}
 
 private:
-	int numerator;
-	int denominator;
+	DOUBLE numerator;
+	DOUBLE denominator;
 };
