@@ -159,25 +159,42 @@ void CAaronMathViewerDlg::OnPaint()
 	{
 	case IDC_RADIO_PPC:
 	{
+		if (m_vecCoord.size() >= 2)
+		{
+			CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
+			CPen* pOldPen = boardDC->SelectObject(&pen);
+
+			boardDC->MoveTo(m_vecCoord[0]);
+			boardDC->LineTo(m_vecCoord[1]);
+			if (m_vecCoord.size() > 3)
+			{
+				CPen dotPen(PS_DOT, 1, RGB(255, 120, 0));
+				boardDC->SelectObject(&dotPen);
+
+				boardDC->MoveTo(m_vecCoord[2]);
+				boardDC->LineTo(m_vecCoord[3]);
+			}
+			boardDC->SelectObject(*pOldPen);
+		}
+
 		if (m_vecCoord.size() >= 1)
 		{
+			CPen pen(PS_SOLID, 2, RGB(255, 0, 0));
+			CPen* pOldPen = boardDC->SelectObject(&pen);
+
 			boardDC->Ellipse(m_vecCoord[0].x - 2, m_vecCoord[0].y - 2, m_vecCoord[0].x + 2, m_vecCoord[0].y + 2);
 
 			if (m_vecCoord.size() >= 2)
 			{
 				boardDC->Ellipse(m_vecCoord[1].x - 2, m_vecCoord[1].y - 2, m_vecCoord[1].x + 2, m_vecCoord[1].y + 2);
 
-				boardDC->MoveTo(m_vecCoord[0]);
-				boardDC->LineTo(m_vecCoord[1]);
 				if (m_vecCoord.size() > 3)
 				{
 					boardDC->Ellipse(m_vecCoord[2].x - 2, m_vecCoord[2].y - 2, m_vecCoord[2].x + 2, m_vecCoord[2].y + 2);
 					boardDC->Ellipse(m_vecCoord[3].x - 2, m_vecCoord[3].y - 2, m_vecCoord[3].x + 2, m_vecCoord[3].y + 2);
-
-					boardDC->MoveTo(m_vecCoord[2]);
-					boardDC->LineTo(m_vecCoord[3]);
 				}
 			}
+			boardDC->SelectObject(*pOldPen);
 		}
 
 		break;
