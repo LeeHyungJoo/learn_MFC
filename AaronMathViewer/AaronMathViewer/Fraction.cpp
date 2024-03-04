@@ -36,14 +36,14 @@ BOOL Fraction::IsInteger() const
 	return denominator == 1;
 }
 
-LONG64 Fraction::GetNumerator() const
+DOUBLE Fraction::GetNumerator() const
 {
-	return static_cast<LONG64>(numerator);
+	return numerator;
 }
 
-LONG64 Fraction::GetDenomiator() const
+DOUBLE Fraction::GetDenomiator() const
 {
-	return static_cast<LONG64>(denominator);
+	return denominator;
 }
 
 DOUBLE Fraction::GetValue() const

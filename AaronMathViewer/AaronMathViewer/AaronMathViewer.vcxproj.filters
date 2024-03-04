@@ -36,6 +36,9 @@
     <ClInclude Include="Fraction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Formatter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AaronMathViewer.cpp">
@@ -48,6 +51,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Fraction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Formatter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

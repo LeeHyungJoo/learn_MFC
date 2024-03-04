@@ -7,7 +7,7 @@
 #include "AaronMathViewer.h"
 #include "AaronMathViewerDlg.h"
 #include "afxdialogex.h"
-#include "Fraction.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -90,34 +90,12 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			
 
 			//TODO : Fraction Output..;;;;
-			auto m = Fraction(m_vecCoord[1].x - m_vecCoord[0].x, m_vecCoord[1].y - m_vecCoord[0].y);
+			auto m = Fraction(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
 			auto c = m * m_vecCoord[0].x * -1;
 			c = c + m_vecCoord[0].y;
 
 			CString expr;
-
-			if (m.IsInteger())
-			{
-				if (c.IsInteger())
-				{
-					expr.Format(_T("직선 방정식 : y = %+dx %+d"), m.GetNumerator(), c.GetNumerator());
-				}
-				else
-				{
-					expr.Format(_T("직선 방정식 : y = %+dx %+d/%d"), m.GetNumerator(), c.GetNumerator(), c.GetDenomiator());
-				}
-			}
-			else
-			{
-				if (c.IsInteger())
-				{
-					expr.Format(_T("직선 방정식 : y = %+d/%dx %+d"), m.GetNumerator(), m.GetDenomiator(), c.GetNumerator());
-				}
-				else
-				{
-					expr.Format(_T("직선 방정식 : y = %+d/%dx %+d/%d"), m.GetNumerator(), m.GetDenomiator(), c.GetNumerator(), c.GetDenomiator());
-				}
-			}
+			Formatter::LineQuation(L"직선 방정식", m, c, &expr);
 			m_lbxExpr.AddString(expr);
 		}
 		else if (m_vecCoord.size() == 3)
@@ -129,58 +107,14 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto ic = Fraction(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
 
 			CString expr;
-
-			if (im.IsInteger())
-			{
-				if (ic.IsInteger())
-				{
-					expr.Format(_T("수선 방정식 : y = %+dx %+d"), im.GetNumerator(), ic.GetNumerator());
-				}
-				else
-				{
-					expr.Format(_T("수선 방정식 : y = %+dx %+d/%d"), im.GetNumerator(), ic.GetNumerator(), ic.GetDenomiator());
-				}
-			}
-			else
-			{
-				if (ic.IsInteger())
-				{
-					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d"), im.GetNumerator(), im.GetDenomiator(), ic.GetNumerator());
-				}
-				else
-				{
-					expr.Format(_T("수선 방정식 : y = %+d/%dx %+d/%d"), im.GetNumerator(), im.GetDenomiator(), ic.GetNumerator(), ic.GetDenomiator());
-				}
-			}
+			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
 			m_lbxExpr.AddString(expr);
 
 
 			CString strCoord;
 			auto inter_x = Fraction(ic - c, m - im);
 			auto inter_y = m * inter_x + c;
-
-			if (inter_x.IsInteger())
-			{
-				if (inter_y.IsInteger())
-				{
-					strCoord.Format(_T("교점 : ( %+d, %+d )"), inter_x.GetNumerator(), inter_y.GetNumerator());
-				}
-				else
-				{
-					strCoord.Format(_T("교점 : ( %+d, %+d/%d )"), inter_x.GetNumerator(), inter_y.GetNumerator(), inter_y.GetDenomiator());
-				}
-			}
-			else
-			{
-				if (inter_y.IsInteger())
-				{
-					strCoord.Format(_T("교점 : ( %+d/%d, %+d )"), inter_x.GetNumerator(), inter_x.GetDenomiator(), inter_y.GetNumerator());
-				}
-				else
-				{
-					strCoord.Format(_T("교점 : ( %+d/%d, %+d/%d )"), inter_x.GetNumerator(), inter_y.GetNumerator(), inter_y.GetDenomiator());
-				}
-			}
+			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
 			dc.MoveTo(m_vecCoord[2]);
 			POINT tar;
