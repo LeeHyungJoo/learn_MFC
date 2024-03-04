@@ -8,8 +8,8 @@ public:
 	Fraction(const Fraction& numFrac, const Fraction& denomFrac);
 
 	BOOL IsInteger() const;
-	LONG GetNumerator() const;
-	LONG GetDenomiator() const;
+	LONG64 GetNumerator() const;
+	LONG64 GetDenomiator() const;
 
 	DOUBLE GetValue() const;
 
@@ -20,7 +20,7 @@ public:
 	Fraction operator/(const Fraction& other) const;
 
 private:
-	LONG gcd(LONG a, LONG b) {
+	LONG64 gcd(LONG64 a, LONG64 b) {
 		while (b != 0) {
 			int temp = a % b;
 			a = b;

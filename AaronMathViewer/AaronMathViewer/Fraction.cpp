@@ -7,7 +7,7 @@ Fraction::Fraction(DOUBLE num)
 }
 
 Fraction::Fraction(DOUBLE num, DOUBLE denom)
-	: numerator(static_cast<LONG>(num)), denominator(static_cast<LONG>(denom))
+	: numerator(static_cast<LONG64>(num)), denominator(static_cast<LONG64>(denom))
 {
 	if (denominator < 0) 
 	{
@@ -15,7 +15,7 @@ Fraction::Fraction(DOUBLE num, DOUBLE denom)
 		denominator = -denominator;
 	}
 
-	LONG factor = gcd(static_cast<LONG>(abs(numerator)), static_cast<LONG>(denominator));
+	LONG64 factor = gcd(static_cast<LONG64>(abs(numerator)), static_cast<LONG64>(denominator));
 	numerator /= factor;
 	denominator /= factor;
 }
@@ -36,14 +36,14 @@ BOOL Fraction::IsInteger() const
 	return denominator == 1;
 }
 
-LONG Fraction::GetNumerator() const
+LONG64 Fraction::GetNumerator() const
 {
-	return static_cast<LONG>(numerator);
+	return static_cast<LONG64>(numerator);
 }
 
-LONG Fraction::GetDenomiator() const
+LONG64 Fraction::GetDenomiator() const
 {
-	return static_cast<LONG>(denominator);
+	return static_cast<LONG64>(denominator);
 }
 
 DOUBLE Fraction::GetValue() const

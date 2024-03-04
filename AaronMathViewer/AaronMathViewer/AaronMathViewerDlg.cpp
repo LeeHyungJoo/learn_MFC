@@ -184,10 +184,9 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			dc.MoveTo(m_vecCoord[2]);
 			POINT tar;
-			tar.x = static_cast<LONG>(inter_x.GetValue());
-			tar.y = static_cast<LONG>(inter_y.GetValue());
+			tar.x = static_cast<LONG64>(inter_x.GetValue());
+			tar.y = static_cast<LONG64>(inter_y.GetValue());
 			dc.LineTo(CPoint(tar));
-
 
 			m_lbxExpr.AddString(strCoord);
 		}
