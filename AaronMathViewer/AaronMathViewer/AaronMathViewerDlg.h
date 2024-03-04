@@ -29,6 +29,8 @@ public:
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedButtonReset();
+	afx_msg void OnLbnDblclkListView();
 
 public:
 	UINT m_lastMethodRadioID;
@@ -39,5 +41,5 @@ public:
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
 	CListBox m_lbxExpr;
-	afx_msg void OnBnClickedButtonReset();
+	std::vector<BOOL> m_bExprDecimal;
 };

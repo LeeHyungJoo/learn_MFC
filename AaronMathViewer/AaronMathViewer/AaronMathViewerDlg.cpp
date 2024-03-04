@@ -33,6 +33,7 @@ void CAaronMathViewerDlg::ResetPicking()
 {
 	m_vecCoord.clear();
 	m_lbxExpr.ResetContent();
+	m_bExprDecimal.clear();
 
 	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
 	{
@@ -64,13 +65,14 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
-	for (size_t i = 0 ; i < m_vecCoord.size() ; i++)
+	for (size_t i = 0; i < m_vecCoord.size(); i++)
 	{
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), m_vecCoord[i].x, m_vecCoord[i].y);
 		m_vecCoordEdits[i]->SetWindowText(strCoord);
 	}
 
+	BOOL bDecimalFormat = FALSE;
 	switch (m_lastMethodRadioID)
 	{
 	case IDC_RADIO_PPC:
@@ -81,8 +83,9 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
 			CString expr;
-			Formatter::LineQuation(L"직선 방정식", m, c, &expr);
+			Formatter::LineQuation(L"직선 방정식", m, c, &expr, bDecimalFormat);
 			m_lbxExpr.AddString(expr);
+			m_bExprDecimal.push_back(bDecimalFormat);
 		}
 		else if (m_vecCoord.size() == 3)
 		{
@@ -93,20 +96,22 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
 
 			CString expr;
-			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
+			Formatter::LineQuation(L"수선 방정식", im, ic, &expr, bDecimalFormat);
 			m_lbxExpr.AddString(expr);
+			m_bExprDecimal.push_back(bDecimalFormat);
 
 			CString strCoord;
 			auto inter_x = RationalNum(ic - c, m - im);
 			auto inter_y = m * inter_x + c;
-			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
+			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord, bDecimalFormat);
+
+			m_lbxExpr.AddString(strCoord);
+			m_bExprDecimal.push_back(bDecimalFormat);
 
 			POINT tar;
 			tar.x = static_cast<LONG>(inter_x.GetValue());
 			tar.y = static_cast<LONG>(inter_y.GetValue());
 			m_vecCoord.push_back(CPoint(tar));
-
-			m_lbxExpr.AddString(strCoord);
 		}
 		break;
 	}
@@ -121,6 +126,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO5, OnMethodRadioChanged)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
+	ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -260,4 +266,67 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 {
 	ResetPicking();
 	Invalidate();
+}
+
+void CAaronMathViewerDlg::OnLbnDblclkListView()
+{
+	int selectedIdx = m_lbxExpr.GetCurSel();
+	if (selectedIdx != LB_ERR)
+	{
+		CString expr;
+		switch (m_lastMethodRadioID)
+		{
+		case IDC_RADIO_PPC:
+		{
+			switch (selectedIdx)
+			{
+			case 0:
+			{
+				auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+				auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
+
+				Formatter::LineQuation(L"직선 방정식", m, c, &expr, !m_bExprDecimal[0]);
+				break;
+			}
+			case 1:
+			{
+				auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+				auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
+
+				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+				auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+
+				Formatter::LineQuation(L"수선 방정식", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
+				break;
+			}
+			case 2:
+			{
+				auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+				auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
+
+				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+				auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+
+				auto inter_x = RationalNum(ic - c, m - im);
+				auto inter_y = m * inter_x + c;
+
+				Formatter::Coord(L"교점", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
+				break;
+			}
+			default:
+				return;
+			}
+			break;
+		}
+		default:
+			return;
+		}
+
+		m_bExprDecimal[selectedIdx] = !m_bExprDecimal[selectedIdx];
+
+		m_lbxExpr.DeleteString(selectedIdx);
+		m_lbxExpr.InsertString(selectedIdx, expr);
+		m_lbxExpr.SetCurSel(selectedIdx);
+	}
+
 }

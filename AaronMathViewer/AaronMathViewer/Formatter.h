@@ -8,13 +8,15 @@ public:
 		const CString& desc, 
 		const RationalNum& gradient, 
 		const RationalNum& constant, 
-		OUT CString* format
+		OUT CString* format,
+		BOOL bDecimalFormat = FALSE
 	);
 
 	static void Coord(
 		const CString& desc,
 		const RationalNum& x,
 		const RationalNum& y,
-		OUT CString* format
+		OUT CString* format,
+		BOOL bDecimalFormat = FALSE
 	);
 };

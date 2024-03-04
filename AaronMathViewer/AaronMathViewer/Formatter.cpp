@@ -2,11 +2,14 @@
 #include "pch.h"
 #include "Formatter.h"
 
-static bool DECIMAL_FORMAT = TRUE;
-
-void Formatter::LineQuation(const CString & desc, const RationalNum & gradient, const RationalNum & constant, OUT CString * format)
+void Formatter::LineQuation(
+	const CString & desc,
+	const RationalNum & gradient, 
+	const RationalNum & constant, 
+	OUT CString * format, 
+	BOOL bDecimalFormat)
 {
-	if (DECIMAL_FORMAT)
+	if (bDecimalFormat)
 	{
 		if (gradient.IsInteger())
 		{
@@ -78,9 +81,14 @@ void Formatter::LineQuation(const CString & desc, const RationalNum & gradient, 
 	}
 }
 
-void Formatter::Coord(const CString & desc, const RationalNum & x, const RationalNum & y, OUT CString * format)
+void Formatter::Coord(
+	const CString & desc, 
+	const RationalNum & x, 
+	const RationalNum & y, 
+	OUT CString * format,
+	BOOL bDecimalFormat)
 {
-	if (DECIMAL_FORMAT)
+	if (bDecimalFormat)
 	{
 		if (x.IsInteger())
 		{
