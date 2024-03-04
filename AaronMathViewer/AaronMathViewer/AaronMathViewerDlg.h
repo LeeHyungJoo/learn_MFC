@@ -17,6 +17,9 @@ protected:
 	virtual BOOL OnInitDialog();
 	DECLARE_MESSAGE_MAP()
 
+private:
+	void ResetPicking();
+
 public:
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
 	void OnMethodRadioChanged(UINT ID);
@@ -36,4 +39,5 @@ public:
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
 	CListBox m_lbxExpr;
+	afx_msg void OnBnClickedButtonReset();
 };

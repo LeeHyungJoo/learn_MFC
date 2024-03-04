@@ -1,7 +1,4 @@
 
-// AaronMathViewerDlg.cpp : implementation file
-//
-
 #include "pch.h"
 #include "framework.h"
 #include "AaronMathViewer.h"
@@ -32,6 +29,19 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
 }
 
+void CAaronMathViewerDlg::ResetPicking()
+{
+	m_vecCoord.clear();
+	m_lbxExpr.ResetContent();
+
+	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
+	{
+		m_vecCoordEdits[i]->SetWindowText(L"");
+		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
+	}
+}
+
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
 {
 	BOOL bIn = true;
@@ -49,15 +59,7 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 
 	m_lastMethodRadioID = ID;
 
-	m_vecCoord.clear();
-	m_lbxExpr.ResetContent();
-
-	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
-	{
-		m_vecCoordEdits[i]->SetWindowText(L"");
-		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
-		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
-	}
+	ResetPicking();
 }
 
 void CAaronMathViewerDlg::UpdatePickCoords()
@@ -118,6 +120,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO5, OnMethodRadioChanged)
+	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -169,8 +172,6 @@ void CAaronMathViewerDlg::OnPaint()
 		break;
 	}
 	}
-
-
 }
 
 void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
@@ -204,17 +205,31 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	if (IsScreenPointInRect(screenPoint, wRect))
 	{
 		screenPoint.Offset(-wRect.left, -wRect.top);
-		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
-		if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < (size_t)itr->second)
+		if (m_lastMethodRadioID == 0)
 		{
-			m_vecCoord.push_back(screenPoint);
-			UpdatePickCoords();
+			AfxMessageBox(_T("Please Choose One Method Type First !"), MB_ICONWARNING | MB_OK);
 		}
 		else
 		{
-			AfxMessageBox(_T("Already Picked MAX Coords"), MB_ICONWARNING | MB_OK);
+			auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+			if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < (size_t)itr->second)
+			{
+				m_vecCoord.push_back(screenPoint);
+				UpdatePickCoords();
+			}
+			else
+			{
+				AfxMessageBox(_T("Already Max Count of Picked Coords !"), MB_ICONWARNING | MB_OK);
+			}
 		}
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+void CAaronMathViewerDlg::OnBnClickedButtonReset()
+{
+	ResetPicking();
+	Invalidate();
 }
