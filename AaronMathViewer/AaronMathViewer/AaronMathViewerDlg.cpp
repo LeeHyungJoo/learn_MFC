@@ -32,14 +32,6 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
 }
 
-void CAaronMathViewerDlg::ResetContentBoard()
-{
-	CClientDC dc(&m_pcBoard);
-	CRect cRect;
-	m_pcBoard.GetClientRect(&cRect);
-	dc.FillSolidRect(cRect, RGB(255, 255, 255));
-}
-
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
 {
 	BOOL bIn = true;
@@ -59,7 +51,6 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 
 	m_vecCoord.clear();
 	m_lbxExpr.ResetContent();
-	ResetContentBoard();
 
 	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
 	{
@@ -78,16 +69,12 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		m_vecCoordEdits[i]->SetWindowText(strCoord);
 	}
 
-	CClientDC dc(&m_pcBoard);
 	switch (m_lastMethodRadioID)
 	{
 	case IDC_RADIO_PPC:
 	{
 		if (m_vecCoord.size() == 2)
 		{
-			dc.MoveTo(m_vecCoord[0]);
-			dc.LineTo(m_vecCoord[1]);
-			
 			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
 			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
@@ -107,25 +94,22 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
 			m_lbxExpr.AddString(expr);
 
-
 			CString strCoord;
 			auto inter_x = RationalNum(ic - c, m - im);
 			auto inter_y = m * inter_x + c;
 			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
-			dc.MoveTo(m_vecCoord[2]);
 			POINT tar;
 			tar.x = static_cast<LONG>(inter_x.GetValue());
 			tar.y = static_cast<LONG>(inter_y.GetValue());
-			dc.LineTo(CPoint(tar));
+			m_vecCoord.push_back(CPoint(tar));
 
 			m_lbxExpr.AddString(strCoord);
 		}
-
 		break;
 	}
 	}
-
+	Invalidate();
 }
 
 BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
@@ -149,6 +133,44 @@ BOOL CAaronMathViewerDlg::OnInitDialog()
 void CAaronMathViewerDlg::OnPaint()
 {
 	CDialogEx::OnPaint();
+
+	CDC* boardDC = m_pcBoard.GetDC();
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_PPC:
+	case IDC_RADIO2:
+	case IDC_RADIO3:
+	case IDC_RADIO4:
+	case IDC_RADIO5:
+	{
+		CRect cRect;
+		m_pcBoard.GetClientRect(&cRect);
+		boardDC->FillSolidRect(cRect, RGB(255, 255, 255));
+		break;
+	}
+	default:
+		return;
+	}
+
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_PPC:
+	{
+		if (m_vecCoord.size() >= 2)
+		{
+			boardDC->MoveTo(m_vecCoord[0]);
+			boardDC->LineTo(m_vecCoord[1]);
+			if (m_vecCoord.size() > 3)
+			{
+				boardDC->MoveTo(m_vecCoord[2]);
+				boardDC->LineTo(m_vecCoord[3]);
+			}
+		}
+		break;
+	}
+	}
+
+
 }
 
 void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
