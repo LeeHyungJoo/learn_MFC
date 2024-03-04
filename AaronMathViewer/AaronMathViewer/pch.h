@@ -10,7 +10,7 @@
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include "Formatter.h"
-#include "Fraction.h"
+#include "RationalNum.h"
 #include <cmath>
 #include <numeric>
 #include <vector>

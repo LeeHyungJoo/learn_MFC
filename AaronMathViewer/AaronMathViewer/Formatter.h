@@ -1,20 +1,20 @@
 #pragma once
 
-class Fraction;
+class RationalNum;
 class Formatter
 {
 public:
 	static void LineQuation(
 		const CString& desc, 
-		const Fraction& gradient, 
-		const Fraction& constant, 
+		const RationalNum& gradient, 
+		const RationalNum& constant, 
 		OUT CString* format
 	);
 
 	static void Coord(
 		const CString& desc,
-		const Fraction& x,
-		const Fraction& y,
+		const RationalNum& x,
+		const RationalNum& y,
 		OUT CString* format
 	);
 };

@@ -88,11 +88,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			dc.MoveTo(m_vecCoord[0]);
 			dc.LineTo(m_vecCoord[1]);
 			
-
-			//TODO : Fraction Output..;;;;
-			auto m = Fraction(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
-			auto c = m * m_vecCoord[0].x * -1;
-			c = c + m_vecCoord[0].y;
+			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
 			CString expr;
 			Formatter::LineQuation(L"직선 방정식", m, c, &expr);
@@ -100,11 +97,11 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		}
 		else if (m_vecCoord.size() == 3)
 		{
-			auto m = Fraction(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
-			auto c = Fraction(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
+			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
-			auto im = Fraction(-m.GetDenomiator(), m.GetNumerator());
-			auto ic = Fraction(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+			auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+			auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
 
 			CString expr;
 			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
@@ -112,14 +109,14 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 
 			CString strCoord;
-			auto inter_x = Fraction(ic - c, m - im);
+			auto inter_x = RationalNum(ic - c, m - im);
 			auto inter_y = m * inter_x + c;
 			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
 			dc.MoveTo(m_vecCoord[2]);
 			POINT tar;
-			tar.x = static_cast<LONG64>(inter_x.GetValue());
-			tar.y = static_cast<LONG64>(inter_y.GetValue());
+			tar.x = static_cast<LONG>(inter_x.GetValue());
+			tar.y = static_cast<LONG>(inter_y.GetValue());
 			dc.LineTo(CPoint(tar));
 
 			m_lbxExpr.AddString(strCoord);

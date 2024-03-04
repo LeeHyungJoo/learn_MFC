@@ -190,7 +190,7 @@
     <ClInclude Include="AaronMathViewer.h" />
     <ClInclude Include="AaronMathViewerDlg.h" />
     <ClInclude Include="Formatter.h" />
-    <ClInclude Include="Fraction.h" />
+    <ClInclude Include="RationalNum.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
@@ -200,7 +200,7 @@
     <ClCompile Include="AaronMathViewer.cpp" />
     <ClCompile Include="AaronMathViewerDlg.cpp" />
     <ClCompile Include="Formatter.cpp" />
-    <ClCompile Include="Fraction.cpp" />
+    <ClCompile Include="RationalNum.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

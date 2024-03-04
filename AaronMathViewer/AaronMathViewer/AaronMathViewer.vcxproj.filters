@@ -33,10 +33,10 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Fraction.h">
+    <ClInclude Include="Formatter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Formatter.h">
+    <ClInclude Include="RationalNum.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,10 +50,10 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Fraction.cpp">
+    <ClCompile Include="Formatter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Formatter.cpp">
+    <ClCompile Include="RationalNum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

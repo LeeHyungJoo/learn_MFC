@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Formatter.h"
 
-void Formatter::LineQuation(const CString & desc, const Fraction & gradient, const Fraction & constant, OUT CString * format)
+void Formatter::LineQuation(const CString & desc, const RationalNum & gradient, const RationalNum & constant, OUT CString * format)
 {
 	if (gradient.IsInteger())
 	{
@@ -40,7 +40,7 @@ void Formatter::LineQuation(const CString & desc, const Fraction & gradient, con
 	}
 }
 
-void Formatter::Coord(const CString & desc, const Fraction & x, const Fraction & y, OUT CString * format)
+void Formatter::Coord(const CString & desc, const RationalNum & x, const RationalNum & y, OUT CString * format)
 {
 	if (x.IsInteger())
 	{

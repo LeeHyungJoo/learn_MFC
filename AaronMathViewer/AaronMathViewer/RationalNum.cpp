@@ -1,13 +1,13 @@
 #include "pch.h"
-#include "Fraction.h"
+#include "RationalNum.h"
 
-Fraction::Fraction(DOUBLE num)
+RationalNum::RationalNum(DOUBLE num)
 	: numerator(num), denominator(1)
 {
 }
 
-Fraction::Fraction(DOUBLE num, DOUBLE denom)
-	: numerator(static_cast<LONG64>(num)), denominator(static_cast<LONG64>(denom))
+RationalNum::RationalNum(DOUBLE num, DOUBLE denom)
+	: numerator(num), denominator(denom)
 {
 	if (denominator < 0) 
 	{
@@ -20,9 +20,9 @@ Fraction::Fraction(DOUBLE num, DOUBLE denom)
 	denominator /= factor;
 }
 
-Fraction::Fraction(const Fraction & numFrac, const Fraction & denomFrac)
+RationalNum::RationalNum(const RationalNum & numFrac, const RationalNum & denomFrac)
 {
-	auto frac = Fraction(
+	auto frac = RationalNum(
 		numFrac.GetNumerator() * denomFrac.GetDenomiator(),
 		numFrac.GetDenomiator() * denomFrac.GetNumerator()
 	);
@@ -31,53 +31,53 @@ Fraction::Fraction(const Fraction & numFrac, const Fraction & denomFrac)
 	denominator = frac.denominator;
 }
 
-BOOL Fraction::IsInteger() const
+BOOL RationalNum::IsInteger() const
 {
 	return denominator == 1;
 }
 
-DOUBLE Fraction::GetNumerator() const
+DOUBLE RationalNum::GetNumerator() const
 {
 	return numerator;
 }
 
-DOUBLE Fraction::GetDenomiator() const
+DOUBLE RationalNum::GetDenomiator() const
 {
 	return denominator;
 }
 
-DOUBLE Fraction::GetValue() const
+DOUBLE RationalNum::GetValue() const
 {
 	return numerator / denominator;
 }
 
-Fraction Fraction::operator+(const Fraction & other) const
+RationalNum RationalNum::operator+(const RationalNum & other) const
 {
-	return Fraction(
+	return RationalNum(
 		numerator * other.denominator + other.numerator * denominator,
 		denominator * other.denominator
 	);
 }
 
-Fraction Fraction::operator-(const Fraction & other) const
+RationalNum RationalNum::operator-(const RationalNum & other) const
 {
-	return Fraction(
+	return RationalNum(
 		numerator * other.denominator - other.numerator * denominator,
 		denominator * other.denominator
 	);
 }
 
-Fraction Fraction::operator*(const Fraction & other) const
+RationalNum RationalNum::operator*(const RationalNum & other) const
 {
-	return Fraction(
+	return RationalNum(
 		numerator * other.numerator, 
 		denominator * other.denominator
 	);
 }
 
-Fraction Fraction::operator/(const Fraction & other) const
+RationalNum RationalNum::operator/(const RationalNum & other) const
 {
-	return Fraction(
+	return RationalNum(
 		numerator * other.denominator, 
 		denominator * other.numerator
 	);
