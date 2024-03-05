@@ -22,6 +22,7 @@ protected:
 
 private:
 	void ResetPicking();
+	void ResetParamCoords();
 
 public:
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
@@ -37,7 +38,8 @@ public:
 
 public:
 	UINT m_lastMethodRadioID;
-	std::vector<CPoint> m_vecCoord;
+	std::vector<CPoint> m_vecPickedCoord;
+	std::vector<CPoint> m_vecParamCoord;
 	std::vector<CEdit*> m_vecCoordEdits;
 	std::unordered_map<UINT, INT> m_mPickedCoordCount;
 
