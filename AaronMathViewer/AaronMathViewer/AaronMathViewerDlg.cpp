@@ -110,51 +110,90 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	{
 		if (m_vecCoord.size() == 2)
 		{
-			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
-			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
-
 			CString expr;
-			Formatter::LineQuation(L"직선 방정식", m, c, &expr);
+			Formatter::LineQuation(
+				L"직선 방정식", 
+				m_vecCoord[1].x - m_vecCoord[0].x,
+				m_vecCoord[1].y - m_vecCoord[0].y, 
+				m_vecCoord[0].x,
+				m_vecCoord[0].y,
+				&expr);
+
 			m_lbxExpr.AddString(expr);
-			m_bExprDecimal.push_back(FALSE);
+			m_bExprDecimal.push_back(TRUE);
 		}
 		else if (m_vecCoord.size() == 3)
 		{
-			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
-			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
+			auto dy = m_vecCoord[1].y - m_vecCoord[0].y;
+			auto dx = m_vecCoord[1].x - m_vecCoord[0].x;
 
-			if ((m * m_vecCoord[2].x + c) == m_vecCoord[2].y)
+			if (dx == 0)
 			{
-				m_vecCoord.pop_back();
-				AfxMessageBox(_T("직선 위에 있는 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
-				break;
+				CString expr;
+				Formatter::HorizontalLineQuation(L"수선 방정식", m_vecCoord[2].y, &expr);
+				m_lbxExpr.AddString(expr);
+				m_bExprDecimal.push_back(TRUE);
+
+				CString strCoord;
+				Formatter::Coord(L"교점", m_vecCoord[0].x, m_vecCoord[2].y, &strCoord);
+
+				m_lbxExpr.AddString(strCoord);
+				m_bExprDecimal.push_back(TRUE);
+
+				m_vecCoord.push_back(CPoint(m_vecCoord[0].x, m_vecCoord[2].y));
 			}
+			else if (dy == 0)
+			{
+				CString expr;
+				Formatter::VerticalLineQuation(L"수선 방정식", m_vecCoord[2].x, &expr);
+				m_lbxExpr.AddString(expr);
+				m_bExprDecimal.push_back(TRUE);
 
-			auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
-			auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+				CString strCoord;
+				Formatter::Coord(L"교점", m_vecCoord[2].x, m_vecCoord[0].y, &strCoord);
 
-			CString expr;
-			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
-			m_lbxExpr.AddString(expr);
-			m_bExprDecimal.push_back(FALSE);
+				m_lbxExpr.AddString(strCoord);
+				m_bExprDecimal.push_back(TRUE);
 
-			CString strCoord;
-			auto inter_x = RationalNum(ic - c, m - im);
-			auto inter_y = m * inter_x + c;
-			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
+				m_vecCoord.push_back(CPoint(m_vecCoord[2].x, m_vecCoord[0].y));
+			}
+			else
+			{
+				auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
+				auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
-			m_lbxExpr.AddString(strCoord);
-			m_bExprDecimal.push_back(FALSE);
+				if ((m * m_vecCoord[2].x + c) == m_vecCoord[2].y)
+				{
+					m_vecCoord.pop_back();
+					AfxMessageBox(_T("직선 위에 있는 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
+					break;
+				}
 
-			POINT tar;
-			tar.x = static_cast<LONG>(inter_x.GetValue());
-			tar.y = static_cast<LONG>(inter_y.GetValue());
-			m_vecCoord.push_back(CPoint(tar));
+				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+				auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
+
+				CString expr;
+				Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
+				m_lbxExpr.AddString(expr);
+				m_bExprDecimal.push_back(TRUE);
+
+				CString strCoord;
+				auto inter_x = RationalNum(ic - c, m - im);
+				auto inter_y = m * inter_x + c;
+				Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
+
+				m_lbxExpr.AddString(strCoord);
+				m_bExprDecimal.push_back(TRUE);
+
+				POINT tar;
+				tar.x = static_cast<LONG>(inter_x.GetValue());
+				tar.y = static_cast<LONG>(inter_y.GetValue());
+				m_vecCoord.push_back(CPoint(tar));
+			}
 		}
 		break;
 	}
 	}
-
 
 	Invalidate();
 }

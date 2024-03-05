@@ -28,7 +28,6 @@ public:
 	void OnMethodRadioChanged(UINT ID);
 	void UpdatePickCoords();
 
-
 public:
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);

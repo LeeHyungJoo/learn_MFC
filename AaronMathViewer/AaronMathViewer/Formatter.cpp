@@ -81,6 +81,40 @@ void Formatter::LineQuation(
 	}
 }
 
+void Formatter::LineQuation(const CString & desc, const LONG dx, const LONG dy, const LONG x1, const LONG y1, OUT CString * format, BOOL bDecimalFormat)
+{
+	if (dx == 0)
+	{
+		VerticalLineQuation(desc, x1, format, bDecimalFormat);
+	} 
+	else if (dy == 0)
+	{
+		HorizontalLineQuation(desc, y1, format, bDecimalFormat);
+	}
+	else
+	{
+		auto m = RationalNum(dy, dx);
+		LineQuation(desc, m, m * -x1 + y1, format, bDecimalFormat);
+	}
+}
+
+void Formatter::VerticalLineQuation(const CString & desc, const LONG constant, OUT CString * format, BOOL bDecimalFormat)
+{
+	format->Format(_T("%s [ x = %ld ]"),
+		desc,
+		constant
+	);
+}
+
+void Formatter::HorizontalLineQuation(const CString & desc, const LONG constant, OUT CString * format, BOOL bDecimalFormat)
+{
+	format->Format(_T("%s [ y = %ld ]"),
+		desc,
+		constant
+	);
+}
+
+
 void Formatter::Coord(
 	const CString & desc, 
 	const RationalNum & x, 
