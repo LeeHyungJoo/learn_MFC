@@ -43,4 +43,11 @@ public:
 		OUT CString* format,
 		BOOL bDecimalFormat = TRUE
 	);
+
+	static void Coord(
+		const CString& desc,
+		const CPoint& point,
+		OUT CString* format,
+		BOOL bDecimalFormat = TRUE
+	);
 };

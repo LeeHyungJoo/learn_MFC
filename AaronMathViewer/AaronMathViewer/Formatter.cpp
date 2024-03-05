@@ -127,7 +127,7 @@ void Formatter::Coord(
 		if (x.IsInteger())
 		{
 			if (y.IsInteger())
-				format->Format(_T("%s ( %+.0f, %.0f )"),
+				format->Format(_T("%s ( %+.0f, %+.0f )"),
 					desc,
 					x.GetNumerator(),
 					y.GetNumerator()
@@ -142,7 +142,7 @@ void Formatter::Coord(
 		else
 		{
 			if (y.IsInteger())
-				format->Format(_T("%s ( %+.3f, %.0f )"),
+				format->Format(_T("%s ( %+.3f, %+.0f )"),
 					desc,
 					x.GetNumerator() / x.GetDenomiator(),
 					y.GetNumerator()
@@ -160,7 +160,7 @@ void Formatter::Coord(
 		if (x.IsInteger())
 		{
 			if (y.IsInteger())
-				format->Format(_T("%s ( %+.0f, %.0f )"),
+				format->Format(_T("%s ( %+.0f, %+.0f )"),
 					desc,
 					x.GetNumerator(),
 					y.GetNumerator()
@@ -176,7 +176,7 @@ void Formatter::Coord(
 		else
 		{
 			if (y.IsInteger())
-				format->Format(_T("%s ( %+.0f/%.0f, %.0f )"),
+				format->Format(_T("%s ( %+.0f/%.0f, %+.0f )"),
 					desc,
 					x.GetNumerator(),
 					x.GetDenomiator(),
@@ -192,4 +192,9 @@ void Formatter::Coord(
 				);
 		}
 	}
+}
+
+void Formatter::Coord(const CString & desc, const CPoint & point, OUT CString * format, BOOL bDecimalFormat)
+{
+	Formatter::Coord(desc, point.x, point.y, format, bDecimalFormat);
 }

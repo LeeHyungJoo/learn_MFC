@@ -26,15 +26,21 @@ private:
 
 public:
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
-	void OnMethodRadioChanged(UINT ID);
 	void UpdatePickCoords();
+	void OnMethodRadioChanged(UINT ID);
+
+	void DrawLine(const CPoint& start, const CPoint& end);
+	void DrawDotLine(const CPoint& start, const CPoint& end);
+	void DrawDotCircle(const CPoint& point);
+	void DrawSpecificDotCircle(const CPoint& point);
+	void DrawPolyLine(const std::vector<CPoint>& points, INT startIdx, INT endIdx);
 
 public:
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedButtonReset();
-	afx_msg void OnLbnDblclkListView();
+	//afx_msg void OnLbnDblclkListView();
 
 public:
 	UINT m_lastMethodRadioID;

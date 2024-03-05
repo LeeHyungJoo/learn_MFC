@@ -74,33 +74,6 @@ BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const 
 	return bIn;
 }
 
-void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
-{
-	if (m_lastMethodRadioID == ID)
-		return;
-
-	switch (m_lastMethodRadioID)
-	{
-	case IDC_RADIO_TRIROT:
-		m_edtDegree.EnableWindow(FALSE);
-		m_btnRot.EnableWindow(FALSE);
-		break;
-	}
-
-	m_lastMethodRadioID = ID;
-
-	ResetPicking();
-	ResetParamCoords();
-
-	switch (m_lastMethodRadioID)
-	{
-	case IDC_RADIO_TRIROT:
-		m_edtDegree.EnableWindow(TRUE);
-		m_btnRot.EnableWindow(TRUE);
-		break;
-	}
-}
-
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
 	for (size_t i = 0; i < m_vecPickedCoord.size(); i++)
@@ -201,7 +174,19 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	}
 	case IDC_RADIO_TRIROT:
 	{
+		if (m_vecPickedCoord.size() == 3)
+		{
+			CString strCoord;
 
+			Formatter::Coord(L"A :", m_vecPickedCoord[0], &strCoord);
+			m_lbxExpr.AddString(strCoord);
+
+			Formatter::Coord(L"B :", m_vecPickedCoord[1], &strCoord);
+			m_lbxExpr.AddString(strCoord);
+
+			Formatter::Coord(L"C :", m_vecPickedCoord[2], &strCoord);
+			m_lbxExpr.AddString(strCoord);
+		}
 		break;
 	}
 	}
@@ -216,7 +201,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO5, OnMethodRadioChanged)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
-	ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
+	//ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -251,66 +236,139 @@ void CAaronMathViewerDlg::OnPaint()
 		return;
 	}
 
+	//TODO : Seperate Line, Dot Method.
 	switch (m_lastMethodRadioID)
 	{
 	case IDC_RADIO_PPC:
 	{
 		if (m_vecPickedCoord.size() > 1)
-		{
-			CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
-			CPen* pOldPen = boardDC->SelectObject(&pen);
+			DrawLine(m_vecPickedCoord[0], m_vecPickedCoord[1]);
 
-			boardDC->MoveTo(m_vecPickedCoord[0]);
-			boardDC->LineTo(m_vecPickedCoord[1]);
-
-			if (m_vecParamCoord.size() > 0 && m_vecPickedCoord.size() > 2)
-			{
-				CPen dotPen(PS_DOT, 1, RGB(255, 120, 0));
-				boardDC->SelectObject(&dotPen);
-
-				boardDC->MoveTo(m_vecPickedCoord[2]);
-				boardDC->LineTo(m_vecParamCoord[0]);
-			}
-
-			boardDC->SelectObject(*pOldPen);
-		}
+		if (m_vecPickedCoord.size() > 2 && m_vecParamCoord.size() > 0)
+			DrawDotLine(m_vecPickedCoord[2], m_vecParamCoord[0]);
 
 		if (m_vecPickedCoord.size() > 0)
-		{
-			CPen pen(PS_SOLID, 2, RGB(255, 0, 0));
-			CPen* pOldPen = boardDC->SelectObject(&pen);
+			DrawDotCircle(m_vecPickedCoord[0]);
 
-			boardDC->Ellipse(m_vecPickedCoord[0].x - 2, m_vecPickedCoord[0].y - 2, m_vecPickedCoord[0].x + 2, m_vecPickedCoord[0].y + 2);
+		if (m_vecPickedCoord.size() > 1)
+			DrawDotCircle(m_vecPickedCoord[1]);
 
-			if (m_vecPickedCoord.size() > 1)
-			{
-				boardDC->Ellipse(m_vecPickedCoord[1].x - 2, m_vecPickedCoord[1].y - 2, m_vecPickedCoord[1].x + 2, m_vecPickedCoord[1].y + 2);
-
-				if (m_vecPickedCoord.size() > 2)
-					boardDC->Ellipse(m_vecPickedCoord[2].x - 2, m_vecPickedCoord[2].y - 2, m_vecPickedCoord[2].x + 2, m_vecPickedCoord[2].y + 2);
-			}
-			boardDC->SelectObject(*pOldPen);
-		}
+		if (m_vecPickedCoord.size() > 2)
+			DrawDotCircle(m_vecPickedCoord[2]);
 
 		if (m_vecParamCoord.size() > 0)
-		{
-			CPen interPen(PS_SOLID, 3, RGB(0, 50, 255));
-			CPen* pOldPen = boardDC->SelectObject(&interPen);
-
-			boardDC->SelectObject(&interPen);
-			boardDC->Ellipse(m_vecParamCoord[0].x - 2, m_vecParamCoord[0].y - 2, m_vecParamCoord[0].x + 2, m_vecParamCoord[0].y + 2);
-
-			boardDC->SelectObject(*pOldPen);
-		}
+			DrawSpecificDotCircle(m_vecParamCoord[0]);
 
 		break;
 	}
 	case IDC_RADIO_TRIROT:
 	{
+		if (m_vecPickedCoord.size() > 0)
+			for(const auto& c : m_vecPickedCoord)
+				DrawDotCircle(c);
+
+		if (m_vecPickedCoord.size() == 3)
+			DrawPolyLine(m_vecPickedCoord, 0, 2);
 
 		break;
 	}
 	}
+}
+
+void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
+{
+	if (m_lastMethodRadioID == ID)
+		return;
+
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(FALSE);
+		m_btnRot.EnableWindow(FALSE);
+		break;
+	}
+
+	m_lastMethodRadioID = ID;
+
+	ResetPicking();
+	ResetParamCoords();
+
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(TRUE);
+		m_btnRot.EnableWindow(TRUE);
+		break;
+	}
+}
+
+void CAaronMathViewerDlg::DrawLine(const CPoint & start, const CPoint & end)
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+
+	CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
+	CPen* pOldPen = boardDC->SelectObject(&pen);
+
+	boardDC->MoveTo(start);
+	boardDC->LineTo(end);
+
+	boardDC->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawDotLine(const CPoint & start, const CPoint & end)
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+
+	CPen dotPen(PS_DOT, 1, RGB(255, 120, 0));
+	CPen* pOldPen = boardDC->SelectObject(&dotPen);
+
+	boardDC->MoveTo(start);
+	boardDC->LineTo(end);
+
+	boardDC->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawDotCircle(const CPoint & point)
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+
+	CPen pen(PS_SOLID, 2, RGB(255, 0, 0));
+	CPen* pOldPen = boardDC->SelectObject(&pen);
+
+	boardDC->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
+	boardDC->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawSpecificDotCircle(const CPoint & point)
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+
+	CPen interPen(PS_SOLID, 3, RGB(0, 50, 255));
+	CPen* pOldPen = boardDC->SelectObject(&interPen);
+
+	boardDC->SelectObject(&interPen);
+	boardDC->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
+
+	boardDC->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawPolyLine(const std::vector<CPoint>& points, INT startIdx, INT endIdx)
+{
+	if (endIdx - startIdx < 2)
+		return;
+
+	CDC* boardDC = m_pcBoard.GetDC();
+	CPen dotPen(PS_SOLID, 1, RGB(120, 0, 255));
+	CPen* pOldPen = boardDC->SelectObject(&dotPen);
+
+	INT count = endIdx - startIdx + 2;
+	POINT* pntArr = new POINT[count];
+	for (INT i = startIdx; i <= endIdx; i++)
+		pntArr[i] = points[i];
+	pntArr[count - 1] = points[startIdx];
+
+	boardDC->Polyline(pntArr, count);
+	boardDC->SelectObject(*pOldPen);
 }
 
 void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
@@ -381,65 +439,65 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 	Invalidate();
 }
 
-void CAaronMathViewerDlg::OnLbnDblclkListView()
-{
-	int selectedIdx = m_lbxExpr.GetCurSel();
-	if (selectedIdx != LB_ERR)
-	{
-		CString expr;
-		switch (m_lastMethodRadioID)
-		{
-		case IDC_RADIO_PPC:
-		{
-			switch (selectedIdx)
-			{
-			case 0:
-			{
-				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-
-				Formatter::LineQuation(L"직선 방정식", m, c, &expr, !m_bExprDecimal[0]);
-				break;
-			}
-			case 1:
-			{
-				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-
-				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
-				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
-
-				Formatter::LineQuation(L"수선 방정식", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
-				break;
-			}
-			case 2:
-			{
-				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-
-				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
-				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
-
-				auto inter_x = RationalNum(ic - c, m - im);
-				auto inter_y = m * inter_x + c;
-
-				Formatter::Coord(L"교점", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
-				break;
-			}
-			default:
-				return;
-			}
-			break;
-		}
-		default:
-			return;
-		}
-
-		m_bExprDecimal[selectedIdx] = !m_bExprDecimal[selectedIdx];
-
-		m_lbxExpr.DeleteString(selectedIdx);
-		m_lbxExpr.InsertString(selectedIdx, expr);
-		m_lbxExpr.SetCurSel(selectedIdx);
-	}
-
-}
+//void CAaronMathViewerDlg::OnLbnDblclkListView()
+//{
+//	int selectedIdx = m_lbxExpr.GetCurSel();
+//	if (selectedIdx != LB_ERR)
+//	{
+//		CString expr;
+//		switch (m_lastMethodRadioID)
+//		{
+//		case IDC_RADIO_PPC:
+//		{
+//			switch (selectedIdx)
+//			{
+//			case 0:
+//			{
+//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
+//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
+//
+//				Formatter::LineQuation(L"직선 방정식", m, c, &expr, !m_bExprDecimal[0]);
+//				break;
+//			}
+//			case 1:
+//			{
+//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
+//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
+//
+//				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+//				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
+//
+//				Formatter::LineQuation(L"수선 방정식", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
+//				break;
+//			}
+//			case 2:
+//			{
+//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
+//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
+//
+//				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
+//				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
+//
+//				auto inter_x = RationalNum(ic - c, m - im);
+//				auto inter_y = m * inter_x + c;
+//
+//				Formatter::Coord(L"교점", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
+//				break;
+//			}
+//			default:
+//				return;
+//			}
+//			break;
+//		}
+//		default:
+//			return;
+//		}
+//
+//		m_bExprDecimal[selectedIdx] = !m_bExprDecimal[selectedIdx];
+//
+//		m_lbxExpr.DeleteString(selectedIdx);
+//		m_lbxExpr.InsertString(selectedIdx, expr);
+//		m_lbxExpr.SetCurSel(selectedIdx);
+//	}
+//
+//}
