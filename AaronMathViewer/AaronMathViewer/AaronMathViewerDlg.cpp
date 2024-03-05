@@ -60,6 +60,7 @@ void CAaronMathViewerDlg::ResetPicking()
 
 void CAaronMathViewerDlg::ResetParamCoords()
 {
+	m_vecDoubleCoord.clear();
 	m_vecParamCoord.clear();
 }
 
