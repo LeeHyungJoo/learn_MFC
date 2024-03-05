@@ -47,4 +47,7 @@ public:
 
 	CListBox m_lbxExpr;
 	std::vector<BOOL> m_bExprDecimal;
+
+	CEdit m_edtDegree;
+	CButton m_btnRot;
 };

@@ -17,7 +17,7 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	, m_lastMethodRadioID(0U)
 {
 	m_mPickedCoordCount[IDC_RADIO_PPC] = 3U;
-	m_mPickedCoordCount[IDC_RADIO2] = -1;
+	m_mPickedCoordCount[IDC_RADIO_TRIROT] = 3U;
 	m_mPickedCoordCount[IDC_RADIO3] = -1;
 	m_mPickedCoordCount[IDC_RADIO4] = -1;
 	m_mPickedCoordCount[IDC_RADIO5] = -1;
@@ -41,6 +41,8 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_PICCONTROL, m_pcBoard);
 	DDX_Control(pDX, IDC_STATIC_PNTCOORD, m_stCoord);
 	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
+	DDX_Control(pDX, IDC_EDIT_DEGREE, m_edtDegree);
+	DDX_Control(pDX, IDC_BUTTON_ROT, m_btnRot);
 }
 
 void CAaronMathViewerDlg::ResetPicking()
@@ -72,9 +74,25 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 	if (m_lastMethodRadioID == ID)
 		return;
 
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(FALSE);
+		m_btnRot.EnableWindow(FALSE);
+		break;
+	}
+
 	m_lastMethodRadioID = ID;
 
 	ResetPicking();
+
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(TRUE);
+		m_btnRot.EnableWindow(TRUE);
+		break;
+	}
 }
 
 void CAaronMathViewerDlg::UpdatePickCoords()
@@ -169,7 +187,7 @@ void CAaronMathViewerDlg::OnPaint()
 	switch (m_lastMethodRadioID)
 	{
 	case IDC_RADIO_PPC:
-	case IDC_RADIO2:
+	case IDC_RADIO_TRIROT:
 	case IDC_RADIO3:
 	case IDC_RADIO4:
 	case IDC_RADIO5:
