@@ -72,7 +72,6 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		m_vecCoordEdits[i]->SetWindowText(strCoord);
 	}
 
-	BOOL bDecimalFormat = FALSE;
 	switch (m_lastMethodRadioID)
 	{
 	case IDC_RADIO_PPC:
@@ -83,9 +82,9 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
 			CString expr;
-			Formatter::LineQuation(L"직선 방정식", m, c, &expr, bDecimalFormat);
+			Formatter::LineQuation(L"직선 방정식", m, c, &expr);
 			m_lbxExpr.AddString(expr);
-			m_bExprDecimal.push_back(bDecimalFormat);
+			m_bExprDecimal.push_back(FALSE);
 		}
 		else if (m_vecCoord.size() == 3)
 		{
@@ -96,17 +95,17 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
 
 			CString expr;
-			Formatter::LineQuation(L"수선 방정식", im, ic, &expr, bDecimalFormat);
+			Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
 			m_lbxExpr.AddString(expr);
-			m_bExprDecimal.push_back(bDecimalFormat);
+			m_bExprDecimal.push_back(FALSE);
 
 			CString strCoord;
 			auto inter_x = RationalNum(ic - c, m - im);
 			auto inter_y = m * inter_x + c;
-			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord, bDecimalFormat);
+			Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
 			m_lbxExpr.AddString(strCoord);
-			m_bExprDecimal.push_back(bDecimalFormat);
+			m_bExprDecimal.push_back(FALSE);
 
 			POINT tar;
 			tar.x = static_cast<LONG>(inter_x.GetValue());
