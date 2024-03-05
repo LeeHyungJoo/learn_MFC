@@ -14,7 +14,7 @@ const static BOOL B_TEST = FALSE;
 
 CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_AARONMATHVIEWER_DIALOG, pParent)
-	, m_lastMethodRadioID(0U)
+	, m_uMethodID(0U)
 {
 	m_mPickedCoordCount[IDC_RADIO_PPC] = 3U;
 	m_mPickedCoordCount[IDC_RADIO_TRIROT] = 3U;
@@ -49,12 +49,11 @@ void CAaronMathViewerDlg::ResetPicking()
 {
 	m_vecPickedCoord.clear();
 	m_lbxExpr.ResetContent();
-	m_bExprDecimal.clear();
 
 	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
 	{
 		m_vecCoordEdits[i]->SetWindowText(L"");
-		auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+		auto itr = m_mPickedCoordCount.find(m_uMethodID);
 		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
 	}
 }
@@ -83,7 +82,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		m_vecCoordEdits[i]->SetWindowText(strCoord);
 	}
 
-	switch (m_lastMethodRadioID)
+	switch (m_uMethodID)
 	{
 	case IDC_RADIO_PPC:
 	{
@@ -99,7 +98,6 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				&expr);
 
 			m_lbxExpr.AddString(expr);
-			m_bExprDecimal.push_back(TRUE);
 		}
 		else if (m_vecPickedCoord.size() == 3)
 		{
@@ -111,13 +109,11 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				CString expr;
 				Formatter::HorizontalLineQuation(L"수선 방정식", m_vecPickedCoord[2].y, &expr);
 				m_lbxExpr.AddString(expr);
-				m_bExprDecimal.push_back(TRUE);
 
 				CString strCoord;
 				Formatter::Coord(L"교점", m_vecPickedCoord[0].x, m_vecPickedCoord[2].y, &strCoord);
 
 				m_lbxExpr.AddString(strCoord);
-				m_bExprDecimal.push_back(TRUE);
 
 				m_vecParamCoord.push_back(CPoint(m_vecPickedCoord[0].x, m_vecPickedCoord[2].y));
 			}
@@ -126,13 +122,11 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				CString expr;
 				Formatter::VerticalLineQuation(L"수선 방정식", m_vecPickedCoord[2].x, &expr);
 				m_lbxExpr.AddString(expr);
-				m_bExprDecimal.push_back(TRUE);
 
 				CString strCoord;
 				Formatter::Coord(L"교점", m_vecPickedCoord[2].x, m_vecPickedCoord[0].y, &strCoord);
 
 				m_lbxExpr.AddString(strCoord);
-				m_bExprDecimal.push_back(TRUE);
 
 				m_vecParamCoord.push_back(CPoint(m_vecPickedCoord[2].x, m_vecPickedCoord[0].y));
 			}
@@ -154,7 +148,6 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				CString expr;
 				Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
 				m_lbxExpr.AddString(expr);
-				m_bExprDecimal.push_back(TRUE);
 
 				CString strCoord;
 				auto inter_x = RationalNum(ic - c, m - im);
@@ -162,7 +155,6 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
 				m_lbxExpr.AddString(strCoord);
-				m_bExprDecimal.push_back(TRUE);
 
 				POINT tar;
 				tar.x = static_cast<LONG>(inter_x.GetValue());
@@ -176,7 +168,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	{
 		if (m_vecPickedCoord.size() == 3)
 		{
-			CString strCoord;
+			CString strCoord;	
 
 			Formatter::Coord(L"A :", m_vecPickedCoord[0], &strCoord);
 			m_lbxExpr.AddString(strCoord);
@@ -186,6 +178,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			Formatter::Coord(L"C :", m_vecPickedCoord[2], &strCoord);
 			m_lbxExpr.AddString(strCoord);
+
+			m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
 		}
 		break;
 	}
@@ -202,6 +196,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO5, OnMethodRadioChanged)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
 	//ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
+	ON_BN_CLICKED(IDC_BUTTON_ROT, &CAaronMathViewerDlg::OnBnClickedButtonRot)
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -218,8 +213,78 @@ void CAaronMathViewerDlg::OnPaint()
 {
 	CDialogEx::OnPaint();
 
+	ResetBoard();
+	DrawMethod();
+	DrawOthogonal();
+}
+
+void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
+{
+	if (m_uMethodID == ID)
+		return;
+
+	switch (m_uMethodID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(FALSE);
+		m_btnRot.EnableWindow(FALSE);
+		break;
+	}
+
+	m_uMethodID = ID;
+
+	ResetPicking();
+	ResetParamCoords();
+
+	switch (m_uMethodID)
+	{
+	case IDC_RADIO_TRIROT:
+		m_edtDegree.EnableWindow(TRUE);
+		m_btnRot.EnableWindow(TRUE);
+		break;
+	}
+}
+
+const CPoint CAaronMathViewerDlg::ToOthogonalFromClient(const CPoint & client)
+{
+	CPoint pt = client;
+
+	switch (m_uMethodID)
+	{
+	case IDC_RADIO_TRIROT:
+		CRect cRect;
+		m_pcBoard.GetClientRect(&cRect);
+		pt.x -= cRect.right / 2;
+		pt.y -= cRect.bottom / 2;
+		pt.y *= -1;
+		break;
+	}
+
+	return pt;
+}
+
+const CPoint CAaronMathViewerDlg::ToClientFromOthogonal(const CPoint & othogonal)
+{
+	CPoint pt = othogonal;
+
+	switch (m_uMethodID)
+	{
+	case IDC_RADIO_TRIROT:
+		CRect cRect;
+		m_pcBoard.GetClientRect(&cRect);
+		pt.y *= -1;
+		pt.x += cRect.right / 2;
+		pt.y += cRect.bottom / 2;
+		break;
+	}
+
+	return pt;
+}
+
+void CAaronMathViewerDlg::ResetBoard()
+{
 	CDC* boardDC = m_pcBoard.GetDC();
-	switch (m_lastMethodRadioID)
+	switch (m_uMethodID)
 	{
 	case IDC_RADIO_PPC:
 	case IDC_RADIO_TRIROT:
@@ -235,88 +300,53 @@ void CAaronMathViewerDlg::OnPaint()
 	default:
 		return;
 	}
+}
 
-	//TODO : Seperate Line, Dot Method.
-	switch (m_lastMethodRadioID)
+void CAaronMathViewerDlg::DrawMethod()
+{
+	std::vector<CPoint> oPickedCrd(m_vecPickedCoord);
+	for (auto& oc : oPickedCrd)
+		oc = ToClientFromOthogonal(oc);
+
+	std::vector<CPoint> oParamCrd(m_vecParamCoord);
+	for (auto& oc : oParamCrd)
+		oc = ToClientFromOthogonal(oc);
+
+	switch (m_uMethodID)
 	{
 	case IDC_RADIO_PPC:
 	{
-		if (m_vecPickedCoord.size() > 1)
-			DrawLine(m_vecPickedCoord[0], m_vecPickedCoord[1]);
+		if (oPickedCrd.size() > 1)
+			DrawLine(oPickedCrd[0], oPickedCrd[1]);
 
-		if (m_vecPickedCoord.size() > 2 && m_vecParamCoord.size() > 0)
-			DrawDotLine(m_vecPickedCoord[2], m_vecParamCoord[0]);
+		if (oPickedCrd.size() > 2 && oParamCrd.size() > 0)
+			DrawDotLine(oPickedCrd[2], oParamCrd[0]);
 
-		if (m_vecPickedCoord.size() > 0)
-			DrawDotCircle(m_vecPickedCoord[0]);
+		if (oPickedCrd.size() > 0)
+			DrawDotCircle(oPickedCrd[0]);
 
-		if (m_vecPickedCoord.size() > 1)
-			DrawDotCircle(m_vecPickedCoord[1]);
+		if (oPickedCrd.size() > 1)
+			DrawDotCircle(oPickedCrd[1]);
 
-		if (m_vecPickedCoord.size() > 2)
-			DrawDotCircle(m_vecPickedCoord[2]);
+		if (oPickedCrd.size() > 2)
+			DrawDotCircle(oPickedCrd[2]);
 
-		if (m_vecParamCoord.size() > 0)
-			DrawSpecificDotCircle(m_vecParamCoord[0]);
+		if (oParamCrd.size() > 0)
+			DrawSpecificDotCircle(oParamCrd[0]);
 
 		break;
 	}
 	case IDC_RADIO_TRIROT:
 	{
-		if (m_vecPickedCoord.size() > 0)
-			for(const auto& c : m_vecPickedCoord)
-				DrawDotCircle(c);
+		if (oPickedCrd.size() > 0)
+			for (const auto& oc : oPickedCrd)
+				DrawDotCircle(oc);
 
-		if (m_vecPickedCoord.size() == 3)
-			DrawPolyLine(m_vecPickedCoord, 0, 2);
+		if (oPickedCrd.size() == 3)
+			DrawPolyLine(oPickedCrd, 0, 2);
 
 		break;
 	}
-	}
-}
-
-void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
-{
-	if (m_lastMethodRadioID == ID)
-		return;
-
-	switch (m_lastMethodRadioID)
-	{
-	case IDC_RADIO_TRIROT:
-		m_edtDegree.EnableWindow(FALSE);
-		m_btnRot.EnableWindow(FALSE);
-		break;
-	}
-
-	m_lastMethodRadioID = ID;
-
-	ResetPicking();
-	ResetParamCoords();
-
-	switch (m_lastMethodRadioID)
-	{
-	case IDC_RADIO_TRIROT:
-		m_edtDegree.EnableWindow(TRUE);
-		m_btnRot.EnableWindow(TRUE);
-		break;
-	}
-}
-
-void CAaronMathViewerDlg::ChangeCoordinateSystem(OUT CPoint & point)
-{
-	switch (m_lastMethodRadioID)
-	{
-	case IDC_RADIO_TRIROT:
-	{
-		CRect cRect;
-		m_pcBoard.GetClientRect(&cRect);
-		point.x -= cRect.right / 2;
-		point.y -= cRect.bottom / 2;
-		point.y *= -1;
-		break;
-	}
-	default:
-		break;
 	}
 }
 
@@ -389,6 +419,34 @@ void CAaronMathViewerDlg::DrawPolyLine(const std::vector<CPoint>& points, INT st
 	boardDC->SelectObject(*pOldPen);
 }
 
+void CAaronMathViewerDlg::DrawOthogonal()
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+
+	switch (m_uMethodID)
+	{
+	case IDC_RADIO_TRIROT:
+	{
+		CPen dotPen(PS_DOT, 1, RGB(0, 0, 0));
+		CPen* pOldPen = boardDC->SelectObject(&dotPen);
+
+		CRect cRect;
+		m_pcBoard.GetClientRect(&cRect);
+
+		boardDC->MoveTo(cRect.right / 2, cRect.top);
+		boardDC->LineTo(cRect.right / 2, cRect.bottom);
+
+		boardDC->MoveTo(cRect.left, cRect.right / 2);
+		boardDC->LineTo(cRect.right, cRect.right / 2);
+
+		boardDC->SelectObject(*pOldPen);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
 	CPoint screenPoint = point;
@@ -399,12 +457,11 @@ void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 	if (IsScreenPointInRect(screenPoint, wRect))
 	{
-		screenPoint.Offset(-wRect.left, -wRect.top);
-
-		ChangeCoordinateSystem(screenPoint);
+		auto clientPnt = CPoint(screenPoint.x - wRect.left, screenPoint.y - wRect.top);
+		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
 		CString strCoord;
-		strCoord.Format(_T("(%d, %d)"), screenPoint.x, screenPoint.y);
+		strCoord.Format(_T("(%d, %d)"), othogonalPnt.x, othogonalPnt.y);
 		m_stCoord.SetWindowText(strCoord);
 	}
 
@@ -427,19 +484,20 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		else
 		{
-			screenPoint.Offset(-wRect.left, -wRect.top);
-			ChangeCoordinateSystem(screenPoint);
+			auto clientPnt = CPoint(screenPoint.x - wRect.left, screenPoint.y - wRect.top);
+			auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
-			if (m_lastMethodRadioID == 0)
+			if (m_uMethodID == 0)
 			{
 				AfxMessageBox(_T("먼저 함수 모드를 선택하십시오. !"), MB_ICONWARNING | MB_OK);
 			}
 			else
 			{
-				auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+				auto itr = m_mPickedCoordCount.find(m_uMethodID);
 				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.size() < (size_t)itr->second)
 				{
-					m_vecPickedCoord.push_back(screenPoint);
+					m_vecPickedCoord.push_back(othogonalPnt);
+					m_vecDoubleCoord.push_back(othogonalPnt);
 					UpdatePickCoords();
 				}
 				else
@@ -523,3 +581,26 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //	}
 //
 //}
+
+
+void CAaronMathViewerDlg::OnBnClickedButtonRot()
+{
+	if (m_uMethodID != IDC_RADIO_TRIROT)
+		return;
+
+	CString degreeStr;
+	m_edtDegree.GetWindowText(degreeStr);
+	auto degree = _wtoi(degreeStr);
+	auto radian = degree * (M_PI / 180.0);
+
+	for (int i = 0 ; i < m_vecPickedCoord.size(); i++)
+	{
+		auto x = m_vecDoubleCoord[i].x;
+		auto y = m_vecDoubleCoord[i].y;
+		m_vecDoubleCoord[i].x = x * std::cos(radian) - y * std::sin(radian);
+		m_vecDoubleCoord[i].y = x * std::sin(radian) + y * std::cos(radian);
+		m_vecPickedCoord[i] = CPoint((LONG)m_vecDoubleCoord[i].x, (LONG)m_vecDoubleCoord[i].y);
+	}
+
+	UpdatePickCoords();
+}

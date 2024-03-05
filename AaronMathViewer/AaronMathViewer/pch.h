@@ -16,4 +16,6 @@
 #include <vector>
 #include <unordered_map>
 
+constexpr DOUBLE M_PI = 3.1415926535;
+
 #endif //PCH_H
