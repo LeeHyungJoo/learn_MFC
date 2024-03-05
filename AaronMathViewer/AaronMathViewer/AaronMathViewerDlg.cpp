@@ -302,6 +302,24 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 	}
 }
 
+void CAaronMathViewerDlg::ChangeCoordinateSystem(OUT CPoint & point)
+{
+	switch (m_lastMethodRadioID)
+	{
+	case IDC_RADIO_TRIROT:
+	{
+		CRect cRect;
+		m_pcBoard.GetClientRect(&cRect);
+		point.x -= cRect.right / 2;
+		point.y -= cRect.bottom / 2;
+		point.y *= -1;
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void CAaronMathViewerDlg::DrawLine(const CPoint & start, const CPoint & end)
 {
 	CDC* boardDC = m_pcBoard.GetDC();
@@ -383,6 +401,8 @@ void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		screenPoint.Offset(-wRect.left, -wRect.top);
 
+		ChangeCoordinateSystem(screenPoint);
+
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), screenPoint.x, screenPoint.y);
 		m_stCoord.SetWindowText(strCoord);
@@ -408,6 +428,8 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		else
 		{
 			screenPoint.Offset(-wRect.left, -wRect.top);
+			ChangeCoordinateSystem(screenPoint);
+
 			if (m_lastMethodRadioID == 0)
 			{
 				AfxMessageBox(_T("먼저 함수 모드를 선택하십시오. !"), MB_ICONWARNING | MB_OK);

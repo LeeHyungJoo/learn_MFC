@@ -28,6 +28,7 @@ public:
 	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
 	void UpdatePickCoords();
 	void OnMethodRadioChanged(UINT ID);
+	void OffsetCoord(OUT CPoint& point);
 
 	void DrawLine(const CPoint& start, const CPoint& end);
 	void DrawDotLine(const CPoint& start, const CPoint& end);
@@ -44,6 +45,7 @@ public:
 
 public:
 	UINT m_lastMethodRadioID;
+	
 	std::vector<CPoint> m_vecPickedCoord;
 	std::vector<CPoint> m_vecParamCoord;
 	std::vector<CEdit*> m_vecCoordEdits;
