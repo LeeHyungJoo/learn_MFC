@@ -18,6 +18,7 @@ public:
 	RationalNum operator-(const RationalNum& other) const;
 	RationalNum operator*(const RationalNum& other) const;
 	RationalNum operator/(const RationalNum& other) const;
+	BOOL operator==(const RationalNum& other) const;
 
 private:
 	LONG64 gcd(LONG64 a, LONG64 b) {

@@ -82,3 +82,8 @@ RationalNum RationalNum::operator/(const RationalNum & other) const
 		denominator * other.numerator
 	);
 }
+
+BOOL RationalNum::operator==(const RationalNum & other) const
+{
+	return (abs(numerator - other.numerator) < DBL_EPSILON) && (abs(denominator - other.denominator) < DBL_EPSILON);
+}

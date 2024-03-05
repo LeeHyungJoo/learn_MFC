@@ -9,7 +9,7 @@ public:
 		const RationalNum& gradient, 
 		const RationalNum& constant, 
 		OUT CString* format,
-		BOOL bDecimalFormat = FALSE
+		BOOL bDecimalFormat = TRUE
 	);
 
 	static void Coord(
@@ -17,6 +17,6 @@ public:
 		const RationalNum& x,
 		const RationalNum& y,
 		OUT CString* format,
-		BOOL bDecimalFormat = FALSE
+		BOOL bDecimalFormat = TRUE
 	);
 };

@@ -10,6 +10,8 @@
 #define new DEBUG_NEW
 #endif
 
+const static BOOL B_TEST = FALSE;
+
 CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_AARONMATHVIEWER_DIALOG, pParent)
 	, m_lastMethodRadioID(0U)
@@ -19,6 +21,18 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	m_mPickedCoordCount[IDC_RADIO3] = -1;
 	m_mPickedCoordCount[IDC_RADIO4] = -1;
 	m_mPickedCoordCount[IDC_RADIO5] = -1;
+}
+
+void CAaronMathViewerDlg::TESTPICKCOORDS()
+{
+	m_vecCoord.push_back(CPoint(100, 200));
+	UpdatePickCoords();
+
+	m_vecCoord.push_back(CPoint(200, 400));
+	UpdatePickCoords();
+
+	m_vecCoord.push_back(CPoint(150, 300));
+	UpdatePickCoords();
 }
 
 void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
@@ -91,6 +105,13 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			auto m = RationalNum(m_vecCoord[1].y - m_vecCoord[0].y, m_vecCoord[1].x - m_vecCoord[0].x);
 			auto c = RationalNum(-m_vecCoord[0].x) * m + m_vecCoord[0].y;
 
+			if ((m * m_vecCoord[2].x + c) == m_vecCoord[2].y)
+			{
+				m_vecCoord.pop_back();
+				AfxMessageBox(_T("직선 위에 있거나 너무 근접한 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
+				break;
+			}
+
 			auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
 			auto ic = RationalNum(-m_vecCoord[2].x) * im + m_vecCoord[2].y;
 
@@ -115,6 +136,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		break;
 	}
 	}
+
+
 	Invalidate();
 }
 
@@ -237,22 +260,29 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if (IsScreenPointInRect(screenPoint, wRect))
 	{
-		screenPoint.Offset(-wRect.left, -wRect.top);
-		if (m_lastMethodRadioID == 0)
+		if (B_TEST)
 		{
-			AfxMessageBox(_T("Please Choose One Method Type First !"), MB_ICONWARNING | MB_OK);
+			TESTPICKCOORDS();
 		}
 		else
 		{
-			auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
-			if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < (size_t)itr->second)
+			screenPoint.Offset(-wRect.left, -wRect.top);
+			if (m_lastMethodRadioID == 0)
 			{
-				m_vecCoord.push_back(screenPoint);
-				UpdatePickCoords();
+				AfxMessageBox(_T("먼저 함수 모드를 선택하십시오. !"), MB_ICONWARNING | MB_OK);
 			}
 			else
 			{
-				AfxMessageBox(_T("Already Max Count of Picked Coords !"), MB_ICONWARNING | MB_OK);
+				auto itr = m_mPickedCoordCount.find(m_lastMethodRadioID);
+				if (itr != m_mPickedCoordCount.end() && m_vecCoord.size() < (size_t)itr->second)
+				{
+					m_vecCoord.push_back(screenPoint);
+					UpdatePickCoords();
+				}
+				else
+				{
+					AfxMessageBox(_T("이미 필요한 좌표를 모두 입력하셨습니다. !"), MB_ICONWARNING | MB_OK);
+				}
 			}
 		}
 	}
