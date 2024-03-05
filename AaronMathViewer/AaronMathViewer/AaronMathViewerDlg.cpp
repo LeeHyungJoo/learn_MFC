@@ -108,7 +108,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			if ((m * m_vecCoord[2].x + c) == m_vecCoord[2].y)
 			{
 				m_vecCoord.pop_back();
-				AfxMessageBox(_T("직선 위에 있거나 너무 근접한 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
+				AfxMessageBox(_T("직선 위에 있는 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
 				break;
 			}
 
