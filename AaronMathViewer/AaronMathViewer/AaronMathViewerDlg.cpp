@@ -525,6 +525,28 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
+void CAaronMathViewerDlg::OnBnClickedButtonRot()
+{
+	if (m_uMethodID != IDC_RADIO_TRIROT)
+		return;
+
+	CString degreeStr;
+	m_edtDegree.GetWindowText(degreeStr);
+	auto degree = _wtoi(degreeStr);
+	auto radian = degree * (M_PI / 180.0);
+
+	for (int i = 0; i < m_vecPickedCoord.size(); i++)
+	{
+		auto x = m_vecDoubleCoord[i].x;
+		auto y = m_vecDoubleCoord[i].y;
+		m_vecDoubleCoord[i].x = x * std::cos(radian) - y * std::sin(radian);
+		m_vecDoubleCoord[i].y = x * std::sin(radian) + y * std::cos(radian);
+		m_vecPickedCoord[i] = CPoint((LONG)m_vecDoubleCoord[i].x, (LONG)m_vecDoubleCoord[i].y);
+	}
+
+	UpdatePickCoords();
+}
+
 
 void CAaronMathViewerDlg::OnBnClickedButtonReset()
 {
@@ -597,24 +619,3 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //}
 
 
-void CAaronMathViewerDlg::OnBnClickedButtonRot()
-{
-	if (m_uMethodID != IDC_RADIO_TRIROT)
-		return;
-
-	CString degreeStr;
-	m_edtDegree.GetWindowText(degreeStr);
-	auto degree = _wtoi(degreeStr);
-	auto radian = degree * (M_PI / 180.0);
-
-	for (int i = 0 ; i < m_vecPickedCoord.size(); i++)
-	{
-		auto x = m_vecDoubleCoord[i].x;
-		auto y = m_vecDoubleCoord[i].y;
-		m_vecDoubleCoord[i].x = x * std::cos(radian) - y * std::sin(radian);
-		m_vecDoubleCoord[i].y = x * std::sin(radian) + y * std::cos(radian);
-		m_vecPickedCoord[i] = CPoint((LONG)m_vecDoubleCoord[i].x, (LONG)m_vecDoubleCoord[i].y);
-	}
-
-	UpdatePickCoords();
-}

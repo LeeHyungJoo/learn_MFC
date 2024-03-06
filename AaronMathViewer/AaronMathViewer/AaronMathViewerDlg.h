@@ -60,7 +60,6 @@ public:
 public:
 	UINT m_uMethodID;
 	
-
 	std::vector<CPoint> m_vecPickedCoord;
 	std::vector<CPointDouble> m_vecDoubleCoord;	//TODO: Param 좌표로 합칠것 (구조체)
 	std::vector<CPoint> m_vecParamCoord;		//TODO: Param 좌표로 합칠것 (구조체)
