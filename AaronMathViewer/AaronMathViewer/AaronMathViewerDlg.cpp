@@ -167,6 +167,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	}
 	case IDC_RADIO_TRIROT:
 	{
+
 		if (m_vecPickedCoord.size() == 3)
 		{
 			CString strCoord;	
@@ -176,6 +177,18 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			Formatter::Coord(L"B :", m_vecPickedCoord[1], &strCoord);
 			m_lbxExpr.AddString(strCoord);
+
+			auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
+			auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
+
+			if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
+			{
+				m_vecPickedCoord.pop_back();
+				m_vecDoubleCoord.pop_back();
+				AfxMessageBox(_T("앞의 두 점을 지나는 직선 위의 점은 선택할 수 없습니다!\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
+				break;
+			}
+
 
 			Formatter::Coord(L"C :", m_vecPickedCoord[2], &strCoord);
 			m_lbxExpr.AddString(strCoord);
