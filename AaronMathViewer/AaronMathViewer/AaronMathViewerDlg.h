@@ -43,7 +43,7 @@ public:
 	void DrawDotLine(const CPoint& start, const CPoint& end);
 	void DrawDotCircle(const CPoint& point);
 	void DrawSpecificDotCircle(const CPoint& point);
-	void DrawPolyLine(const std::vector<CPoint>& points, INT startIdx, INT endIdx);
+	void DrawPolyLine(const CArray<CPoint>& points, INT startIdx, INT endIdx);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);
 	const CPoint ToClientFromOthogonal(const CPoint& othogonal);
@@ -60,7 +60,8 @@ public:
 public:
 	UINT m_uMethodID;
 	
-	std::vector<CPoint> m_vecPickedCoord;
+	CArray<CPoint> m_vecPickedCoord;
+	//std::vector<CPoint> m_vecPickedCoord;
 	std::vector<CPointDouble> m_vecDoubleCoord;	//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 	std::vector<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 	std::vector<CEdit*> m_vecCoordEdits;
