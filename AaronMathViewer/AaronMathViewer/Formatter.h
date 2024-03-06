@@ -50,4 +50,21 @@ public:
 		OUT CString* format,
 		BOOL bDecimalFormat = TRUE
 	);
+
+	static void Coord(
+		const CString& desc,
+		const DOUBLE& pointx,
+		const DOUBLE& pointy,
+		OUT CString* format,
+		BOOL bDecimalFormat = TRUE
+	);
+
+	static void Coord(
+		const CString& desc,
+		const INT& label,
+		const DOUBLE& pointx,
+		const DOUBLE& pointy,
+		OUT CString* format,
+		BOOL bDecimalFormat = TRUE
+	);
 };

@@ -42,6 +42,7 @@ void CAaronMathViewerDlg::ResetPicking()
 {
 	m_vecPickedCoord.RemoveAll();
 	m_lbxExpr.ResetContent();
+	m_bFirstEnter = true;
 
 	INT cnt = 0;
 	for (INT i = 0; i < m_vecCoordEdits.GetSize(); i++)
@@ -56,6 +57,8 @@ void CAaronMathViewerDlg::ResetParamCoords()
 {
 	m_vecDoubleCoord.RemoveAll();
 	m_vecParamCoord.RemoveAll();
+	m_points.RemoveAll();
+	m_iRotDegree = 0;
 }
 
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
@@ -161,31 +164,36 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	}
 	case IDC_RADIO_TRIROT:
 	{
-
-		if (m_vecPickedCoord.GetSize() == 3)
+		if (m_vecDoubleCoord.GetSize() == 3)
 		{
-			CString strCoord;	
-
-			Formatter::Coord(L"A :", m_vecPickedCoord[0], &strCoord);
-			m_lbxExpr.AddString(strCoord);
-
-			Formatter::Coord(L"B :", m_vecPickedCoord[1], &strCoord);
-			m_lbxExpr.AddString(strCoord);
-
-			auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-			auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-
-			if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
+			if (m_bFirstEnter)
 			{
-				m_vecPickedCoord.RemoveAt(m_vecPickedCoord.GetUpperBound());
-				m_vecDoubleCoord.RemoveAt(m_vecDoubleCoord.GetUpperBound());
-				AfxMessageBox(_T("앞의 두 점을 지나는 직선 위의 점은 선택할 수 없습니다!\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
-				break;
+				m_bFirstEnter = false;
+
+				INT count = m_vecDoubleCoord.GetSize() + 1;
+				POINT* pntArr = new POINT[count];
+
+				for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
+					pntArr[i] = ToClientFromOthogonal(CPoint((LONG)m_vecDoubleCoord[i].x, (LONG)m_vecDoubleCoord[i].y));
+
+				pntArr[count - 1] = pntArr[0];
+				m_points.Add(std::make_pair(pntArr, count));
 			}
 
+			CString strCoord;
+			auto radian = (DOUBLE)m_iRotDegree * (M_PI / 180.0);
 
-			Formatter::Coord(L"C :", m_vecPickedCoord[2], &strCoord);
-			m_lbxExpr.AddString(strCoord);
+			for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
+			{
+				auto x = m_vecDoubleCoord[i].x;
+				auto y = m_vecDoubleCoord[i].y;
+
+				double dcx = x * std::cos(radian) - y * std::sin(radian);
+				double dcy = x * std::sin(radian) + y * std::cos(radian);
+
+				Formatter::Coord(L"", i ,dcx, dcy, &strCoord);
+				m_lbxExpr.AddString(strCoord);
+			}
 
 			m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
 		}
@@ -352,7 +360,10 @@ void CAaronMathViewerDlg::DrawMethod()
 			DrawDotCircle(oPickedCrd[i]);
 
 		if (oPickedCrd.GetSize() == 3)
+		{
+			DrawPolyLines(m_points, 0, m_points.GetUpperBound());
 			DrawPolyLine(oPickedCrd, 0, 2);
+		}
 
 		break;
 	}
@@ -428,6 +439,19 @@ void CAaronMathViewerDlg::DrawPolyLine(const CArray<CPoint>& points, INT startId
 	boardDC->SelectObject(*pOldPen);
 
 	delete[] pntArr;
+}
+
+void CAaronMathViewerDlg::DrawPolyLines(const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx)
+{
+	CDC* boardDC = m_pcBoard.GetDC();
+	CPen pen(PS_DOT, 1, RGB(200, 200, 200));
+
+	CPen* pOldPen = boardDC->SelectObject(&pen);
+
+	for (INT i = startIdx; i <= endIdx; i++)
+		boardDC->Polyline(points[i].first, points[i].second);
+
+	boardDC->SelectObject(*pOldPen);
 }
 
 void CAaronMathViewerDlg::DrawOthogonal()
@@ -524,20 +548,32 @@ void CAaronMathViewerDlg::OnBnClickedButtonRot()
 	CString degreeStr;
 	m_edtDegree.GetWindowText(degreeStr);
 	auto degree = _wtoi(degreeStr);
-	auto radian = degree * (M_PI / 180.0);
+	m_iRotDegree += degree;
+	m_iRotDegree %= 360;
 
-	for (int i = 0; i < m_vecPickedCoord.GetSize(); i++)
+	auto radian = (DOUBLE)m_iRotDegree * (M_PI / 180.0);
+	INT count = m_vecDoubleCoord.GetSize() + 1;
+	POINT* pntArr = new POINT[count];
+
+	for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
 	{
 		auto x = m_vecDoubleCoord[i].x;
 		auto y = m_vecDoubleCoord[i].y;
-		m_vecDoubleCoord[i].x = x * std::cos(radian) - y * std::sin(radian);
-		m_vecDoubleCoord[i].y = x * std::sin(radian) + y * std::cos(radian);
-		m_vecPickedCoord[i] = CPoint((LONG)m_vecDoubleCoord[i].x, (LONG)m_vecDoubleCoord[i].y);
+
+		double dcx = x * std::cos(radian) - y * std::sin(radian);
+		double dcy = x * std::sin(radian) + y * std::cos(radian);
+
+		auto cp = CPoint(dcx, dcy);
+
+		m_vecPickedCoord[i] = cp;
+		pntArr[i] = ToClientFromOthogonal(cp);
 	}
+
+	pntArr[count - 1] = pntArr[0];
+	m_points.Add(std::make_pair(pntArr, count));
 
 	UpdatePickCoords();
 }
-
 
 void CAaronMathViewerDlg::OnBnClickedButtonReset()
 {

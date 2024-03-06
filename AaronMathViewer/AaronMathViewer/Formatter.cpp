@@ -198,3 +198,22 @@ void Formatter::Coord(const CString & desc, const CPoint & point, OUT CString * 
 {
 	Formatter::Coord(desc, point.x, point.y, format, bDecimalFormat);
 }
+
+void Formatter::Coord(const CString & desc, const DOUBLE & pointx, const DOUBLE & pointy, OUT CString * format, BOOL bDecimalFormat)
+{
+	format->Format(_T("%s ( %+.3f, %+.3f )"),
+		desc,
+		pointx,
+		pointy
+	);
+}
+
+void Formatter::Coord(const CString & desc, const INT & label, const DOUBLE & pointx, const DOUBLE & pointy, OUT CString * format, BOOL bDecimalFormat)
+{
+	format->Format(_T("%s %d ( %+.3f, %+.3f )"),
+		desc,
+		label,
+		pointx,
+		pointy
+	);
+}

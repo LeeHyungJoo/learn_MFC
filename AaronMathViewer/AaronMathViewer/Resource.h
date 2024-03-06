@@ -1,4 +1,7 @@
-
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++에서 생성한 포함 파일입니다.
+// AaronMathViewer.rc에서 사용되고 있습니다.
+//
 #define IDM_ABOUTBOX                    0x0010
 #define IDD_AARONMATHVIEWER_DIALOG      102
 #define IDR_MAINFRAME                   128
@@ -21,6 +24,8 @@
 #define IDC_EDIT_DEGREE                 1020
 #define IDC_BUTTON_ROT                  1022
 
+// Next default values for new objects
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130

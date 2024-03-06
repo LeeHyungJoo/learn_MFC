@@ -19,9 +19,6 @@ public:
 	enum { IDD = IDD_AARONMATHVIEWER_DIALOG };
 #endif
 
-private:
-	void TESTPICKCOORDS();
-
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
 
@@ -45,6 +42,7 @@ public:
 	void DrawDotCircle(const CPoint& point);
 	void DrawSpecificDotCircle(const CPoint& point);
 	void DrawPolyLine(const CArray<CPoint>& points, INT startIdx, INT endIdx);
+	void DrawPolyLines(const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);
 	const CPoint ToClientFromOthogonal(const CPoint& othogonal);
@@ -67,6 +65,9 @@ public:
 	CPtrArray m_vecCoordEdits;
 	CMap<UINT, UINT, INT, INT> m_mPickedCoordCount;
 
+	CArray<std::pair<POINT*, INT>> m_points;
+	INT m_iRotDegree;
+
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
 
@@ -75,4 +76,5 @@ public:
 
 	CEdit m_edtDegree;
 	CButton m_btnRot;
+	BOOL m_bFirstEnter;
 };
