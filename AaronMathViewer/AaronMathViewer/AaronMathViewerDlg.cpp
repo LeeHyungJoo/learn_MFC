@@ -169,6 +169,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			if (m_bFirstEnter)
 			{
 				m_bFirstEnter = false;
+				m_iRotDegree = 0;
 
 				INT count = m_vecDoubleCoord.GetSize() + 1;
 				POINT* pntArr = new POINT[count];
