@@ -50,11 +50,11 @@ void CAaronMathViewerDlg::ResetPicking()
 	m_vecPickedCoord.RemoveAll();
 	m_lbxExpr.ResetContent();
 
-	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
+	for (size_t i = 0; i < m_vecCoordEdits.GetSize(); i++)
 	{
-		m_vecCoordEdits[i]->SetWindowText(L"");
+		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(L"");
 		auto itr = m_mPickedCoordCount.find(m_uMethodID);
-		m_vecCoordEdits[i]->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
+		static_cast<CEdit*>(m_vecCoordEdits[i])->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
 	}
 }
 
@@ -76,18 +76,18 @@ BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const 
 
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
-	for (size_t i = 0; i < m_vecPickedCoord.GetCount(); i++)
+	for (size_t i = 0; i < m_vecPickedCoord.GetSize(); i++)
 	{
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
-		m_vecCoordEdits[i]->SetWindowText(strCoord);
+		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(strCoord);
 	}
 
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_PPC:
 	{
-		if (m_vecPickedCoord.GetCount() == 2)
+		if (m_vecPickedCoord.GetSize() == 2)
 		{
 			CString expr;
 			Formatter::LineQuation(
@@ -100,7 +100,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			m_lbxExpr.AddString(expr);
 		}
-		else if (m_vecPickedCoord.GetCount() == 3)
+		else if (m_vecPickedCoord.GetSize() == 3)
 		{
 			auto dy = m_vecPickedCoord[1].y - m_vecPickedCoord[0].y;
 			auto dx = m_vecPickedCoord[1].x - m_vecPickedCoord[0].x;
@@ -168,7 +168,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	case IDC_RADIO_TRIROT:
 	{
 
-		if (m_vecPickedCoord.GetCount() == 3)
+		if (m_vecPickedCoord.GetSize() == 3)
 		{
 			CString strCoord;	
 
@@ -218,7 +218,7 @@ BOOL CAaronMathViewerDlg::OnInitDialog()
 	CDialogEx::OnInitDialog();
 
 	for (auto editID = IDC_EDIT_PICK1; editID <= IDC_EDIT_PICK6; editID++)
-		m_vecCoordEdits.push_back((CEdit*)(GetDlgItem(editID)));
+		m_vecCoordEdits.Add((CEdit*)(GetDlgItem(editID)));
 
 	return TRUE;
 }
@@ -319,8 +319,8 @@ void CAaronMathViewerDlg::ResetBoard()
 void CAaronMathViewerDlg::DrawMethod()
 {
 	CArray<CPoint> oPickedCrd;
-	oPickedCrd.SetSize(m_vecPickedCoord.GetCount());
-	for (int i = 0 ; i < oPickedCrd.GetCount(); i++)
+	oPickedCrd.SetSize(m_vecPickedCoord.GetSize());
+	for (int i = 0 ; i < oPickedCrd.GetSize(); i++)
 		oPickedCrd[i] = ToClientFromOthogonal(m_vecPickedCoord[i]);
 
 	std::vector<CPoint> oParamCrd(m_vecParamCoord);
@@ -331,19 +331,19 @@ void CAaronMathViewerDlg::DrawMethod()
 	{
 	case IDC_RADIO_PPC:
 	{
-		if (oPickedCrd.GetCount() > 1)
+		if (oPickedCrd.GetSize() > 1)
 			DrawLine(oPickedCrd[0], oPickedCrd[1]);
 
-		if (oPickedCrd.GetCount() > 2 && oParamCrd.size() > 0)
+		if (oPickedCrd.GetSize() > 2 && oParamCrd.size() > 0)
 			DrawDotLine(oPickedCrd[2], oParamCrd[0]);
 
-		if (oPickedCrd.GetCount() > 0)
+		if (oPickedCrd.GetSize() > 0)
 			DrawDotCircle(oPickedCrd[0]);
 
-		if (oPickedCrd.GetCount() > 1)
+		if (oPickedCrd.GetSize() > 1)
 			DrawDotCircle(oPickedCrd[1]);
 
-		if (oPickedCrd.GetCount() > 2)
+		if (oPickedCrd.GetSize() > 2)
 			DrawDotCircle(oPickedCrd[2]);
 
 		if (oParamCrd.size() > 0)
@@ -353,10 +353,10 @@ void CAaronMathViewerDlg::DrawMethod()
 	}
 	case IDC_RADIO_TRIROT:
 	{
-		for (int i = 0; i < oPickedCrd.GetCount(); i++)
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
 			DrawDotCircle(oPickedCrd[i]);
 
-		if (oPickedCrd.GetCount() == 3)
+		if (oPickedCrd.GetSize() == 3)
 			DrawPolyLine(oPickedCrd, 0, 2);
 
 		break;
@@ -508,7 +508,7 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 			{
 				auto itr = m_mPickedCoordCount.find(m_uMethodID);
-				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.GetCount() < (size_t)itr->second)
+				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.GetSize() < (size_t)itr->second)
 				{
 					m_vecPickedCoord.Add(othogonalPnt);
 					m_vecDoubleCoord.push_back(othogonalPnt);
@@ -535,7 +535,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonRot()
 	auto degree = _wtoi(degreeStr);
 	auto radian = degree * (M_PI / 180.0);
 
-	for (int i = 0; i < m_vecPickedCoord.GetCount(); i++)
+	for (int i = 0; i < m_vecPickedCoord.GetSize(); i++)
 	{
 		auto x = m_vecDoubleCoord[i].x;
 		auto y = m_vecDoubleCoord[i].y;

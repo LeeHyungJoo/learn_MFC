@@ -61,10 +61,9 @@ public:
 	UINT m_uMethodID;
 	
 	CArray<CPoint> m_vecPickedCoord;
-	//std::vector<CPoint> m_vecPickedCoord;
 	std::vector<CPointDouble> m_vecDoubleCoord;	//TODO: Param 좌표로 합칠것 (구조체)
 	std::vector<CPoint> m_vecParamCoord;		//TODO: Param 좌표로 합칠것 (구조체)
-	std::vector<CEdit*> m_vecCoordEdits;
+	CPtrArray m_vecCoordEdits;
 	std::unordered_map<UINT, INT> m_mPickedCoordCount;
 
 	CStatic m_pcBoard;
