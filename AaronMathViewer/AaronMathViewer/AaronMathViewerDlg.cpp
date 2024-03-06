@@ -25,13 +25,13 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 
 void CAaronMathViewerDlg::TESTPICKCOORDS()
 {
-	m_vecPickedCoord.push_back(CPoint(100, 200));
+	m_vecPickedCoord.Add(CPoint(100, 200));
 	UpdatePickCoords();
 
-	m_vecPickedCoord.push_back(CPoint(200, 400));
+	m_vecPickedCoord.Add(CPoint(200, 400));
 	UpdatePickCoords();
 
-	m_vecPickedCoord.push_back(CPoint(150, 300));
+	m_vecPickedCoord.Add(CPoint(150, 300));
 	UpdatePickCoords();
 }
 
@@ -47,7 +47,7 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 
 void CAaronMathViewerDlg::ResetPicking()
 {
-	m_vecPickedCoord.clear();
+	m_vecPickedCoord.RemoveAll();
 	m_lbxExpr.ResetContent();
 
 	for (size_t i = 0; i < m_vecCoordEdits.size(); i++)
@@ -76,7 +76,7 @@ BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const 
 
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
-	for (size_t i = 0; i < m_vecPickedCoord.size(); i++)
+	for (size_t i = 0; i < m_vecPickedCoord.GetCount(); i++)
 	{
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
@@ -87,7 +87,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	{
 	case IDC_RADIO_PPC:
 	{
-		if (m_vecPickedCoord.size() == 2)
+		if (m_vecPickedCoord.GetCount() == 2)
 		{
 			CString expr;
 			Formatter::LineQuation(
@@ -100,7 +100,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			m_lbxExpr.AddString(expr);
 		}
-		else if (m_vecPickedCoord.size() == 3)
+		else if (m_vecPickedCoord.GetCount() == 3)
 		{
 			auto dy = m_vecPickedCoord[1].y - m_vecPickedCoord[0].y;
 			auto dx = m_vecPickedCoord[1].x - m_vecPickedCoord[0].x;
@@ -138,7 +138,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 				if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
 				{
-					m_vecPickedCoord.pop_back();
+					m_vecPickedCoord.RemoveAt(m_vecPickedCoord.GetUpperBound());
 					AfxMessageBox(_T("직선 위에 있는 점에서는 수선을 내릴 수 없습니다 !\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
 					break;
 				}
@@ -168,7 +168,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	case IDC_RADIO_TRIROT:
 	{
 
-		if (m_vecPickedCoord.size() == 3)
+		if (m_vecPickedCoord.GetCount() == 3)
 		{
 			CString strCoord;	
 
@@ -183,7 +183,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
 			{
-				m_vecPickedCoord.pop_back();
+				m_vecPickedCoord.RemoveAt(m_vecPickedCoord.GetUpperBound());
 				m_vecDoubleCoord.pop_back();
 				AfxMessageBox(_T("앞의 두 점을 지나는 직선 위의 점은 선택할 수 없습니다!\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
 				break;
@@ -318,9 +318,10 @@ void CAaronMathViewerDlg::ResetBoard()
 
 void CAaronMathViewerDlg::DrawMethod()
 {
-	std::vector<CPoint> oPickedCrd(m_vecPickedCoord);
-	for (auto& oc : oPickedCrd)
-		oc = ToClientFromOthogonal(oc);
+	CArray<CPoint> oPickedCrd;
+	oPickedCrd.SetSize(m_vecPickedCoord.GetCount());
+	for (int i = 0 ; i < oPickedCrd.GetCount(); i++)
+		oPickedCrd[i] = ToClientFromOthogonal(m_vecPickedCoord[i]);
 
 	std::vector<CPoint> oParamCrd(m_vecParamCoord);
 	for (auto& oc : oParamCrd)
@@ -330,19 +331,19 @@ void CAaronMathViewerDlg::DrawMethod()
 	{
 	case IDC_RADIO_PPC:
 	{
-		if (oPickedCrd.size() > 1)
+		if (oPickedCrd.GetCount() > 1)
 			DrawLine(oPickedCrd[0], oPickedCrd[1]);
 
-		if (oPickedCrd.size() > 2 && oParamCrd.size() > 0)
+		if (oPickedCrd.GetCount() > 2 && oParamCrd.size() > 0)
 			DrawDotLine(oPickedCrd[2], oParamCrd[0]);
 
-		if (oPickedCrd.size() > 0)
+		if (oPickedCrd.GetCount() > 0)
 			DrawDotCircle(oPickedCrd[0]);
 
-		if (oPickedCrd.size() > 1)
+		if (oPickedCrd.GetCount() > 1)
 			DrawDotCircle(oPickedCrd[1]);
 
-		if (oPickedCrd.size() > 2)
+		if (oPickedCrd.GetCount() > 2)
 			DrawDotCircle(oPickedCrd[2]);
 
 		if (oParamCrd.size() > 0)
@@ -352,11 +353,10 @@ void CAaronMathViewerDlg::DrawMethod()
 	}
 	case IDC_RADIO_TRIROT:
 	{
-		if (oPickedCrd.size() > 0)
-			for (const auto& oc : oPickedCrd)
-				DrawDotCircle(oc);
+		for (int i = 0; i < oPickedCrd.GetCount(); i++)
+			DrawDotCircle(oPickedCrd[i]);
 
-		if (oPickedCrd.size() == 3)
+		if (oPickedCrd.GetCount() == 3)
 			DrawPolyLine(oPickedCrd, 0, 2);
 
 		break;
@@ -414,7 +414,7 @@ void CAaronMathViewerDlg::DrawSpecificDotCircle(const CPoint & point)
 	boardDC->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawPolyLine(const std::vector<CPoint>& points, INT startIdx, INT endIdx)
+void CAaronMathViewerDlg::DrawPolyLine(const CArray<CPoint>& points, INT startIdx, INT endIdx)
 {
 	if (endIdx - startIdx < 2)
 		return;
@@ -508,9 +508,9 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			else
 			{
 				auto itr = m_mPickedCoordCount.find(m_uMethodID);
-				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.size() < (size_t)itr->second)
+				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.GetCount() < (size_t)itr->second)
 				{
-					m_vecPickedCoord.push_back(othogonalPnt);
+					m_vecPickedCoord.Add(othogonalPnt);
 					m_vecDoubleCoord.push_back(othogonalPnt);
 					UpdatePickCoords();
 				}
@@ -535,7 +535,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonRot()
 	auto degree = _wtoi(degreeStr);
 	auto radian = degree * (M_PI / 180.0);
 
-	for (int i = 0; i < m_vecPickedCoord.size(); i++)
+	for (int i = 0; i < m_vecPickedCoord.GetCount(); i++)
 	{
 		auto x = m_vecDoubleCoord[i].x;
 		auto y = m_vecDoubleCoord[i].y;
