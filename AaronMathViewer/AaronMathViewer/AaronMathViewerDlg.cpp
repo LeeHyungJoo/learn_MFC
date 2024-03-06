@@ -50,18 +50,19 @@ void CAaronMathViewerDlg::ResetPicking()
 	m_vecPickedCoord.RemoveAll();
 	m_lbxExpr.ResetContent();
 
-	for (size_t i = 0; i < m_vecCoordEdits.GetSize(); i++)
+	INT cnt = 0;
+	for (INT i = 0; i < m_vecCoordEdits.GetSize(); i++)
 	{
 		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(L"");
-		auto itr = m_mPickedCoordCount.find(m_uMethodID);
-		static_cast<CEdit*>(m_vecCoordEdits[i])->EnableWindow(itr != m_mPickedCoordCount.end() && (size_t)itr->second > i);
+		m_mPickedCoordCount.Lookup(m_uMethodID, cnt);
+		static_cast<CEdit*>(m_vecCoordEdits[i])->EnableWindow(cnt > i);
 	}
 }
 
 void CAaronMathViewerDlg::ResetParamCoords()
 {
-	m_vecDoubleCoord.clear();
-	m_vecParamCoord.clear();
+	m_vecDoubleCoord.RemoveAll();
+	m_vecParamCoord.RemoveAll();
 }
 
 BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
@@ -76,7 +77,7 @@ BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const 
 
 void CAaronMathViewerDlg::UpdatePickCoords()
 {
-	for (size_t i = 0; i < m_vecPickedCoord.GetSize(); i++)
+	for (INT i = 0; i < m_vecPickedCoord.GetSize(); i++)
 	{
 		CString strCoord;
 		strCoord.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
@@ -116,7 +117,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 				m_lbxExpr.AddString(strCoord);
 
-				m_vecParamCoord.push_back(CPoint(m_vecPickedCoord[0].x, m_vecPickedCoord[2].y));
+				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[0].x, m_vecPickedCoord[2].y));
 			}
 			else if (dy == 0)
 			{
@@ -129,7 +130,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 				m_lbxExpr.AddString(strCoord);
 
-				m_vecParamCoord.push_back(CPoint(m_vecPickedCoord[2].x, m_vecPickedCoord[0].y));
+				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[2].x, m_vecPickedCoord[0].y));
 			}
 			else
 			{
@@ -160,7 +161,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				POINT tar;
 				tar.x = static_cast<LONG>(inter_x.GetValue());
 				tar.y = static_cast<LONG>(inter_y.GetValue());
-				m_vecParamCoord.push_back(CPoint(tar));
+				m_vecParamCoord.Add(CPoint(tar));
 			}
 		}
 		break;
@@ -184,7 +185,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
 			{
 				m_vecPickedCoord.RemoveAt(m_vecPickedCoord.GetUpperBound());
-				m_vecDoubleCoord.pop_back();
+				m_vecDoubleCoord.RemoveAt(m_vecDoubleCoord.GetUpperBound());
 				AfxMessageBox(_T("앞의 두 점을 지나는 직선 위의 점은 선택할 수 없습니다!\r\n다시 시도해주세요 ! "), MB_ICONWARNING | MB_OK);
 				break;
 			}
@@ -323,9 +324,10 @@ void CAaronMathViewerDlg::DrawMethod()
 	for (int i = 0 ; i < oPickedCrd.GetSize(); i++)
 		oPickedCrd[i] = ToClientFromOthogonal(m_vecPickedCoord[i]);
 
-	std::vector<CPoint> oParamCrd(m_vecParamCoord);
-	for (auto& oc : oParamCrd)
-		oc = ToClientFromOthogonal(oc);
+	CArray<CPoint> oParamCrd;
+	oParamCrd.SetSize(m_vecPickedCoord.GetSize());
+	for (int i = 0; i < oParamCrd.GetSize(); i++)
+		oParamCrd[i] = ToClientFromOthogonal(m_vecParamCoord[i]);
 
 	switch (m_uMethodID)
 	{
@@ -334,7 +336,7 @@ void CAaronMathViewerDlg::DrawMethod()
 		if (oPickedCrd.GetSize() > 1)
 			DrawLine(oPickedCrd[0], oPickedCrd[1]);
 
-		if (oPickedCrd.GetSize() > 2 && oParamCrd.size() > 0)
+		if (oPickedCrd.GetSize() > 2 && oParamCrd.GetSize() > 0)
 			DrawDotLine(oPickedCrd[2], oParamCrd[0]);
 
 		if (oPickedCrd.GetSize() > 0)
@@ -346,7 +348,7 @@ void CAaronMathViewerDlg::DrawMethod()
 		if (oPickedCrd.GetSize() > 2)
 			DrawDotCircle(oPickedCrd[2]);
 
-		if (oParamCrd.size() > 0)
+		if (oParamCrd.GetSize() > 0)
 			DrawSpecificDotCircle(oParamCrd[0]);
 
 		break;
@@ -507,11 +509,12 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			}
 			else
 			{
-				auto itr = m_mPickedCoordCount.find(m_uMethodID);
-				if (itr != m_mPickedCoordCount.end() && m_vecPickedCoord.GetSize() < (size_t)itr->second)
+				INT cnt = 0;
+				m_mPickedCoordCount.Lookup(m_uMethodID, cnt);
+				if (m_vecPickedCoord.GetSize() < cnt)
 				{
 					m_vecPickedCoord.Add(othogonalPnt);
-					m_vecDoubleCoord.push_back(othogonalPnt);
+					m_vecDoubleCoord.Add(CPointDouble(othogonalPnt));
 					UpdatePickCoords();
 				}
 				else

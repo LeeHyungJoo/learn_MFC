@@ -3,8 +3,8 @@
 
 struct CPointDouble
 {
-	CPointDouble(CPoint point) : x(point.x), y(point.y) {}
-	CPointDouble(double x, double y) :x(x), y(y) {}
+	CPointDouble() : x(0), y(0) {};
+	CPointDouble(const CPoint& point) : x(point.x), y(point.y) {}
 	double x;
 	double y;
 };
@@ -61,16 +61,16 @@ public:
 	UINT m_uMethodID;
 	
 	CArray<CPoint> m_vecPickedCoord;
-	std::vector<CPointDouble> m_vecDoubleCoord;	//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
-	std::vector<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
+	CArray<CPointDouble> m_vecDoubleCoord;	//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
+	CArray<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 	CPtrArray m_vecCoordEdits;
-	std::unordered_map<UINT, INT> m_mPickedCoordCount;
+	CMap<UINT, UINT, INT, INT> m_mPickedCoordCount;
 
 	CStatic m_pcBoard;
 	CStatic m_stCoord;
 
 	CListBox m_lbxExpr;
-	std::vector<BOOL> m_bExprDecimal;			//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
+	CArray<BOOL> m_bExprDecimal;			//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 
 	CEdit m_edtDegree;
 	CButton m_btnRot;

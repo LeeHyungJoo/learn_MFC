@@ -166,7 +166,7 @@ BOOL MainDlg::Deserialize(const CString& filePath)
 		return FALSE;
 
 	m_urbtActiveIdx = setting.m_urbtActiveIdx;
-	for (int i = 0; i < m_vcbxOpt.size(); i++)
+	for (size_t i = 0; i < m_vcbxOpt.size(); i++)
 		m_vcbxOpt[i]->SetCheck(setting.m_ubitOptIdx & (1 << i));
 	m_uCnt = setting.m_uCnt;
 	m_uElapsed = setting.m_uElapsed;
@@ -181,7 +181,7 @@ BOOL MainDlg::Serialize(const CString & filePath)
 	DAO setting;
 	setting.m_urbtActiveIdx = m_urbtActiveIdx;
 	UINT bit = 0U;
-	for (int i = 0; i < m_vcbxOpt.size(); i++)
+	for (size_t i = 0; i < m_vcbxOpt.size(); i++)
 		if (m_vcbxOpt[i]->GetCheck())
 			bit |= (1 << i);
 	setting.m_ubitOptIdx = bit;
