@@ -53,6 +53,7 @@ public:
 	afx_msg void OnPaint();
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedButtonRot();
 	afx_msg void OnBnClickedButtonReset();
 	//afx_msg void OnLbnDblclkListView();
 
@@ -74,5 +75,4 @@ public:
 
 	CEdit m_edtDegree;
 	CButton m_btnRot;
-	afx_msg void OnBnClickedButtonRot();
 };
