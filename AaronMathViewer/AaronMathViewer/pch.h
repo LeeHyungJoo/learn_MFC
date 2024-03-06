@@ -13,9 +13,7 @@
 #include "RationalNum.h"
 #include <cmath>
 #include <numeric>
-#include <vector>
-#include <unordered_map>
 
-constexpr DOUBLE M_PI = 3.1415926535;
+constexpr DOUBLE M_PI = 3.141592653589793;
 
 #endif //PCH_H

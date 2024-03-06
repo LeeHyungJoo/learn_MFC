@@ -23,6 +23,11 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	m_mPickedCoordCount[IDC_RADIO5] = -1;
 }
 
+CAaronMathViewerDlg::~CAaronMathViewerDlg()
+{
+	//m_vecCoordEdits.RemoveAll();
+}
+
 void CAaronMathViewerDlg::TESTPICKCOORDS()
 {
 	m_vecPickedCoord.Add(CPoint(100, 200));
@@ -325,7 +330,7 @@ void CAaronMathViewerDlg::DrawMethod()
 		oPickedCrd[i] = ToClientFromOthogonal(m_vecPickedCoord[i]);
 
 	CArray<CPoint> oParamCrd;
-	oParamCrd.SetSize(m_vecPickedCoord.GetSize());
+	oParamCrd.SetSize(m_vecParamCoord.GetSize());
 	for (int i = 0; i < oParamCrd.GetSize(); i++)
 		oParamCrd[i] = ToClientFromOthogonal(m_vecParamCoord[i]);
 
@@ -433,6 +438,8 @@ void CAaronMathViewerDlg::DrawPolyLine(const CArray<CPoint>& points, INT startId
 
 	boardDC->Polyline(pntArr, count);
 	boardDC->SelectObject(*pOldPen);
+
+	delete[] pntArr;
 }
 
 void CAaronMathViewerDlg::DrawOthogonal()

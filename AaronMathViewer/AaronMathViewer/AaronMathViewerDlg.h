@@ -13,6 +13,7 @@ class CAaronMathViewerDlg : public CDialogEx
 {
 public:
 	CAaronMathViewerDlg(CWnd* pParent = nullptr);	// standard constructor
+	virtual ~CAaronMathViewerDlg();
 
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_AARONMATHVIEWER_DIALOG };
