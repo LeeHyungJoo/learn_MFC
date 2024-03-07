@@ -31,7 +31,7 @@ private:
 	void ResetParamCoords();
 
 public:
-	BOOL IsScreenPointInRect(const CPoint& screenPoint, const CRect& wRect) const;
+	BOOL IsPointInBoard(const CPoint& clientPnt) const;
 	void UpdatePickCoords();
 	void OnMethodRadioChanged(UINT ID);
 

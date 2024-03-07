@@ -61,13 +61,16 @@ void CAaronMathViewerDlg::ResetParamCoords()
 	m_iRotDegree = 0;
 }
 
-BOOL CAaronMathViewerDlg::IsScreenPointInRect(const CPoint & screenPoint, const CRect & wRect) const
+BOOL CAaronMathViewerDlg::IsPointInBoard(const CPoint & clientPnt) const
 {
+	CRect cRect;
+	m_pcBoard.GetClientRect(&cRect);
+
 	BOOL bIn = true;
-	bIn &= screenPoint.y <= wRect.bottom;
-	bIn &= screenPoint.y >= wRect.top;
-	bIn &= screenPoint.x <= wRect.right;
-	bIn &= screenPoint.x >= wRect.left;
+	bIn &= clientPnt.y <= cRect.bottom;
+	bIn &= clientPnt.y >= cRect.top;
+	bIn &= clientPnt.x <= cRect.right;
+	bIn &= clientPnt.x >= cRect.left;
 	return bIn;
 }
 
@@ -488,12 +491,11 @@ void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	CPoint screenPoint = point;
 	ClientToScreen(&screenPoint);
 
-	CRect wRect;
-	m_pcBoard.GetWindowRect(&wRect);
+	CPoint clientPnt = screenPoint;
+	m_pcBoard.ScreenToClient(&clientPnt);
 
-	if (IsScreenPointInRect(screenPoint, wRect))
+	if (IsPointInBoard(clientPnt))
 	{
-		auto clientPnt = CPoint(screenPoint.x - wRect.left, screenPoint.y - wRect.top);
 		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
 		CString strCoord;
@@ -509,12 +511,11 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	CPoint screenPoint = point;
 	ClientToScreen(&screenPoint);
 
-	CRect wRect;
-	m_pcBoard.GetWindowRect(&wRect);
+	CPoint clientPnt = screenPoint;
+	m_pcBoard.ScreenToClient(&clientPnt);
 
-	if (IsScreenPointInRect(screenPoint, wRect))
+	if (IsPointInBoard(clientPnt))
 	{
-		auto clientPnt = CPoint(screenPoint.x - wRect.left, screenPoint.y - wRect.top);
 		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
 		if (m_uMethodID == 0)

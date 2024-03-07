@@ -5,23 +5,37 @@
 using namespace std;
 
 
-class Parent
-{
-public:
-	void Print() { cout << "Parent Print" << endl; }
-};
+//class Parent
+//{
+//public:
+//	virtual void Print() { cout << "Parent Print" << endl; }
+//};
+//
+//class Child : public Parent
+//{
+//public:
+//	virtual void Print() { cout << "Child Print" << endl; }
+//};
 
-class Child : public Parent
+const int& Test()
 {
-};
+	int ret = 1234;
+
+	return ret;
+}
+
+void TestT
 
 int main()
 {
-	auto p = Parent();
-	auto c = Child();
+	//Parent* ptr;
+	//Parent p = Parent();
+	//Child c = Child();
 
-	p.Print();
-	c.Print();
+	//ptr = &p;
+	//ptr->Print();
 
+	//ptr = &c;
+	//ptr->Print();
 	return 0;
 }
