@@ -510,7 +510,7 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	CPoint screenPoint = point;
 	ClientToScreen(&screenPoint);
-
+	
 	CPoint clientPnt = screenPoint;
 	m_pcBoard.ScreenToClient(&clientPnt);
 
@@ -518,11 +518,7 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	{
 		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
-		if (m_uMethodID == 0)
-		{
-			AfxMessageBox(_T("먼저 함수 모드를 선택하십시오. !"), MB_ICONWARNING | MB_OK);
-		}
-		else
+		if (m_uMethodID != 0)
 		{
 			INT cnt = 0;
 			m_mPickedCoordCount.Lookup(m_uMethodID, cnt);
@@ -536,6 +532,10 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			{
 				AfxMessageBox(_T("이미 필요한 좌표를 모두 입력하셨습니다. !"), MB_ICONWARNING | MB_OK);
 			}
+		}
+		else
+		{
+			AfxMessageBox(_T("먼저 함수 모드를 선택하십시오. !"), MB_ICONWARNING | MB_OK);
 		}
 	}
 
