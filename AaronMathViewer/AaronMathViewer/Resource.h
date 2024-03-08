@@ -17,9 +17,9 @@
 #define IDC_BUTTON_RESET                1010
 #define IDC_RADIO_PPC                   1013
 #define IDC_RADIO_TRIROT                1014
-#define IDC_RADIO3                      1015
-#define IDC_RADIO4                      1016
-#define IDC_RADIO5                      1017
+#define IDC_RADIO_LSMLINE               1015
+#define IDC_RADIO_LSMCIRCLE             1016
+#define IDC_RADIO_LSMPARABO             1017
 #define IDC_CHECK_FORMAT                1018
 #define IDC_EDIT_DEGREE                 1020
 #define IDC_BUTTON_ROT                  1022

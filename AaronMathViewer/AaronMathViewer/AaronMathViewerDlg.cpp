@@ -18,9 +18,9 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 {
 	m_mPickedCoordCount[IDC_RADIO_PPC] = 3U;
 	m_mPickedCoordCount[IDC_RADIO_TRIROT] = 3U;
-	m_mPickedCoordCount[IDC_RADIO3] = -1;
-	m_mPickedCoordCount[IDC_RADIO4] = -1;
-	m_mPickedCoordCount[IDC_RADIO5] = -1;
+	m_mPickedCoordCount[IDC_RADIO_LSMLINE] = 500U;
+	m_mPickedCoordCount[IDC_RADIO_LSMCIRCLE] = 500U;
+	m_mPickedCoordCount[IDC_RADIO_LSMPARABO] = 500U;
 }
 
 CAaronMathViewerDlg::~CAaronMathViewerDlg()
@@ -81,7 +81,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	{
 		CString show;
 		show.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
-		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(show);
+		static_cast<CEdit*>(m_vecCoordEdits[i % 6])->SetWindowText(show);
 	}
 
 	switch (m_uMethodID)
@@ -200,6 +200,20 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		}
 		break;
 	}
+	case IDC_RADIO_LSMLINE:
+	{
+		if (m_vecDoubleCoord.GetSize() > 2)
+		{
+			INT64 n = m_vecDoubleCoord.GetSize();
+			double m_arg1, m_arg2, m_arg3, m_arg4;
+			double c_arg1, c_arg2, c_arg3, c_arg4;
+
+
+
+		}
+
+		break;
+	}
 	}
 
 	Invalidate();
@@ -210,7 +224,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONDOWN()
-	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO5, OnMethodRadioChanged)
+	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO_LSMPARABO, OnMethodRadioChanged)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
 	//ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
 	ON_BN_CLICKED(IDC_BUTTON_ROT, &CAaronMathViewerDlg::OnBnClickedButtonRot)
@@ -273,6 +287,9 @@ const CPoint CAaronMathViewerDlg::ToOthogonalFromClient(const CPoint & client)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
+	case IDC_RADIO_LSMLINE:
+	case IDC_RADIO_LSMCIRCLE:
+	case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.x -= cRect.right / 2;
@@ -291,6 +308,9 @@ const CPoint CAaronMathViewerDlg::ToClientFromOthogonal(const CPoint & othogonal
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
+	case IDC_RADIO_LSMLINE:
+	case IDC_RADIO_LSMCIRCLE:
+	case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.y *= -1;
@@ -308,9 +328,9 @@ void CAaronMathViewerDlg::ResetBoard(CPaintDC* dc)
 	{
 	case IDC_RADIO_PPC:
 	case IDC_RADIO_TRIROT:
-	case IDC_RADIO3:
-	case IDC_RADIO4:
-	case IDC_RADIO5:
+	case IDC_RADIO_LSMLINE:
+	case IDC_RADIO_LSMCIRCLE:
+	case IDC_RADIO_LSMPARABO:
 	{
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
@@ -453,6 +473,9 @@ void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
+	case IDC_RADIO_LSMLINE:
+	case IDC_RADIO_LSMCIRCLE:
+	case IDC_RADIO_LSMPARABO:
 	{
 		CPen dotPen(PS_DOT, 1, RGB(0, 0, 0));
 		CPen* pOldPen = dc->SelectObject(&dotPen);
