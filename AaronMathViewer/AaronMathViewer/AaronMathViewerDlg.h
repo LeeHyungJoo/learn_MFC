@@ -41,8 +41,8 @@ public:
 	void DrawDotLine(CPaintDC* dc, const CPoint& start, const CPoint& end);
 	void DrawDotCircle(CPaintDC* dc, const CPoint& point);
 	void DrawSpecificDotCircle(CPaintDC* dc, const CPoint& point);
-	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT startIdx, INT endIdx);
-	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx);
+	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT64 startIdx, INT64 endIdx);
+	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx);
 	void DrawOthogonal(CPaintDC* dc);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);
@@ -65,7 +65,7 @@ public:
 	CPtrArray m_vecCoordEdits;
 	CMap<UINT, UINT, INT, INT> m_mPickedCoordCount;
 
-	CArray<std::pair<POINT*, INT>> m_points;
+	CArray<std::pair<POINT*, INT64>> m_points;
 	INT m_iRotDegree;
 
 	CStatic m_pcBoard;

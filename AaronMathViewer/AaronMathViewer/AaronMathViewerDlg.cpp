@@ -25,7 +25,8 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 
 CAaronMathViewerDlg::~CAaronMathViewerDlg()
 {
-
+	m_vecCoordEdits.RemoveAll();
+	m_points.RemoveAll();
 }
 
 void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
@@ -78,9 +79,9 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 {
 	for (INT i = 0; i < m_vecPickedCoord.GetSize(); i++)
 	{
-		CString strCoord;
-		strCoord.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
-		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(strCoord);
+		CString show;
+		show.Format(_T("(%d, %d)"), m_vecPickedCoord[i].x, m_vecPickedCoord[i].y);
+		static_cast<CEdit*>(m_vecCoordEdits[i])->SetWindowText(show);
 	}
 
 	switch (m_uMethodID)
@@ -89,16 +90,16 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 	{
 		if (m_vecPickedCoord.GetSize() == 2)
 		{
-			CString expr;
+			CString show;
 			Formatter::LineQuation(
 				L"직선 방정식", 
 				m_vecPickedCoord[1].x - m_vecPickedCoord[0].x,
 				m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, 
 				m_vecPickedCoord[0].x,
 				m_vecPickedCoord[0].y,
-				&expr);
+				&show);
 
-			m_lbxExpr.AddString(expr);
+			m_lbxExpr.AddString(show);
 		}
 		else if (m_vecPickedCoord.GetSize() == 3)
 		{
@@ -107,27 +108,23 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			if (dx == 0)
 			{
-				CString expr;
-				Formatter::HorizontalLineQuation(L"수선 방정식", m_vecPickedCoord[2].y, &expr);
-				m_lbxExpr.AddString(expr);
+				CString show;
+				Formatter::HorizontalLineQuation(L"수선 방정식", m_vecPickedCoord[2].y, &show);
+				m_lbxExpr.AddString(show);
 
-				CString strCoord;
-				Formatter::Coord(L"교점", m_vecPickedCoord[0].x, m_vecPickedCoord[2].y, &strCoord);
-
-				m_lbxExpr.AddString(strCoord);
+				Formatter::Coord(L"교점", m_vecPickedCoord[0].x, m_vecPickedCoord[2].y, &show);
+				m_lbxExpr.AddString(show);
 
 				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[0].x, m_vecPickedCoord[2].y));
 			}
 			else if (dy == 0)
 			{
-				CString expr;
-				Formatter::VerticalLineQuation(L"수선 방정식", m_vecPickedCoord[2].x, &expr);
-				m_lbxExpr.AddString(expr);
+				CString show;
+				Formatter::VerticalLineQuation(L"수선 방정식", m_vecPickedCoord[2].x, &show);
+				m_lbxExpr.AddString(show);
 
-				CString strCoord;
-				Formatter::Coord(L"교점", m_vecPickedCoord[2].x, m_vecPickedCoord[0].y, &strCoord);
-
-				m_lbxExpr.AddString(strCoord);
+				Formatter::Coord(L"교점", m_vecPickedCoord[2].x, m_vecPickedCoord[0].y, &show);
+				m_lbxExpr.AddString(show);
 
 				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[2].x, m_vecPickedCoord[0].y));
 			}
@@ -146,16 +143,15 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
 				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
 
-				CString expr;
-				Formatter::LineQuation(L"수선 방정식", im, ic, &expr);
-				m_lbxExpr.AddString(expr);
+				CString show;
+				Formatter::LineQuation(L"수선 방정식", im, ic, &show);
+				m_lbxExpr.AddString(show);
 
-				CString strCoord;
 				auto inter_x = RationalNum(ic - c, m - im);
 				auto inter_y = m * inter_x + c;
-				Formatter::Coord(L"교점", inter_x, inter_y, &strCoord);
 
-				m_lbxExpr.AddString(strCoord);
+				Formatter::Coord(L"교점", inter_x, inter_y, &show);
+				m_lbxExpr.AddString(show);
 
 				POINT tar;
 				tar.x = static_cast<LONG>(inter_x.GetValue());
@@ -174,7 +170,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				m_bFirstEnter = false;
 				m_iRotDegree = 0;
 
-				INT count = m_vecDoubleCoord.GetSize() + 1;
+				INT64 count = m_vecDoubleCoord.GetSize() + 1;
 				POINT* pntArr = new POINT[count];
 
 				for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
@@ -184,7 +180,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				m_points.Add(std::make_pair(pntArr, count));
 			}
 
-			CString strCoord;
+			CString show;
 			auto radian = (DOUBLE)m_iRotDegree * (M_PI / 180.0);
 
 			for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
@@ -195,8 +191,9 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				double dcx = x * std::cos(radian) - y * std::sin(radian);
 				double dcy = x * std::sin(radian) + y * std::cos(radian);
 
-				Formatter::Coord(L"", i ,dcx, dcy, &strCoord);
-				m_lbxExpr.AddString(strCoord);
+				
+				Formatter::Coord(L"", i ,dcx, dcy, &show);
+				m_lbxExpr.AddString(show);
 			}
 
 			m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
@@ -419,7 +416,7 @@ void CAaronMathViewerDlg::DrawSpecificDotCircle(CPaintDC* dc, const CPoint & poi
 	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT startIdx, INT endIdx)
+void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT64 startIdx, INT64 endIdx)
 {
 	if (endIdx - startIdx < 2)
 		return;
@@ -427,26 +424,26 @@ void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& point
 	CPen dotPen(PS_SOLID, 1, RGB(120, 0, 255));
 	CPen* pOldPen = dc->SelectObject(&dotPen);
 
-	INT count = endIdx - startIdx + 2;
+	INT64 count = endIdx - startIdx + 2;
 	POINT* pntArr = new POINT[count];
-	for (INT i = startIdx; i <= endIdx; i++)
+	for (INT64 i = startIdx; i <= endIdx; i++)
 		pntArr[i] = points[i];
 	pntArr[count - 1] = points[startIdx];
 
-	dc->Polyline(pntArr, count);
+	dc->Polyline(pntArr, (INT)count);
 	dc->SelectObject(*pOldPen);
 
 	delete[] pntArr;
 }
 
-void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx)
+void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx)
 {
 	CPen pen(PS_DOT, 1, RGB(200, 200, 200));
 
 	CPen* pOldPen = dc->SelectObject(&pen);
 
-	for (INT i = startIdx; i <= endIdx; i++)
-		dc->Polyline(points[i].first, points[i].second);
+	for (INT64 i = startIdx; i <= endIdx; i++)
+		dc->Polyline(points[i].first, (INT)points[i].second);
 
 	dc->SelectObject(*pOldPen);
 }
@@ -489,9 +486,9 @@ void CAaronMathViewerDlg::OnMouseMove(UINT nFlags, CPoint point)
 	{
 		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
 
-		CString strCoord;
-		strCoord.Format(_T("(%d, %d)"), othogonalPnt.x, othogonalPnt.y);
-		m_stCoord.SetWindowText(strCoord);
+		CString show;
+		show.Format(_T("(%d, %d)"), othogonalPnt.x, othogonalPnt.y);
+		m_stCoord.SetWindowText(show);
 	}
 
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -545,7 +542,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonRot()
 	m_iRotDegree %= 360;
 
 	auto radian = (DOUBLE)m_iRotDegree * (M_PI / 180.0);
-	INT count = m_vecDoubleCoord.GetSize() + 1;
+	INT64 count = m_vecDoubleCoord.GetSize() + 1;
 	POINT* pntArr = new POINT[count];
 
 	for (int i = 0; i < m_vecDoubleCoord.GetSize(); i++)
@@ -556,7 +553,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonRot()
 		double dcx = x * std::cos(radian) - y * std::sin(radian);
 		double dcy = x * std::sin(radian) + y * std::cos(radian);
 
-		auto cp = CPoint(dcx, dcy);
+		auto cp = CPoint((LONG)dcx, (LONG)dcy);
 
 		m_vecPickedCoord[i] = cp;
 		pntArr[i] = ToClientFromOthogonal(cp);

@@ -24,8 +24,6 @@ const int& Test()
 	return ret;
 }
 
-void TestT
-
 int main()
 {
 	//Parent* ptr;
