@@ -188,8 +188,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				auto x = m_vecDoubleCoord[i].x;
 				auto y = m_vecDoubleCoord[i].y;
 
-				double dcx = x * std::cos(radian) - y * std::sin(radian);
-				double dcy = x * std::sin(radian) + y * std::cos(radian);
+				DOUBLE dcx = x * std::cos(radian) - y * std::sin(radian);
+				DOUBLE dcy = x * std::sin(radian) + y * std::cos(radian);
 
 				
 				Formatter::Coord(L"", i ,dcx, dcy, &show);
@@ -205,11 +205,39 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		if (m_vecDoubleCoord.GetSize() > 2)
 		{
 			INT64 n = m_vecDoubleCoord.GetSize();
-			double m_arg1, m_arg2, m_arg3, m_arg4;
-			double c_arg1, c_arg2, c_arg3, c_arg4;
+			DOUBLE A11 = 0, A12 = 0, A21 = 0, A22 = 0;
+			DOUBLE B11 = 0, B21 = 0;
 
+			for (INT64 i = 0; i < n; i++)
+			{
+				A11 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].x;
+				A12 += m_vecDoubleCoord[i].x;
+				A21 += m_vecDoubleCoord[i].x;
+				A22 += (i + 1);
 
+				B11 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y;
+				B21 += m_vecDoubleCoord[i].y;
+			}
 
+			DOUBLE detA = 1 / (A11 * A22 - A12 * A21);
+			DOUBLE inv_A11 = 0, inv_A12 = 0, inv_A21 = 0, inv_A22 = 0;
+
+			inv_A11 = detA * +A22;
+			inv_A12 = detA * -A21;
+			inv_A21 = detA * -A12;
+			inv_A22 = detA * +A11;
+
+			DOUBLE m = inv_A11 * B11 + inv_A12 * B21;
+			DOUBLE c = inv_A21 * B11 + inv_A22 * B21;
+
+			CString show;
+			Formatter::LineQuation(
+				L"ÃÖ¼Ò ÀÚ½Â½Ä",
+				m,
+				c,
+				&show);
+
+			m_lbxExpr.AddString(show);
 		}
 
 		break;
