@@ -233,9 +233,11 @@ void CAaronMathViewerDlg::OnPaint()
 {
 	CDialogEx::OnPaint();
 
-	ResetBoard();
-	DrawMethod();
-	DrawOthogonal();
+	CPaintDC dc(&m_pcBoard);
+
+	ResetBoard(&dc);
+	DrawMethod(&dc);
+	DrawOthogonal(&dc);
 }
 
 void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
@@ -263,6 +265,8 @@ void CAaronMathViewerDlg::OnMethodRadioChanged(UINT ID)
 		m_btnRot.EnableWindow(TRUE);
 		break;
 	}
+
+	Invalidate();
 }
 
 const CPoint CAaronMathViewerDlg::ToOthogonalFromClient(const CPoint & client)
@@ -301,9 +305,8 @@ const CPoint CAaronMathViewerDlg::ToClientFromOthogonal(const CPoint & othogonal
 	return pt;
 }
 
-void CAaronMathViewerDlg::ResetBoard()
+void CAaronMathViewerDlg::ResetBoard(CPaintDC* dc)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_PPC:
@@ -314,7 +317,7 @@ void CAaronMathViewerDlg::ResetBoard()
 	{
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
-		boardDC->FillSolidRect(cRect, RGB(255, 255, 255));
+		dc->FillSolidRect(cRect, RGB(255, 255, 255));
 		break;
 	}
 	default:
@@ -322,7 +325,7 @@ void CAaronMathViewerDlg::ResetBoard()
 	}
 }
 
-void CAaronMathViewerDlg::DrawMethod()
+void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 {
 	CArray<CPoint> oPickedCrd;
 	oPickedCrd.SetSize(m_vecPickedCoord.GetSize());
@@ -339,34 +342,34 @@ void CAaronMathViewerDlg::DrawMethod()
 	case IDC_RADIO_PPC:
 	{
 		if (oPickedCrd.GetSize() > 1)
-			DrawLine(oPickedCrd[0], oPickedCrd[1]);
+			DrawLine(dc, oPickedCrd[0], oPickedCrd[1]);
 
 		if (oPickedCrd.GetSize() > 2 && oParamCrd.GetSize() > 0)
-			DrawDotLine(oPickedCrd[2], oParamCrd[0]);
+			DrawDotLine(dc, oPickedCrd[2], oParamCrd[0]);
 
 		if (oPickedCrd.GetSize() > 0)
-			DrawDotCircle(oPickedCrd[0]);
+			DrawDotCircle(dc, oPickedCrd[0]);
 
 		if (oPickedCrd.GetSize() > 1)
-			DrawDotCircle(oPickedCrd[1]);
+			DrawDotCircle(dc, oPickedCrd[1]);
 
 		if (oPickedCrd.GetSize() > 2)
-			DrawDotCircle(oPickedCrd[2]);
+			DrawDotCircle(dc, oPickedCrd[2]);
 
 		if (oParamCrd.GetSize() > 0)
-			DrawSpecificDotCircle(oParamCrd[0]);
+			DrawSpecificDotCircle(dc, oParamCrd[0]);
 
 		break;
 	}
 	case IDC_RADIO_TRIROT:
 	{
 		for (int i = 0; i < oPickedCrd.GetSize(); i++)
-			DrawDotCircle(oPickedCrd[i]);
+			DrawDotCircle(dc, oPickedCrd[i]);
 
 		if (oPickedCrd.GetSize() == 3)
 		{
-			DrawPolyLines(m_points, 0, m_points.GetUpperBound());
-			DrawPolyLine(oPickedCrd, 0, 2);
+			DrawPolyLines(dc, m_points, 0, m_points.GetUpperBound());
+			DrawPolyLine(dc, oPickedCrd, 0, 2);
 		}
 
 		break;
@@ -374,64 +377,55 @@ void CAaronMathViewerDlg::DrawMethod()
 	}
 }
 
-void CAaronMathViewerDlg::DrawLine(const CPoint & start, const CPoint & end)
+void CAaronMathViewerDlg::DrawLine(CPaintDC* dc, const CPoint & start, const CPoint & end)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
-
 	CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
-	CPen* pOldPen = boardDC->SelectObject(&pen);
+	CPen* pOldPen = dc->SelectObject(&pen);
 
-	boardDC->MoveTo(start);
-	boardDC->LineTo(end);
+	dc->MoveTo(start);
+	dc->LineTo(end);
 
-	boardDC->SelectObject(*pOldPen);
+	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawDotLine(const CPoint & start, const CPoint & end)
+void CAaronMathViewerDlg::DrawDotLine(CPaintDC* dc, const CPoint & start, const CPoint & end)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
-
 	CPen dotPen(PS_DOT, 1, RGB(255, 120, 0));
-	CPen* pOldPen = boardDC->SelectObject(&dotPen);
+	CPen* pOldPen = dc->SelectObject(&dotPen);
 
-	boardDC->MoveTo(start);
-	boardDC->LineTo(end);
+	dc->MoveTo(start);
+	dc->LineTo(end);
 
-	boardDC->SelectObject(*pOldPen);
+	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawDotCircle(const CPoint & point)
+void CAaronMathViewerDlg::DrawDotCircle(CPaintDC* dc, const CPoint & point)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
-
 	CPen pen(PS_SOLID, 2, RGB(255, 0, 0));
-	CPen* pOldPen = boardDC->SelectObject(&pen);
+	CPen* pOldPen = dc->SelectObject(&pen);
 
-	boardDC->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
-	boardDC->SelectObject(*pOldPen);
+	dc->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
+	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawSpecificDotCircle(const CPoint & point)
+void CAaronMathViewerDlg::DrawSpecificDotCircle(CPaintDC* dc, const CPoint & point)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
-
 	CPen interPen(PS_SOLID, 3, RGB(0, 50, 255));
-	CPen* pOldPen = boardDC->SelectObject(&interPen);
+	CPen* pOldPen = dc->SelectObject(&interPen);
 
-	boardDC->SelectObject(&interPen);
-	boardDC->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
+	dc->SelectObject(&interPen);
+	dc->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
 
-	boardDC->SelectObject(*pOldPen);
+	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawPolyLine(const CArray<CPoint>& points, INT startIdx, INT endIdx)
+void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT startIdx, INT endIdx)
 {
 	if (endIdx - startIdx < 2)
 		return;
 
-	CDC* boardDC = m_pcBoard.GetDC();
 	CPen dotPen(PS_SOLID, 1, RGB(120, 0, 255));
-	CPen* pOldPen = boardDC->SelectObject(&dotPen);
+	CPen* pOldPen = dc->SelectObject(&dotPen);
 
 	INT count = endIdx - startIdx + 2;
 	POINT* pntArr = new POINT[count];
@@ -439,46 +433,43 @@ void CAaronMathViewerDlg::DrawPolyLine(const CArray<CPoint>& points, INT startId
 		pntArr[i] = points[i];
 	pntArr[count - 1] = points[startIdx];
 
-	boardDC->Polyline(pntArr, count);
-	boardDC->SelectObject(*pOldPen);
+	dc->Polyline(pntArr, count);
+	dc->SelectObject(*pOldPen);
 
 	delete[] pntArr;
 }
 
-void CAaronMathViewerDlg::DrawPolyLines(const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx)
+void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
 	CPen pen(PS_DOT, 1, RGB(200, 200, 200));
 
-	CPen* pOldPen = boardDC->SelectObject(&pen);
+	CPen* pOldPen = dc->SelectObject(&pen);
 
 	for (INT i = startIdx; i <= endIdx; i++)
-		boardDC->Polyline(points[i].first, points[i].second);
+		dc->Polyline(points[i].first, points[i].second);
 
-	boardDC->SelectObject(*pOldPen);
+	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawOthogonal()
+void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
 {
-	CDC* boardDC = m_pcBoard.GetDC();
-
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
 	{
 		CPen dotPen(PS_DOT, 1, RGB(0, 0, 0));
-		CPen* pOldPen = boardDC->SelectObject(&dotPen);
+		CPen* pOldPen = dc->SelectObject(&dotPen);
 
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 
-		boardDC->MoveTo(cRect.right / 2, cRect.top);
-		boardDC->LineTo(cRect.right / 2, cRect.bottom);
+		dc->MoveTo(cRect.right / 2, cRect.top);
+		dc->LineTo(cRect.right / 2, cRect.bottom);
 
-		boardDC->MoveTo(cRect.left, cRect.right / 2);
-		boardDC->LineTo(cRect.right, cRect.right / 2);
+		dc->MoveTo(cRect.left, cRect.right / 2);
+		dc->LineTo(cRect.right, cRect.right / 2);
 
-		boardDC->SelectObject(*pOldPen);
+		dc->SelectObject(*pOldPen);
 		break;
 	}
 	default:

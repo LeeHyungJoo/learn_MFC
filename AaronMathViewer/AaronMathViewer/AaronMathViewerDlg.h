@@ -35,18 +35,18 @@ public:
 	void UpdatePickCoords();
 	void OnMethodRadioChanged(UINT ID);
 
-	void ResetBoard();
-	void DrawMethod();
-	void DrawLine(const CPoint& start, const CPoint& end);
-	void DrawDotLine(const CPoint& start, const CPoint& end);
-	void DrawDotCircle(const CPoint& point);
-	void DrawSpecificDotCircle(const CPoint& point);
-	void DrawPolyLine(const CArray<CPoint>& points, INT startIdx, INT endIdx);
-	void DrawPolyLines(const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx);
+	void ResetBoard(CPaintDC* dc);
+	void DrawMethod(CPaintDC* dc);
+	void DrawLine(CPaintDC* dc, const CPoint& start, const CPoint& end);
+	void DrawDotLine(CPaintDC* dc, const CPoint& start, const CPoint& end);
+	void DrawDotCircle(CPaintDC* dc, const CPoint& point);
+	void DrawSpecificDotCircle(CPaintDC* dc, const CPoint& point);
+	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT startIdx, INT endIdx);
+	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT>>& points, INT startIdx, INT endIdx);
+	void DrawOthogonal(CPaintDC* dc);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);
 	const CPoint ToClientFromOthogonal(const CPoint& othogonal);
-	void DrawOthogonal();
 
 public:
 	afx_msg void OnPaint();
