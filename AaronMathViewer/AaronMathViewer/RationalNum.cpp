@@ -33,7 +33,7 @@ RationalNum::RationalNum(const RationalNum & numFrac, const RationalNum & denomF
 
 BOOL RationalNum::IsInteger() const
 {
-	return denominator == 1;
+	return denominator == 1 && std::abs(numerator - (LONG)numerator) < DBL_EPSILON;
 }
 
 DOUBLE RationalNum::GetNumerator() const

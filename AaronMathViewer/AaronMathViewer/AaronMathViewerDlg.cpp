@@ -238,12 +238,24 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				&show);
 
 			m_lbxExpr.AddString(show);
+
+			CRect cRect;
+			m_pcBoard.GetClientRect(&cRect);
+
+			m_vecParamCoord.RemoveAll();
+			
+			//y = mx + c => x = (y - c) / m
+			CPoint top = CPoint((cRect.bottom / 2 - c) / m, cRect.bottom / 2);
+			CPoint bottom = CPoint((-cRect.bottom / 2 - c) / m, -cRect.bottom / 2);
+			m_vecParamCoord.Add(top);
+			m_vecParamCoord.Add(bottom);
 		}
 
 		break;
 	}
 	}
 
+	m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
 	Invalidate();
 }
 
@@ -273,6 +285,9 @@ void CAaronMathViewerDlg::OnPaint()
 	CDialogEx::OnPaint();
 
 	CPaintDC dc(&m_pcBoard);
+	CRect cRect;
+	m_pcBoard.GetClientRect(&cRect);
+	dc.IntersectClipRect(&cRect);
 
 	ResetBoard(&dc);
 	DrawMethod(&dc);
@@ -416,6 +431,16 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 			DrawPolyLines(dc, m_points, 0, m_points.GetUpperBound());
 			DrawPolyLine(dc, oPickedCrd, 0, 2);
 		}
+
+		break;
+	}
+	case IDC_RADIO_LSMLINE:
+	{
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
+			DrawDotCircle(dc, oPickedCrd[i]);
+
+		if (oParamCrd.GetSize() > 1)
+			DrawLine(dc, oParamCrd[0], oParamCrd[1]);
 
 		break;
 	}

@@ -60,8 +60,7 @@ public:
 	UINT m_uMethodID;
 	
 	CArray<CPoint> m_vecPickedCoord;
-	CArray<CPointDouble> m_vecDoubleCoord;	//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
-	CArray<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
+	CArray<CPointDouble> m_vecDoubleCoord;
 	CPtrArray m_vecCoordEdits;
 	CMap<UINT, UINT, INT, INT> m_mPickedCoordCount;
 
@@ -72,6 +71,8 @@ public:
 	CStatic m_stCoord;
 
 	CListBox m_lbxExpr;
+
+	CArray<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 	CArray<BOOL> m_bExprDecimal;			//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 
 	CEdit m_edtDegree;
