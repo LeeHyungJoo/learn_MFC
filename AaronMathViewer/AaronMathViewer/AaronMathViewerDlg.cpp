@@ -242,25 +242,16 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				B21 += m_vecDoubleCoord[i].y;
 			}
 
-			CString log;
-			log.Format(L"A11 : %+.3f, A12 : %+.3f, A21 : %+.3f, A22 : %+.3f\r\nB11 : %+.3f , B21 : %+.3f\r\n", A11, A12, A21, A22, B11, B21);
-			OutputDebugString(log);
-
 			DOUBLE detA = 1.0 / (A11 * A22 - A12 * A21);
 			DOUBLE inv_A11 = 0, inv_A12 = 0, inv_A21 = 0, inv_A22 = 0;
 
-			inv_A11 = +A22;
-			inv_A12 = -A21;
-			inv_A21 = -A12;
-			inv_A22 = +A11;
+			inv_A11 = detA * +A22;
+			inv_A12 = detA * -A21;
+			inv_A21 = detA * -A12;
+			inv_A22 = detA * +A11;
 
 			DOUBLE m = inv_A11 * B11 + inv_A12 * B21;
 			DOUBLE c = inv_A21 * B11 + inv_A22 * B21;
-			m *= detA;
-			c *= detA;
-
-			log.Format(L"detA : %+f\r\ninv_A11 : %+.3f, inv_A12 : %+.3f, inv_A21 : %+.3f, inv_A22 : %+.3f\r\nm : %+.3f , c : %+.3f\r\n", detA, inv_A11, inv_A12, inv_A21, inv_A22, m, c);
-			OutputDebugString(log);
 
 			CString show;
 			Formatter::LineQuation(
