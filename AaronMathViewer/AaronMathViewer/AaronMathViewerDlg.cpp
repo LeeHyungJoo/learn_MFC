@@ -276,6 +276,51 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 		break;
 	}
+	case IDC_RADIO_LSMCIRCLE:
+	{
+		if (m_vecDoubleCoord.GetSize() > 2)
+		{
+			INT64 n = m_vecDoubleCoord.GetSize();
+
+			/*
+				arg1 : x^2 
+				arg2 : y
+				arg3 : x
+				arg4 : xy
+				arg5 : y^2
+
+				h = ((arg1 * arg2) - (arg3 * arg4)) / ((n * arg5) - (arg2 * arg2));
+				k = ((arg5 * arg3) - (arg2 * arg4)) / ((n* arg5) - (arg2 * arg2));
+				r = sqrt((1 / n) * (arg1 + arg5 - 2 * h * arg3 - 2 * k * arg2 + n * k * k + n * k * k));
+			*/
+
+			//DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0;
+
+			//for (INT64 i = 0; i < n; i++)
+			//{
+			//	arg1 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].x);
+			//	arg2 += m_vecDoubleCoord[i].y;
+			//	arg3 += m_vecDoubleCoord[i].x;
+			//	arg4 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y);
+			//	arg5 += (m_vecDoubleCoord[i].y * m_vecDoubleCoord[i].y);
+			//}
+
+			//DOUBLE h = 0, k = 0, r = 0;
+
+			//h = (arg3 / n);
+			//k = (arg2 / n);
+			//r = sqrt(((arg1 / n + (-2 * h * arg3) / n + h * h / n)  + (arg5 / n + (-2 * k * arg2) / n + k * k / n)));
+			//m_vecParamCoord.RemoveAll();
+
+			////y = mx + c => x = (y - c) / m
+			//CPoint top = CPoint((LONG)(h - r / 2), (LONG)(k - r / 2) );
+			//CPoint bottom = CPoint((LONG)(h + r / 2), (LONG)(k + r / 2) );
+			//m_vecParamCoord.Add(top);
+			//m_vecParamCoord.Add(bottom);
+		}
+
+		break;
+	}
 	}
 
 	m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
@@ -468,6 +513,15 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 
 		break;
 	}
+	case IDC_RADIO_LSMCIRCLE:
+	{
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
+			DrawDotCircle(dc, oPickedCrd[i]);
+
+		if (oParamCrd.GetSize() > 1)
+			DrawCircle(dc, oParamCrd[0], oParamCrd[1]);
+		break;
+	}
 	}
 }
 
@@ -499,6 +553,15 @@ void CAaronMathViewerDlg::DrawDotCircle(CPaintDC* dc, const CPoint & point)
 	CPen* pOldPen = dc->SelectObject(&pen);
 
 	dc->Ellipse(point.x - 2, point.y - 2, point.x + 2, point.y + 2);
+	dc->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawCircle(CPaintDC * dc, const CPoint & LT, const CPoint & RB)
+{
+	CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
+	CPen* pOldPen = dc->SelectObject(&pen);
+
+	dc->Ellipse(LT.x,LT.y, RB.x, RB.y);
 	dc->SelectObject(*pOldPen);
 }
 

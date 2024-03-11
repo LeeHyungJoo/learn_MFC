@@ -41,6 +41,7 @@ public:
 	void DrawLine(CPaintDC* dc, const CPoint& start, const CPoint& end);
 	void DrawDotLine(CPaintDC* dc, const CPoint& start, const CPoint& end);
 	void DrawDotCircle(CPaintDC* dc, const CPoint& point);
+	void DrawCircle(CPaintDC* dc, const CPoint& LT, const CPoint& RB);
 	void DrawSpecificDotCircle(CPaintDC* dc, const CPoint& point);
 	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT64 startIdx, INT64 endIdx);
 	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx);
