@@ -1,8 +1,7 @@
 # AaronMathViewer
 
 ### Perpendicular
-![GIFMaker_me](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/c5f939a5-d908-4639-ba9a-673e7ce7a63d)
-
+![GIFMaker_me (3)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/5f990b44-0ee4-42cf-9c1e-008262555fb6)
 
 ### Rotate Triangle
 ![GIFMaker_me (1)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/a7b6a0c8-be08-4da6-a525-ea80e1508982)
