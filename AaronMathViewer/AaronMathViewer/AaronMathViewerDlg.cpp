@@ -294,29 +294,36 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				r = sqrt((1 / n) * (arg1 + arg5 - 2 * h * arg3 - 2 * k * arg2 + n * k * k + n * k * k));
 			*/
 
-			//DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0;
+			DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0 , arg6 = 0;
 
-			//for (INT64 i = 0; i < n; i++)
-			//{
-			//	arg1 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].x);
-			//	arg2 += m_vecDoubleCoord[i].y;
-			//	arg3 += m_vecDoubleCoord[i].x;
-			//	arg4 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y);
-			//	arg5 += (m_vecDoubleCoord[i].y * m_vecDoubleCoord[i].y);
-			//}
+			for (INT64 i = 0; i < n; i++)
+			{
+				arg1 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].x);
+				arg2 += m_vecDoubleCoord[i].y;
+				arg3 += m_vecDoubleCoord[i].x;
+				arg4 += (m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y);
+				arg5 += (m_vecDoubleCoord[i].y * m_vecDoubleCoord[i].y);
+			}
 
-			//DOUBLE h = 0, k = 0, r = 0;
+			DOUBLE h = 0, k = 0, r = 0;
 
-			//h = (arg3 / n);
-			//k = (arg2 / n);
-			//r = sqrt(((arg1 / n + (-2 * h * arg3) / n + h * h / n)  + (arg5 / n + (-2 * k * arg2) / n + k * k / n)));
-			//m_vecParamCoord.RemoveAll();
+			h = (arg3 / n);
+			k = (arg2 / n);
 
-			////y = mx + c => x = (y - c) / m
-			//CPoint top = CPoint((LONG)(h - r / 2), (LONG)(k - r / 2) );
-			//CPoint bottom = CPoint((LONG)(h + r / 2), (LONG)(k + r / 2) );
-			//m_vecParamCoord.Add(top);
-			//m_vecParamCoord.Add(bottom);
+
+			for (INT64 i = 0; i < n; i++)
+			{
+				arg6 += (m_vecDoubleCoord[i].x - h)* (m_vecDoubleCoord[i].x - h) /n + (m_vecDoubleCoord[i].y - k) * (m_vecDoubleCoord[i].y - k) /n;
+			}
+
+			r = sqrt(arg6);
+
+			m_vecParamCoord.RemoveAll();
+
+			CPoint top = CPoint((LONG)(h - r), (LONG)(k - r) );
+			CPoint bottom = CPoint((LONG)(h + r), (LONG)(k + r) );
+			m_vecParamCoord.Add(top);
+			m_vecParamCoord.Add(bottom);
 		}
 
 		break;
@@ -515,11 +522,12 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 	}
 	case IDC_RADIO_LSMCIRCLE:
 	{
+		if (oParamCrd.GetSize() > 1)
+			DrawCircle(dc, oParamCrd[0], oParamCrd[1]);
+
 		for (int i = 0; i < oPickedCrd.GetSize(); i++)
 			DrawDotCircle(dc, oPickedCrd[i]);
 
-		if (oParamCrd.GetSize() > 1)
-			DrawCircle(dc, oParamCrd[0], oParamCrd[1]);
 		break;
 	}
 	}
