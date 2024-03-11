@@ -83,6 +83,26 @@ RationalNum RationalNum::operator/(const RationalNum & other) const
 	);
 }
 
+void RationalNum::operator+=(const RationalNum & other)
+{
+	*this = this->operator+(other);
+}
+
+void RationalNum::operator-=(const RationalNum & other)
+{
+	*this = this->operator-(other);
+}
+
+void RationalNum::operator*=(const RationalNum & other)
+{
+	*this = this->operator*(other);
+}
+
+void RationalNum::operator/=(const RationalNum & other)
+{
+	*this = this->operator/(other);
+}
+
 BOOL RationalNum::operator==(const RationalNum & other) const
 {
 	return (abs(numerator - other.numerator) < DBL_EPSILON) && (abs(denominator - other.denominator) < DBL_EPSILON);

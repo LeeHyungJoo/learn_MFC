@@ -29,6 +29,7 @@ protected:
 private:
 	void ResetPicking();
 	void ResetParamCoords();
+	BOOL PickCoord(const CPoint& clientPnt);
 
 public:
 	BOOL IsPointInBoard(const CPoint& clientPnt) const;
@@ -54,6 +55,7 @@ public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedButtonRot();
 	afx_msg void OnBnClickedButtonReset();
+	afx_msg void OnBnClickedButtonTestpick();
 	//afx_msg void OnLbnDblclkListView();
 
 public:
@@ -78,4 +80,5 @@ public:
 	CEdit m_edtDegree;
 	CButton m_btnRot;
 	BOOL m_bFirstEnter;
+	CEdit m_edtTestCoord;
 };

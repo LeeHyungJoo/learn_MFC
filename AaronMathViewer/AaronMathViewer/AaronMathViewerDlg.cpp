@@ -1,4 +1,4 @@
-
+ï»¿
 #include "pch.h"
 #include "framework.h"
 #include "AaronMathViewer.h"
@@ -37,6 +37,7 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LIST_VIEW, m_lbxExpr);
 	DDX_Control(pDX, IDC_EDIT_DEGREE, m_edtDegree);
 	DDX_Control(pDX, IDC_BUTTON_ROT, m_btnRot);
+	DDX_Control(pDX, IDC_EDIT_TESTCOORD, m_edtTestCoord);
 }
 
 void CAaronMathViewerDlg::ResetPicking()
@@ -60,6 +61,28 @@ void CAaronMathViewerDlg::ResetParamCoords()
 	m_vecParamCoord.RemoveAll();
 	m_points.RemoveAll();
 	m_iRotDegree = 0;
+}
+
+BOOL CAaronMathViewerDlg::PickCoord(const CPoint& clientPnt)
+{
+	if (m_uMethodID == 0)
+	{
+		AfxMessageBox(_T("ë¨¼ì € í•¨ìˆ˜ ëª¨ë“œë¥¼ ì„ íƒí•˜ì‹­ì‹œì˜¤. !"), MB_ICONWARNING | MB_OK);
+		return FALSE;
+	}
+	INT cnt = 0;
+	m_mPickedCoordCount.Lookup(m_uMethodID, cnt);
+	if (m_vecPickedCoord.GetSize() >= cnt)
+	{
+		AfxMessageBox(_T("ì´ë¯¸ í•„ìš”í•œ ì¢Œí‘œë¥¼ ëª¨ë‘ ìž…ë ¥í•˜ì…¨ìŠµë‹ˆë‹¤. !"), MB_ICONWARNING | MB_OK);
+		return FALSE;
+	}
+
+	auto othogonalPnt = ToOthogonalFromClient(clientPnt);
+	m_vecPickedCoord.Add(othogonalPnt);
+	m_vecDoubleCoord.Add(CPointDouble(othogonalPnt));
+
+	return TRUE;
 }
 
 BOOL CAaronMathViewerDlg::IsPointInBoard(const CPoint & clientPnt) const
@@ -92,7 +115,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 		{
 			CString show;
 			Formatter::LineQuation(
-				L"Á÷¼± ¹æÁ¤½Ä", 
+				L"ì§ì„  ë°©ì •ì‹", 
 				m_vecPickedCoord[1].x - m_vecPickedCoord[0].x,
 				m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, 
 				m_vecPickedCoord[0].x,
@@ -109,10 +132,10 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			if (dx == 0)
 			{
 				CString show;
-				Formatter::HorizontalLineQuation(L"¼ö¼± ¹æÁ¤½Ä", m_vecPickedCoord[2].y, &show);
+				Formatter::HorizontalLineQuation(L"ìˆ˜ì„  ë°©ì •ì‹", m_vecPickedCoord[2].y, &show);
 				m_lbxExpr.AddString(show);
 
-				Formatter::Coord(L"±³Á¡", m_vecPickedCoord[0].x, m_vecPickedCoord[2].y, &show);
+				Formatter::Coord(L"êµì ", m_vecPickedCoord[0].x, m_vecPickedCoord[2].y, &show);
 				m_lbxExpr.AddString(show);
 
 				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[0].x, m_vecPickedCoord[2].y));
@@ -120,10 +143,10 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			else if (dy == 0)
 			{
 				CString show;
-				Formatter::VerticalLineQuation(L"¼ö¼± ¹æÁ¤½Ä", m_vecPickedCoord[2].x, &show);
+				Formatter::VerticalLineQuation(L"ìˆ˜ì„  ë°©ì •ì‹", m_vecPickedCoord[2].x, &show);
 				m_lbxExpr.AddString(show);
 
-				Formatter::Coord(L"±³Á¡", m_vecPickedCoord[2].x, m_vecPickedCoord[0].y, &show);
+				Formatter::Coord(L"êµì ", m_vecPickedCoord[2].x, m_vecPickedCoord[0].y, &show);
 				m_lbxExpr.AddString(show);
 
 				m_vecParamCoord.Add(CPoint(m_vecPickedCoord[2].x, m_vecPickedCoord[0].y));
@@ -136,7 +159,7 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				if ((m * m_vecPickedCoord[2].x + c) == m_vecPickedCoord[2].y)
 				{
 					m_vecPickedCoord.RemoveAt(m_vecPickedCoord.GetUpperBound());
-					AfxMessageBox(_T("Á÷¼± À§¿¡ ÀÖ´Â Á¡¿¡¼­´Â ¼ö¼±À» ³»¸± ¼ö ¾ø½À´Ï´Ù !\r\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä ! "), MB_ICONWARNING | MB_OK);
+					AfxMessageBox(_T("ì§ì„  ìœ„ì— ìžˆëŠ” ì ì—ì„œëŠ” ìˆ˜ì„ ì„ ë‚´ë¦´ ìˆ˜ ì—†ìŠµë‹ˆë‹¤ !\r\në‹¤ì‹œ ì‹œë„í•´ì£¼ì„¸ìš” ! "), MB_ICONWARNING | MB_OK);
 					break;
 				}
 
@@ -144,13 +167,13 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
 
 				CString show;
-				Formatter::LineQuation(L"¼ö¼± ¹æÁ¤½Ä", im, ic, &show);
+				Formatter::LineQuation(L"ìˆ˜ì„  ë°©ì •ì‹", im, ic, &show);
 				m_lbxExpr.AddString(show);
 
 				auto inter_x = RationalNum(ic - c, m - im);
 				auto inter_y = m * inter_x + c;
 
-				Formatter::Coord(L"±³Á¡", inter_x, inter_y, &show);
+				Formatter::Coord(L"êµì ", inter_x, inter_y, &show);
 				m_lbxExpr.AddString(show);
 
 				POINT tar;
@@ -213,26 +236,35 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				A11 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].x;
 				A12 += m_vecDoubleCoord[i].x;
 				A21 += m_vecDoubleCoord[i].x;
-				A22 += (i + 1);
+				A22 += 1;
 
 				B11 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y;
 				B21 += m_vecDoubleCoord[i].y;
 			}
 
-			DOUBLE detA = 1 / (A11 * A22 - A12 * A21);
+			CString log;
+			log.Format(L"A11 : %+.3f, A12 : %+.3f, A21 : %+.3f, A22 : %+.3f\r\nB11 : %+.3f , B21 : %+.3f\r\n", A11, A12, A21, A22, B11, B21);
+			OutputDebugString(log);
+
+			DOUBLE detA = 1.0 / (A11 * A22 - A12 * A21);
 			DOUBLE inv_A11 = 0, inv_A12 = 0, inv_A21 = 0, inv_A22 = 0;
 
-			inv_A11 = detA * +A22;
-			inv_A12 = detA * -A21;
-			inv_A21 = detA * -A12;
-			inv_A22 = detA * +A11;
+			inv_A11 = +A22;
+			inv_A12 = -A21;
+			inv_A21 = -A12;
+			inv_A22 = +A11;
 
 			DOUBLE m = inv_A11 * B11 + inv_A12 * B21;
 			DOUBLE c = inv_A21 * B11 + inv_A22 * B21;
+			m *= detA;
+			c *= detA;
+
+			log.Format(L"detA : %+f\r\ninv_A11 : %+.3f, inv_A12 : %+.3f, inv_A21 : %+.3f, inv_A22 : %+.3f\r\nm : %+.3f , c : %+.3f\r\n", detA, inv_A11, inv_A12, inv_A21, inv_A22, m, c);
+			OutputDebugString(log);
 
 			CString show;
 			Formatter::LineQuation(
-				L"ÃÖ¼Ò ÀÚ½Â½Ä",
+				L"ìµœì†Œ ìžìŠ¹ì‹",
 				m,
 				c,
 				&show);
@@ -245,8 +277,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			m_vecParamCoord.RemoveAll();
 			
 			//y = mx + c => x = (y - c) / m
-			CPoint top = CPoint((cRect.bottom / 2 - c) / m, cRect.bottom / 2);
-			CPoint bottom = CPoint((-cRect.bottom / 2 - c) / m, -cRect.bottom / 2);
+			CPoint top = CPoint((LONG)((cRect.bottom / 2 - c) / m), cRect.bottom / 2);
+			CPoint bottom = CPoint((LONG)((-cRect.bottom / 2 - c) / m), -cRect.bottom / 2);
 			m_vecParamCoord.Add(top);
 			m_vecParamCoord.Add(bottom);
 		}
@@ -268,6 +300,7 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
 	//ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
 	ON_BN_CLICKED(IDC_BUTTON_ROT, &CAaronMathViewerDlg::OnBnClickedButtonRot)
+	ON_BN_CLICKED(IDC_BUTTON_TESTPICK, &CAaronMathViewerDlg::OnBnClickedButtonTestpick)
 END_MESSAGE_MAP()
 
 BOOL CAaronMathViewerDlg::OnInitDialog()
@@ -580,26 +613,9 @@ void CAaronMathViewerDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if (IsPointInBoard(clientPnt))
 	{
-		auto othogonalPnt = ToOthogonalFromClient(clientPnt);
-
-		if (m_uMethodID != 0)
+		if (PickCoord(clientPnt))
 		{
-			INT cnt = 0;
-			m_mPickedCoordCount.Lookup(m_uMethodID, cnt);
-			if (m_vecPickedCoord.GetSize() < cnt)
-			{
-				m_vecPickedCoord.Add(othogonalPnt);
-				m_vecDoubleCoord.Add(CPointDouble(othogonalPnt));
-				UpdatePickCoords();
-			}
-			else
-			{
-				AfxMessageBox(_T("ÀÌ¹Ì ÇÊ¿äÇÑ ÁÂÇ¥¸¦ ¸ðµÎ ÀÔ·ÂÇÏ¼Ì½À´Ï´Ù. !"), MB_ICONWARNING | MB_OK);
-			}
-		}
-		else
-		{
-			AfxMessageBox(_T("¸ÕÀú ÇÔ¼ö ¸ðµå¸¦ ¼±ÅÃÇÏ½Ê½Ã¿À. !"), MB_ICONWARNING | MB_OK);
+			UpdatePickCoords();
 		}
 	}
 
@@ -665,7 +681,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
 //				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
 //
-//				Formatter::LineQuation(L"Á÷¼± ¹æÁ¤½Ä", m, c, &expr, !m_bExprDecimal[0]);
+//				Formatter::LineQuation(L"ì§ì„  ë°©ì •ì‹", m, c, &expr, !m_bExprDecimal[0]);
 //				break;
 //			}
 //			case 1:
@@ -676,7 +692,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
 //				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
 //
-//				Formatter::LineQuation(L"¼ö¼± ¹æÁ¤½Ä", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
+//				Formatter::LineQuation(L"ìˆ˜ì„  ë°©ì •ì‹", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
 //				break;
 //			}
 //			case 2:
@@ -690,7 +706,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //				auto inter_x = RationalNum(ic - c, m - im);
 //				auto inter_y = m * inter_x + c;
 //
-//				Formatter::Coord(L"±³Á¡", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
+//				Formatter::Coord(L"êµì ", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
 //				break;
 //			}
 //			default:
@@ -712,3 +728,20 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //}
 
 
+
+
+void CAaronMathViewerDlg::OnBnClickedButtonTestpick()
+{
+	CString show;
+	m_edtTestCoord.GetWindowText(show);
+
+	INT idx = 0;
+	auto x = show.Tokenize(L", ", idx);
+	auto y = show.Tokenize(L", ", idx);
+	auto pnt = ToClientFromOthogonal(CPoint(_wtoi(x), _wtoi(y)));
+
+	if (PickCoord(pnt))
+	{
+		UpdatePickCoords();
+	}
+}

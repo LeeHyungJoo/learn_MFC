@@ -18,6 +18,10 @@ public:
 	RationalNum operator-(const RationalNum& other) const;
 	RationalNum operator*(const RationalNum& other) const;
 	RationalNum operator/(const RationalNum& other) const;
+	void operator+=(const RationalNum& other);
+	void operator-=(const RationalNum& other);
+	void operator*=(const RationalNum& other);
+	void operator/=(const RationalNum& other);
 	BOOL operator==(const RationalNum& other) const;
 
 private:
