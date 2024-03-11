@@ -8,3 +8,18 @@
 
 ### Least Squares Approximation (Straight)
 ![GIFMaker_me (2)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/54e0d702-c5ba-4ea8-bde3-7578cb8be932)
+
+
+# MFC Number
+
+### Gen Random Numbers & Calculate
+![GIFMaker_me](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/f6c5a32c-ab29-4578-a90a-00cb21916fda)
+
+
+# MFC Tutorial
+
+### SubDlg
+![GIFMaker_me (2)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/b721961c-bebe-4661-8d0e-4b042d3d8530)
+
+### Save File
+![GIFMaker_me (1)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/2c267688-caf7-43e6-b677-0777c1340fdf)
