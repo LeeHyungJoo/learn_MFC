@@ -9,6 +9,9 @@
 ### Least Squares Approximation (Straight)
 ![GIFMaker_me (2)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/54e0d702-c5ba-4ea8-bde3-7578cb8be932)
 
+### Least Squares Approximation (Circle)
+![GIFMaker_me (3)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/3383ce55-3587-4c14-bb87-1728b0a6025e)
+
 
 # MFC Number
 
