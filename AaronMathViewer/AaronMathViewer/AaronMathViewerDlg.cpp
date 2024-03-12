@@ -700,8 +700,8 @@ void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE
 	CPoint othoPnt;
 	for (INT64 x = -cRect.right / 2; x < cRect.right / 2; x++)
 	{
-		othoPnt = ToClientFromOthogonal(CPoint(x, x*x *a + b * x + c));
-		dc->SetPixelV(othoPnt, RGB(255, 120, 0));
+		othoPnt = ToClientFromOthogonal(CPoint((LONG)x, (LONG)(x*x *a + b * x + c)));
+		dc->SetPixelV(othoPnt, RGB(0, 255, 120));
 	}
 }
 
