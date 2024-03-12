@@ -114,6 +114,34 @@ void Formatter::HorizontalLineQuation(const CString & desc, const LONG constant,
 	);
 }
 
+void Formatter::CircleQuation(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & r, OUT CString * format, BOOL bDecimalFormat)
+{
+	CString temp(L"\u00b2");
+	if (bDecimalFormat)
+	{
+		CString formatA;
+		formatA.Format(a.IsInteger() ? L"%+.0f" : L"%+.3f", a.GetValue());
+
+		CString formatB;
+		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
+
+		CString formatR;
+		formatR.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", r.GetValue());
+
+
+		format->Format(_T("%s [ (x - (%s))\u00b2 + (y - (%s))\u00b2 = %s\u00b2 ]"),
+			desc,
+			formatA,
+			formatB,
+			formatR
+		);
+	}
+	else
+	{
+		//NOT IMPLEMENT
+	}
+}
+
 
 void Formatter::Coord(
 	const CString & desc, 

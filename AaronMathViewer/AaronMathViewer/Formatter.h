@@ -36,6 +36,15 @@ public:
 		BOOL bDecimalFormat = TRUE
 	);
 
+	static void CircleQuation(
+		const CString& desc,
+		const RationalNum& a,
+		const RationalNum& b,
+		const RationalNum& r,
+		OUT CString* format,
+		BOOL bDecimalFormat = TRUE
+	);
+
 	static void Coord(
 		const CString& desc,
 		const RationalNum& x,

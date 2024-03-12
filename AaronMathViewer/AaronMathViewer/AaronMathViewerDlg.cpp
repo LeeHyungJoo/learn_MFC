@@ -318,6 +318,16 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 			r = sqrt(arg6);
 
+			CString show;
+			Formatter::CircleQuation(
+				L"최소 자승식",
+				h,
+				k,
+				r,
+				&show
+			);
+			m_lbxExpr.AddString(show);
+
 			m_vecParamCoord.RemoveAll();
 
 			CPoint top = CPoint((LONG)(h - r), (LONG)(k - r) );

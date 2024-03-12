@@ -26,14 +26,12 @@ const int& Test()
 
 int main()
 {
-	//Parent* ptr;
-	//Parent p = Parent();
-	//Child c = Child();
+	CString showA;
+	showA.Format(false ? L"%+.0fx" : L"%+.3fx", 0.4);
+	CString formatA;
+	formatA.Format(_T("%s"), true ? "%+.0fx" : "%+.3fx");
 
-	//ptr = &p;
-	//ptr->Print();
-
-	//ptr = &c;
-	//ptr->Print();
+	CString format;
+	format.Format(_T("%s"), formatA, 0.0f);
 	return 0;
 }
