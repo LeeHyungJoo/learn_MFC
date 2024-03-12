@@ -665,7 +665,7 @@ void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& point
 	if (endIdx - startIdx < 2)
 		return;
 
-	CPen dotPen(PS_SOLID, 1, RGB(120, 0, 255));
+	CPen dotPen(PS_SOLID, 1, RGB(0, 255, 120));
 	CPen* pOldPen = dc->SelectObject(&dotPen);
 
 	INT64 count = endIdx - startIdx + 2;
@@ -677,7 +677,7 @@ void CAaronMathViewerDlg::DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& point
 	dc->Polyline(pntArr, (INT)count);
 	dc->SelectObject(*pOldPen);
 
-	delete[] pntArr;
+	delete pntArr;
 }
 
 void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx)
@@ -697,12 +697,21 @@ void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE
 	CRect cRect;
 	m_pcBoard.GetClientRect(&cRect);
 
-	CPoint othoPnt;
-	for (INT64 x = -cRect.right / 2; x < cRect.right / 2; x++)
+	CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
+	CPen* pOldPen = dc->SelectObject(&pen);
+
+	INT64 pntIdx = 0;
+	POINT* pntArr = new POINT[cRect.right / 2];
+
+	for (INT64 x = -cRect.right / 2; x < cRect.right / 2; x += 2)
 	{
-		othoPnt = ToClientFromOthogonal(CPoint((LONG)x, (LONG)(x*x *a + b * x + c)));
-		dc->SetPixelV(othoPnt, RGB(0, 255, 120));
+		pntArr[pntIdx++] = ToClientFromOthogonal(CPoint((LONG)x, (LONG)(x*x *a + b * x + c)));
 	}
+
+	dc->Polyline(pntArr, (INT)cRect.right / 2);
+	dc->SelectObject(*pOldPen);
+
+	delete pntArr;
 }
 
 void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
