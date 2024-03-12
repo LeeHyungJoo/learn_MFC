@@ -60,6 +60,7 @@ void CAaronMathViewerDlg::ResetParamCoords()
 	m_vecDoubleCoord.RemoveAll();
 	m_vecParamCoord.RemoveAll();
 	m_points.RemoveAll();
+	m_vecParamArray.RemoveAll();
 	m_iRotDegree = 0;
 }
 
@@ -338,6 +339,62 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 
 		break;
 	}
+	case IDC_RADIO_LSMPARABO :
+	{
+		if (m_vecDoubleCoord.GetSize() > 2)
+		{
+			INT64 n = m_vecDoubleCoord.GetSize();
+			/*
+				arg1 = x
+				arg2 = x^2
+				arg3 = x^3
+				arg4 = y
+				arg5 = xy
+				arg6 = x^2 y
+				arg7 = x^4
+
+			*/
+
+			DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0;
+
+			for (INT64 i = 0; i < n; i++)
+			{
+				arg1 += m_vecDoubleCoord[i].x;
+				arg2 += std::pow(m_vecDoubleCoord[i].x, 2);
+				arg3 += std::pow(m_vecDoubleCoord[i].x, 3);
+				arg4 += m_vecDoubleCoord[i].y;
+				arg5 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y;
+				arg6 += std::pow(m_vecDoubleCoord[i].x, 2) * m_vecDoubleCoord[i].y;
+				arg7 += std::pow(m_vecDoubleCoord[i].x, 4);
+			}
+
+			DOUBLE ret1 = 0;
+			ret1 = arg7 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg1 - pow(arg2, 2));
+
+			DOUBLE a = 0, b = 0, c = 0;
+
+			a = (arg6 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg5 - arg1 * arg4) + arg2 * (arg1 *arg5 - arg2 * arg4)) / ret1;
+			b = (arg7 *(n * arg5 - arg1 * arg4) - arg6 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg4 - arg2 * arg5)) / ret1;
+			c = (arg7 * (arg2 * arg4 - arg5 * arg1) - arg3 * (arg3 * arg4 - arg5 * arg2) + arg6 * (arg3 * arg1 - std::pow(arg2, 2))) / ret1;
+
+			CString show;
+			Formatter::ParabolaQuation(
+				L"최소 자승식",
+				a,
+				b,
+				c,
+				&show
+			);
+
+			m_vecParamArray.RemoveAll();
+			m_vecParamArray.Add(a);
+			m_vecParamArray.Add(b);
+			m_vecParamArray.Add(c);
+
+			m_lbxExpr.AddString(show);
+		}
+		break;
+	}
 	}
 
 	m_lbxExpr.SetCurSel(m_lbxExpr.GetCount() - 1);
@@ -540,6 +597,15 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 
 		break;
 	}
+	case IDC_RADIO_LSMPARABO:
+	{
+		if (m_vecParamArray.GetSize() > 2)
+			DrawParabola(dc, m_vecParamArray[0], m_vecParamArray[1], m_vecParamArray[2]);
+
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
+			DrawDotCircle(dc, oPickedCrd[i]);
+		break;
+	}
 	}
 }
 
@@ -624,6 +690,19 @@ void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POI
 		dc->Polyline(points[i].first, (INT)points[i].second);
 
 	dc->SelectObject(*pOldPen);
+}
+
+void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE c)
+{
+	CRect cRect;
+	m_pcBoard.GetClientRect(&cRect);
+
+	CPoint othoPnt;
+	for (INT64 x = -cRect.right / 2; x < cRect.right / 2; x++)
+	{
+		othoPnt = ToClientFromOthogonal(CPoint(x, x*x *a + b * x + c));
+		dc->SetPixelV(othoPnt, RGB(255, 120, 0));
+	}
 }
 
 void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)

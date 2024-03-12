@@ -45,6 +45,7 @@ public:
 	void DrawSpecificDotCircle(CPaintDC* dc, const CPoint& point);
 	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT64 startIdx, INT64 endIdx);
 	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx);
+	void DrawParabola(CPaintDC* dc, DOUBLE a, DOUBLE b, DOUBLE c);
 	void DrawOthogonal(CPaintDC* dc);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);
@@ -75,6 +76,7 @@ public:
 
 	CListBox m_lbxExpr;
 
+	CArray<DOUBLE> m_vecParamArray;
 	CArray<CPoint> m_vecParamCoord;		//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 	CArray<BOOL> m_bExprDecimal;			//TODO: Param ÁÂÇ¥·Î ÇÕÄ¥°Í (±¸Á¶Ã¼)
 

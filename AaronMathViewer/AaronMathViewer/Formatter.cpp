@@ -116,7 +116,6 @@ void Formatter::HorizontalLineQuation(const CString & desc, const LONG constant,
 
 void Formatter::CircleQuation(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & r, OUT CString * format, BOOL bDecimalFormat)
 {
-	CString temp(L"\u00b2");
 	if (bDecimalFormat)
 	{
 		CString formatA;
@@ -126,14 +125,39 @@ void Formatter::CircleQuation(const CString & desc, const RationalNum & a, const
 		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
 
 		CString formatR;
-		formatR.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", r.GetValue());
-
+		formatR.Format(r.IsInteger() ? L"%+.0f" : L"%+.3f", r.GetValue());
 
 		format->Format(_T("%s [ (x - (%s))\u00b2 + (y - (%s))\u00b2 = %s\u00b2 ]"),
 			desc,
 			formatA,
 			formatB,
 			formatR
+		);
+	}
+	else
+	{
+		//NOT IMPLEMENT
+	}
+}
+
+void Formatter::ParabolaQuation(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & c, OUT CString * format, BOOL bDecimalFormat)
+{
+	if (bDecimalFormat)
+	{
+		CString formatA;
+		formatA.Format(a.IsInteger() ? L"%+.0f" : L"%+.3f", a.GetValue());
+
+		CString formatB;
+		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
+
+		CString formatC;
+		formatC.Format(c.IsInteger() ? L"%+.0f" : L"%+.3f", c.GetValue());
+
+		format->Format(_T("%s [ y = %sx\u00b2 - %sx + %s ]"),
+			desc,
+			formatA,
+			formatB,
+			formatC
 		);
 	}
 	else
