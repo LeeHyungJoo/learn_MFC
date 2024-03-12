@@ -12,6 +12,9 @@
 ### Least Squares Approximation (Circle)
 ![GIFMaker_me (3)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/3383ce55-3587-4c14-bb87-1728b0a6025e)
 
+### Least Squares Approximation (Parabola)
+![GIFMaker_me (4)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/3b92ca2b-8de1-433c-90ec-bd56f2d51fe4)
+
 
 # MFC Number
 
