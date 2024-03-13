@@ -43,6 +43,7 @@ void CAaronMathViewerDlg::DoDataExchange(CDataExchange* pDX)
 void CAaronMathViewerDlg::ResetPicking()
 {
 	m_vecPickedCoord.RemoveAll();
+	m_vecDoubleCoord.RemoveAll();
 	m_lbxExpr.ResetContent();
 	m_bFirstEnter = true;
 
@@ -57,7 +58,6 @@ void CAaronMathViewerDlg::ResetPicking()
 
 void CAaronMathViewerDlg::ResetParamCoords()
 {
-	m_vecDoubleCoord.RemoveAll();
 	m_vecParamCoord.RemoveAll();
 	m_points.RemoveAll();
 	m_vecParamArray.RemoveAll();
@@ -243,7 +243,8 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				B21 += m_vecDoubleCoord[i].y;
 			}
 
-			DOUBLE detA = 1.0 / (A11 * A22 - A12 * A21);
+			DOUBLE detA_arg = (A11 * A22 - A12 * A21);
+			DOUBLE detA = 1.0 / detA_arg;
 			DOUBLE inv_A11 = 0, inv_A12 = 0, inv_A21 = 0, inv_A22 = 0;
 
 			inv_A11 = detA * +A22;
@@ -255,24 +256,48 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 			DOUBLE c = inv_A21 * B11 + inv_A22 * B21;
 
 			CString show;
-			Formatter::LineQuation(
-				L"최소 자승식",
-				m,
-				c,
-				&show);
-
-			m_lbxExpr.AddString(show);
-
+			CPoint startPnt;
+			CPoint endPnt;
 			CRect cRect;
 			m_pcBoard.GetClientRect(&cRect);
+			if (abs(detA_arg - 0) < DBL_EPSILON)
+			{
+				Formatter::VerticalLineQuation(
+					L"최소 자승식",
+					m_vecPickedCoord[0].x,
+					&show
+				);
 
+				startPnt = CPoint(m_vecPickedCoord[0].x, 0);
+				endPnt = CPoint(m_vecPickedCoord[0].x, cRect.bottom);
+			}
+			else if (abs(m - 0) < DBL_EPSILON)
+			{
+				Formatter::HorizontalLineQuation(
+					L"최소 자승식",
+					m_vecPickedCoord[0].y,
+					&show
+				);
+
+				startPnt = CPoint(0, m_vecPickedCoord[0].y);
+				endPnt = CPoint(cRect.right, m_vecPickedCoord[0].y);
+			}
+			else
+			{
+				Formatter::LineQuation(
+					L"최소 자승식",
+					m,
+					c,
+					&show);
+
+				startPnt = CPoint((LONG)((-c) / m), 0);
+				endPnt = CPoint((LONG)((cRect.bottom - c) / m), cRect.bottom);
+			}
+
+			m_lbxExpr.AddString(show);
 			m_vecParamCoord.RemoveAll();
-			
-			//y = mx + c => x = (y - c) / m
-			CPoint top = CPoint((LONG)((cRect.bottom / 2 - c) / m), cRect.bottom / 2);
-			CPoint bottom = CPoint((LONG)((-cRect.bottom / 2 - c) / m), -cRect.bottom / 2);
-			m_vecParamCoord.Add(top);
-			m_vecParamCoord.Add(bottom);
+			m_vecParamCoord.Add(startPnt);
+			m_vecParamCoord.Add(endPnt);
 		}
 
 		break;
@@ -473,9 +498,9 @@ const CPoint CAaronMathViewerDlg::ToOthogonalFromClient(const CPoint & client)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	case IDC_RADIO_LSMLINE:
-	case IDC_RADIO_LSMCIRCLE:
-	case IDC_RADIO_LSMPARABO:
+	//case IDC_RADIO_LSMLINE:
+	//case IDC_RADIO_LSMCIRCLE:
+	//case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.x -= cRect.right / 2;
@@ -494,9 +519,9 @@ const CPoint CAaronMathViewerDlg::ToClientFromOthogonal(const CPoint & othogonal
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	case IDC_RADIO_LSMLINE:
-	case IDC_RADIO_LSMCIRCLE:
-	case IDC_RADIO_LSMPARABO:
+	//case IDC_RADIO_LSMLINE:
+	//case IDC_RADIO_LSMCIRCLE:
+	//case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.y *= -1;
@@ -703,7 +728,7 @@ void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE
 	INT64 pntIdx = 0;
 	POINT* pntArr = new POINT[cRect.right / 2];
 
-	for (INT64 x = -cRect.right / 2; x < cRect.right / 2; x += 2)
+	for (INT64 x = 0; x < cRect.right; x += 2)
 	{
 		pntArr[pntIdx++] = ToClientFromOthogonal(CPoint((LONG)x, (LONG)(x*x *a + b * x + c)));
 	}
@@ -719,9 +744,9 @@ void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	case IDC_RADIO_LSMLINE:
-	case IDC_RADIO_LSMCIRCLE:
-	case IDC_RADIO_LSMPARABO:
+	//case IDC_RADIO_LSMLINE:
+	//case IDC_RADIO_LSMCIRCLE:
+	//case IDC_RADIO_LSMPARABO:
 	{
 		CPen dotPen(PS_DOT, 1, RGB(0, 0, 0));
 		CPen* pOldPen = dc->SelectObject(&dotPen);
