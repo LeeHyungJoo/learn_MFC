@@ -887,21 +887,29 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 //
 //}
 
-
-
-
 void CAaronMathViewerDlg::OnBnClickedButtonTestpick()
 {
 	CString show;
 	m_edtTestCoord.GetWindowText(show);
 
-	INT idx = 0;
-	auto x = show.Tokenize(L", ", idx);
-	auto y = show.Tokenize(L", ", idx);
-	auto pnt = ToClientFromOthogonal(CPoint(_wtoi(x), _wtoi(y)));
-
-	if (PickCoord(pnt))
+	try
 	{
-		UpdatePickCoords();
+		INT idx = 0;
+		auto x = show.Tokenize(L", ", idx);
+		if (idx < 0)
+			throw new CInvalidArgException();
+		auto y = show.Tokenize(L", ", idx);
+		if (idx < 0)
+			throw new CInvalidArgException();
+		auto pnt = ToClientFromOthogonal(CPoint(_wtoi(x), _wtoi(y)));
+
+		if (PickCoord(pnt))
+		{
+			UpdatePickCoords();
+		}
+	}
+	catch (... )
+	{
+		AfxMessageBox(_T("x y 좌표 순으로 공백 또는 콤마로 구분해서 입력하세요 ! "), MB_ICONWARNING | MB_OK);
 	}
 }
