@@ -26,6 +26,8 @@ CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 CAaronMathViewerDlg::~CAaronMathViewerDlg()
 {
 	m_vecCoordEdits.RemoveAll();
+	for (INT64 i = 0; i < m_points.GetSize(); i++)
+		delete[] m_points[i].first;
 	m_points.RemoveAll();
 }
 
@@ -59,6 +61,8 @@ void CAaronMathViewerDlg::ResetPicking()
 void CAaronMathViewerDlg::ResetParamCoords()
 {
 	m_vecParamCoord.RemoveAll();
+	for (INT64 i = 0; i < m_points.GetSize(); i++)
+		delete[] m_points[i].first;
 	m_points.RemoveAll();
 	m_vecParamArray.RemoveAll();
 	m_iRotDegree = 0;
@@ -377,7 +381,6 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				arg5 = xy
 				arg6 = x^2 y
 				arg7 = x^4
-
 			*/
 
 			DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0;
@@ -591,25 +594,24 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 	}
 	case IDC_RADIO_TRIROT:
 	{
-		for (int i = 0; i < oPickedCrd.GetSize(); i++)
-			DrawDotCircle(dc, oPickedCrd[i]);
-
 		if (oPickedCrd.GetSize() == 3)
 		{
 			DrawPolyLines(dc, m_points, 0, m_points.GetUpperBound());
 			DrawPolyLine(dc, oPickedCrd, 0, 2);
 		}
 
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
+			DrawDotCircle(dc, oPickedCrd[i]);
+
 		break;
 	}
 	case IDC_RADIO_LSMLINE:
 	{
-		for (int i = 0; i < oPickedCrd.GetSize(); i++)
-			DrawDotCircle(dc, oPickedCrd[i]);
-
 		if (oParamCrd.GetSize() > 1)
 			DrawLine(dc, oParamCrd[0], oParamCrd[1]);
 
+		for (int i = 0; i < oPickedCrd.GetSize(); i++)
+			DrawDotCircle(dc, oPickedCrd[i]);
 		break;
 	}
 	case IDC_RADIO_LSMCIRCLE:
@@ -932,6 +934,7 @@ void CAaronMathViewerDlg::OnBnClickedButtonTestpick()
 		{
 			UpdatePickCoords();
 		}
+		m_edtTestCoord.SetFocus();
 	}
 	catch (... )
 	{
