@@ -5,12 +5,9 @@
 #include "AaronMathViewerDlg.h"
 #include "afxdialogex.h"
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-const static BOOL B_TEST = FALSE;
 
 CAaronMathViewerDlg::CAaronMathViewerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_AARONMATHVIEWER_DIALOG, pParent)
@@ -436,7 +433,6 @@ BEGIN_MESSAGE_MAP(CAaronMathViewerDlg, CDialogEx)
 	ON_WM_LBUTTONDOWN()
 	ON_COMMAND_RANGE(IDC_RADIO_PPC, IDC_RADIO_LSMPARABO, OnMethodRadioChanged)
 	ON_BN_CLICKED(IDC_BUTTON_RESET, &CAaronMathViewerDlg::OnBnClickedButtonReset)
-	//ON_LBN_DBLCLK(IDC_LIST_VIEW, &CAaronMathViewerDlg::OnLbnDblclkListView)
 	ON_BN_CLICKED(IDC_BUTTON_ROT, &CAaronMathViewerDlg::OnBnClickedButtonRot)
 	ON_BN_CLICKED(IDC_BUTTON_TESTPICK, &CAaronMathViewerDlg::OnBnClickedButtonTestpick)
 END_MESSAGE_MAP()
@@ -501,9 +497,6 @@ const CPoint CAaronMathViewerDlg::ToOthogonalFromClient(const CPoint & client)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	//case IDC_RADIO_LSMLINE:
-	//case IDC_RADIO_LSMCIRCLE:
-	//case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.x -= cRect.right / 2;
@@ -522,9 +515,6 @@ const CPoint CAaronMathViewerDlg::ToClientFromOthogonal(const CPoint & othogonal
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	//case IDC_RADIO_LSMLINE:
-	//case IDC_RADIO_LSMCIRCLE:
-	//case IDC_RADIO_LSMPARABO:
 		CRect cRect;
 		m_pcBoard.GetClientRect(&cRect);
 		pt.y *= -1;
@@ -738,7 +728,7 @@ void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE
 	dc->Polyline(pntArr, (INT)cRect.right / 2);
 	dc->SelectObject(*pOldPen);
 
-	delete pntArr;
+	delete[] pntArr;
 }
 
 void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
@@ -746,9 +736,6 @@ void CAaronMathViewerDlg::DrawOthogonal(CPaintDC* dc)
 	switch (m_uMethodID)
 	{
 	case IDC_RADIO_TRIROT:
-	//case IDC_RADIO_LSMLINE:
-	//case IDC_RADIO_LSMCIRCLE:
-	//case IDC_RADIO_LSMPARABO:
 	{
 		CPen dotPen(PS_DOT, 1, RGB(0, 0, 0));
 		CPen* pOldPen = dc->SelectObject(&dotPen);
@@ -850,69 +837,6 @@ void CAaronMathViewerDlg::OnBnClickedButtonReset()
 	ResetParamCoords();
 	Invalidate();
 }
-
-//void CAaronMathViewerDlg::OnLbnDblclkListView()
-//{
-//	int selectedIdx = m_lbxExpr.GetCurSel();
-//	if (selectedIdx != LB_ERR)
-//	{
-//		CString expr;
-//		switch (m_lastMethodRadioID)
-//		{
-//		case IDC_RADIO_PPC:
-//		{
-//			switch (selectedIdx)
-//			{
-//			case 0:
-//			{
-//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-//
-//				Formatter::LineQuation(L"직선 방정식", m, c, &expr, !m_bExprDecimal[0]);
-//				break;
-//			}
-//			case 1:
-//			{
-//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-//
-//				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
-//				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
-//
-//				Formatter::LineQuation(L"수선 방정식", im, ic, &expr, !m_bExprDecimal[selectedIdx]);
-//				break;
-//			}
-//			case 2:
-//			{
-//				auto m = RationalNum(m_vecPickedCoord[1].y - m_vecPickedCoord[0].y, m_vecPickedCoord[1].x - m_vecPickedCoord[0].x);
-//				auto c = RationalNum(-m_vecPickedCoord[0].x) * m + m_vecPickedCoord[0].y;
-//
-//				auto im = RationalNum(-m.GetDenomiator(), m.GetNumerator());
-//				auto ic = RationalNum(-m_vecPickedCoord[2].x) * im + m_vecPickedCoord[2].y;
-//
-//				auto inter_x = RationalNum(ic - c, m - im);
-//				auto inter_y = m * inter_x + c;
-//
-//				Formatter::Coord(L"교점", inter_x, inter_y, &expr, !m_bExprDecimal[selectedIdx]);
-//				break;
-//			}
-//			default:
-//				return;
-//			}
-//			break;
-//		}
-//		default:
-//			return;
-//		}
-//
-//		m_bExprDecimal[selectedIdx] = !m_bExprDecimal[selectedIdx];
-//
-//		m_lbxExpr.DeleteString(selectedIdx);
-//		m_lbxExpr.InsertString(selectedIdx, expr);
-//		m_lbxExpr.SetCurSel(selectedIdx);
-//	}
-//
-//}
 
 void CAaronMathViewerDlg::OnBnClickedButtonTestpick()
 {

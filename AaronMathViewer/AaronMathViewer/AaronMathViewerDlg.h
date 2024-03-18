@@ -58,7 +58,6 @@ public:
 	afx_msg void OnBnClickedButtonRot();
 	afx_msg void OnBnClickedButtonReset();
 	afx_msg void OnBnClickedButtonTestpick();
-	//afx_msg void OnLbnDblclkListView();
 
 public:
 	UINT m_uMethodID;
