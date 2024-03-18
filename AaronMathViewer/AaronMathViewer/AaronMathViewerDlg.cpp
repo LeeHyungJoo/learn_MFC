@@ -380,41 +380,99 @@ void CAaronMathViewerDlg::UpdatePickCoords()
 				arg7 = x^4
 			*/
 
-			DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0;
+			DOUBLE a1 = 0, b1 = 0, c1 = 0, abs1 = 0;
+			DOUBLE a2 = 0, b2 = 0, c2 = 0, abs2 = 0;
 
-			for (INT64 i = 0; i < n; i++)
 			{
-				arg1 += m_vecDoubleCoord[i].x;
-				arg2 += std::pow(m_vecDoubleCoord[i].x, 2);
-				arg3 += std::pow(m_vecDoubleCoord[i].x, 3);
-				arg4 += m_vecDoubleCoord[i].y;
-				arg5 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y;
-				arg6 += std::pow(m_vecDoubleCoord[i].x, 2) * m_vecDoubleCoord[i].y;
-				arg7 += std::pow(m_vecDoubleCoord[i].x, 4);
+				DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0;
+
+				for (INT64 i = 0; i < n; i++)
+				{
+					arg1 += m_vecDoubleCoord[i].x;
+					arg2 += std::pow(m_vecDoubleCoord[i].x, 2);
+					arg3 += std::pow(m_vecDoubleCoord[i].x, 3);
+					arg4 += m_vecDoubleCoord[i].y;
+					arg5 += m_vecDoubleCoord[i].x * m_vecDoubleCoord[i].y;
+					arg6 += std::pow(m_vecDoubleCoord[i].x, 2) * m_vecDoubleCoord[i].y;
+					arg7 += std::pow(m_vecDoubleCoord[i].x, 4);
+				}
+
+				DOUBLE ret1 = 0;
+				ret1 = arg7 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg1 - pow(arg2, 2));
+
+				a1 = (arg6 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg5 - arg1 * arg4) + arg2 * (arg1 *arg5 - arg2 * arg4)) / ret1;
+				b1 = (arg7 *(n * arg5 - arg1 * arg4) - arg6 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg4 - arg2 * arg5)) / ret1;
+				c1 = (arg7 * (arg2 * arg4 - arg5 * arg1) - arg3 * (arg3 * arg4 - arg5 * arg2) + arg6 * (arg3 * arg1 - std::pow(arg2, 2))) / ret1;
+
+				for (INT64 i = 0; i < n; i++)
+				{
+					abs1 += abs(m_vecDoubleCoord[i].y - (a1 * std::pow(m_vecDoubleCoord[i].x, 2) + b1 * m_vecDoubleCoord[i].x + c1));
+				}
 			}
 
-			DOUBLE ret1 = 0;
-			ret1 = arg7 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg1 - pow(arg2, 2));
+			{
+				DOUBLE arg1 = 0, arg2 = 0, arg3 = 0, arg4 = 0, arg5 = 0, arg6 = 0, arg7 = 0;
 
-			DOUBLE a = 0, b = 0, c = 0;
+				for (INT64 i = 0; i < n; i++)
+				{
+					arg1 += m_vecDoubleCoord[i].y;
+					arg2 += std::pow(m_vecDoubleCoord[i].y, 2);
+					arg3 += std::pow(m_vecDoubleCoord[i].y, 3);
+					arg4 += m_vecDoubleCoord[i].x;
+					arg5 += m_vecDoubleCoord[i].y * m_vecDoubleCoord[i].x;
+					arg6 += std::pow(m_vecDoubleCoord[i].y, 2) * m_vecDoubleCoord[i].x;
+					arg7 += std::pow(m_vecDoubleCoord[i].y, 4);
+				}
 
-			a = (arg6 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg5 - arg1 * arg4) + arg2 * (arg1 *arg5 - arg2 * arg4)) / ret1;
-			b = (arg7 *(n * arg5 - arg1 * arg4) - arg6 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg4 - arg2 * arg5)) / ret1;
-			c = (arg7 * (arg2 * arg4 - arg5 * arg1) - arg3 * (arg3 * arg4 - arg5 * arg2) + arg6 * (arg3 * arg1 - std::pow(arg2, 2))) / ret1;
+				DOUBLE ret1 = 0;
+				ret1 = arg7 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg1 - pow(arg2, 2));
+
+				a2 = (arg6 * (n * arg2 - std::pow(arg1, 2)) - arg3 * (n * arg5 - arg1 * arg4) + arg2 * (arg1 *arg5 - arg2 * arg4)) / ret1;
+				b2 = (arg7 *(n * arg5 - arg1 * arg4) - arg6 * (n * arg3 - arg2 * arg1) + arg2 * (arg3 * arg4 - arg2 * arg5)) / ret1;
+				c2 = (arg7 * (arg2 * arg4 - arg5 * arg1) - arg3 * (arg3 * arg4 - arg5 * arg2) + arg6 * (arg3 * arg1 - std::pow(arg2, 2))) / ret1;
+
+				for (INT64 i = 0; i < n; i++)
+				{
+					abs2 += abs(m_vecDoubleCoord[i].x - (a2 * std::pow(m_vecDoubleCoord[i].y, 2) + b2 * m_vecDoubleCoord[i].y + c2));
+				}
+			}
 
 			CString show;
-			Formatter::ParabolaQuation(
-				L"최소 자승식",
-				a,
-				b,
-				c,
-				&show
-			);
-
+			DOUBLE type = 0;
 			m_vecParamArray.RemoveAll();
-			m_vecParamArray.Add(a);
-			m_vecParamArray.Add(b);
-			m_vecParamArray.Add(c);
+
+			if (abs1 < abs2)
+			{
+				type = 0;
+				Formatter::ParabolaQuationX(
+					L"최소 자승식",
+					a1,
+					b1,
+					c1,
+					&show
+				);
+
+				m_vecParamArray.Add(type);
+				m_vecParamArray.Add(a1);
+				m_vecParamArray.Add(b1);
+				m_vecParamArray.Add(c1);
+			}
+			else
+			{
+				type = 1;
+				Formatter::ParabolaQuationY(
+					L"최소 자승식",
+					a2,
+					b2,
+					c2,
+					&show
+				);
+
+				m_vecParamArray.Add(type);
+				m_vecParamArray.Add(a2);
+				m_vecParamArray.Add(b2);
+				m_vecParamArray.Add(c2);
+			}
 
 			m_lbxExpr.AddString(show);
 		}
@@ -616,8 +674,17 @@ void CAaronMathViewerDlg::DrawMethod(CPaintDC* dc)
 	}
 	case IDC_RADIO_LSMPARABO:
 	{
-		if (m_vecParamArray.GetSize() > 2)
-			DrawParabola(dc, m_vecParamArray[0], m_vecParamArray[1], m_vecParamArray[2]);
+		if (m_vecParamArray.GetSize() > 3)
+		{
+			if (m_vecParamArray[0] == 0)
+			{
+				DrawParabolaX(dc, m_vecParamArray[1], m_vecParamArray[2], m_vecParamArray[3]);
+			}
+			else
+			{
+				DrawParabolaY(dc, m_vecParamArray[1], m_vecParamArray[2], m_vecParamArray[3]);
+			}
+		}
 
 		for (int i = 0; i < oPickedCrd.GetSize(); i++)
 			DrawDotCircle(dc, oPickedCrd[i]);
@@ -709,7 +776,7 @@ void CAaronMathViewerDlg::DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POI
 	dc->SelectObject(*pOldPen);
 }
 
-void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE c)
+void CAaronMathViewerDlg::DrawParabolaX(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE c)
 {
 	CRect cRect;
 	m_pcBoard.GetClientRect(&cRect);
@@ -726,6 +793,28 @@ void CAaronMathViewerDlg::DrawParabola(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE
 	}
 
 	dc->Polyline(pntArr, (INT)cRect.right / 2);
+	dc->SelectObject(*pOldPen);
+
+	delete[] pntArr;
+}
+
+void CAaronMathViewerDlg::DrawParabolaY(CPaintDC * dc, DOUBLE a, DOUBLE b, DOUBLE c)
+{
+	CRect cRect;
+	m_pcBoard.GetClientRect(&cRect);
+
+	CPen pen(PS_SOLID, 2, RGB(0, 255, 120));
+	CPen* pOldPen = dc->SelectObject(&pen);
+
+	INT64 pntIdx = 0;
+	POINT* pntArr = new POINT[cRect.bottom / 2];
+
+	for (INT64 y = 0; y < cRect.bottom; y += 2)
+	{
+		pntArr[pntIdx++] = ToClientFromOthogonal(CPoint((LONG)(y*y *a + b * y + c), (LONG)y));
+	}
+
+	dc->Polyline(pntArr, (INT)cRect.bottom / 2);
 	dc->SelectObject(*pOldPen);
 
 	delete[] pntArr;

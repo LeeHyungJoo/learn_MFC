@@ -45,7 +45,8 @@ public:
 	void DrawSpecificDotCircle(CPaintDC* dc, const CPoint& point);
 	void DrawPolyLine(CPaintDC* dc, const CArray<CPoint>& points, INT64 startIdx, INT64 endIdx);
 	void DrawPolyLines(CPaintDC* dc, const CArray<std::pair<POINT*, INT64>>& points, INT64 startIdx, INT64 endIdx);
-	void DrawParabola(CPaintDC* dc, DOUBLE a, DOUBLE b, DOUBLE c);
+	void DrawParabolaX(CPaintDC* dc, DOUBLE a, DOUBLE b, DOUBLE c);
+	void DrawParabolaY(CPaintDC* dc, DOUBLE a, DOUBLE b, DOUBLE c);
 	void DrawOthogonal(CPaintDC* dc);
 
 	const CPoint ToOthogonalFromClient(const CPoint& client);

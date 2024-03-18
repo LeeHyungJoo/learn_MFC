@@ -141,7 +141,7 @@ void Formatter::CircleQuation(const CString & desc, const RationalNum & a, const
 	}
 }
 
-void Formatter::ParabolaQuation(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & c, OUT CString * format, BOOL bDecimalFormat)
+void Formatter::ParabolaQuationX(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & c, OUT CString * format, BOOL bDecimalFormat)
 {
 	if (bDecimalFormat)
 	{
@@ -155,6 +155,32 @@ void Formatter::ParabolaQuation(const CString & desc, const RationalNum & a, con
 		formatC.Format(c.IsInteger() ? L"%+.0f" : L"%+.3f", c.GetValue());
 
 		format->Format(_T("%s [ y = %sx\u00b2%sx%s ]"),
+			desc,
+			formatA,
+			formatB,
+			formatC
+		);
+	}
+	else
+	{
+		//NOT IMPLEMENT
+	}
+}
+
+void Formatter::ParabolaQuationY(const CString & desc, const RationalNum & a, const RationalNum & b, const RationalNum & c, OUT CString * format, BOOL bDecimalFormat)
+{
+	if (bDecimalFormat)
+	{
+		CString formatA;
+		formatA.Format(a.IsInteger() ? L"%+.0f" : L"%+.3f", a.GetValue());
+
+		CString formatB;
+		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
+
+		CString formatC;
+		formatC.Format(c.IsInteger() ? L"%+.0f" : L"%+.3f", c.GetValue());
+
+		format->Format(_T("%s [ x = %sy\u00b2%sy%s ]"),
 			desc,
 			formatA,
 			formatB,

@@ -45,7 +45,16 @@ public:
 		BOOL bDecimalFormat = TRUE
 	);
 
-	static void ParabolaQuation(
+	static void ParabolaQuationX(
+		const CString& desc,
+		const RationalNum& a,
+		const RationalNum& b,
+		const RationalNum& c,
+		OUT CString* format,
+		BOOL bDecimalFormat = TRUE
+	);
+
+	static void ParabolaQuationY(
 		const CString& desc,
 		const RationalNum& a,
 		const RationalNum& b,
