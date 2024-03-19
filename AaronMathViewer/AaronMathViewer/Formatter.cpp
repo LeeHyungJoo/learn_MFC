@@ -145,16 +145,20 @@ void Formatter::ParabolaQuationX(const CString & desc, const RationalNum & a, co
 {
 	if (bDecimalFormat)
 	{
+		RationalNum s = a;
+		RationalNum x = b  / (a * 2);
+		RationalNum y = -(std::pow(b.GetValue(), 2) / (a * 4).GetValue()) + c.GetValue();
+
 		CString formatA;
-		formatA.Format(a.IsInteger() ? L"%+.0f" : L"%+.3f", a.GetValue());
+		formatA.Format(s.IsInteger() ? L"%+.0f" : L"%+.3f", s.GetValue());
 
 		CString formatB;
-		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
+		formatB.Format(x.IsInteger() ? L"%+.0f" : L"%+.3f", x.GetValue());
 
 		CString formatC;
-		formatC.Format(c.IsInteger() ? L"%+.0f" : L"%+.3f", c.GetValue());
+		formatC.Format(y.IsInteger() ? L"%+.0f" : L"%+.3f", y.GetValue());
 
-		format->Format(_T("%s [ y = %sx\u00b2%sx%s ]"),
+		format->Format(_T("%s [ y = %s(x%s)\u00b2%s ]"),
 			desc,
 			formatA,
 			formatB,
@@ -171,16 +175,20 @@ void Formatter::ParabolaQuationY(const CString & desc, const RationalNum & a, co
 {
 	if (bDecimalFormat)
 	{
+		RationalNum s = a;
+		RationalNum x = b / (a * 2);
+		RationalNum y = -(std::pow(b.GetValue(), 2) / (a * 4).GetValue()) + c.GetValue();
+
 		CString formatA;
-		formatA.Format(a.IsInteger() ? L"%+.0f" : L"%+.3f", a.GetValue());
+		formatA.Format(s.IsInteger() ? L"%+.0f" : L"%+.3f", s.GetValue());
 
 		CString formatB;
-		formatB.Format(b.IsInteger() ? L"%+.0f" : L"%+.3f", b.GetValue());
+		formatB.Format(x.IsInteger() ? L"%+.0f" : L"%+.3f", x.GetValue());
 
 		CString formatC;
-		formatC.Format(c.IsInteger() ? L"%+.0f" : L"%+.3f", c.GetValue());
+		formatC.Format(y.IsInteger() ? L"%+.0f" : L"%+.3f", y.GetValue());
 
-		format->Format(_T("%s [ x = %sy\u00b2%sy%s ]"),
+		format->Format(_T("%s [ x = %s(y%s)\u00b2%s ]"),
 			desc,
 			formatA,
 			formatB,
