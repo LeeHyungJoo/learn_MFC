@@ -3,7 +3,7 @@
 
 LightMessage::LightMessage()
 	:m_size(23),
-	m_type(LightMessage::L_4CH_12V), 
+	m_type(LightMessage::L_ALL_CH_12V),
 	m_brightness(0)
 {
 }

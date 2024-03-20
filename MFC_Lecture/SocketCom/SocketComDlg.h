@@ -16,13 +16,12 @@ public:
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
-private:
-	BOOL ConnectToComPort(ENUM_COMM_SET commType);
-	BOOL DisconnectToComPort(ENUM_COMM_SET commType);
 public:
 
 	afx_msg void OnBnClickedBtnConnectLight();
 	afx_msg void OnCbnSelchangeCmbLightType();
+	afx_msg void OnBnClickedBtnLightSend();
+	afx_msg void OnBnClickedBtnLightStop();
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -33,7 +32,13 @@ public:
 	SerialPort* m_port;
 	LightMessage m_msg;
 
+	INT m_lightIntensity;
+
+	CComboBox m_cmbLightType;
+
 	CButton m_btnConnect;
 	CButton m_cxLightConnect;
-	CComboBox m_cmbLightType;
+	CButton m_btnLightSend;
+	CButton m_btnLightStop;
+	afx_msg void OnEnKillfocusEditLightIntensity();
 };

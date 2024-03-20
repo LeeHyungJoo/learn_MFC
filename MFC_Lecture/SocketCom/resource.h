@@ -8,8 +8,8 @@
 #define IDC_CMB_LIGHT_TYPE              1006
 #define IDC_EDIT_LIGHT_INTENSITY        1007
 #define IDC_SPIN_LIGHT_INTENSITY        1008
-#define IDC_BTN_LIGHTON                 1009
-#define IDC_BTN_LIGHTOFF                1010
+#define IDC_BTN_LIGHT_SEND              1009
+#define IDC_BTN_LIGHT_STOP              1010
 #define IDC_CHECK_LIGHTCONNECT          1012
 
 // Next default values for new objects
