@@ -9,12 +9,32 @@
 
 // 여기에 미리 컴파일하려는 헤더 추가
 #include "framework.h"
+#include <string>
+#include "SerialPort.h"
+#include "Protocols.h"
 
 enum ENUM_COMM_SET
 {
-	COMM_TCP_CLIENT_T1 = 0,
-	COMM_SERIAL1,
-	COMM_COUNT
+	COMM_SERIAL1 = 1,
 };
 
 #endif //PCH_H
+
+//#pragma comment(lib, "CommSetDLL")
+//
+//extern "C"  __declspec(dllimport) BOOL WINAPI CommSet_Initialize(int nCount);
+//extern "C"  __declspec(dllimport) void WINAPI CommSet_Finalize();
+//extern "C"  __declspec(dllimport) BOOL WINAPI SetCallback_DataReceived(int nIndex, LPVOID lpFunc);
+//extern "C"  __declspec(dllimport) BOOL WINAPI SetCallback_Error(int nIndex, LPVOID lpFunc);
+//
+//extern "C"  __declspec(dllimport) BOOL WINAPI StopAll(int nIndex);
+//
+//
+//extern "C"  __declspec(dllimport) BOOL WINAPI SetParameter(int nIndex, TCHAR * port, unsigned int baudrate, unsigned int parity, unsigned int databit, unsigned int stopbit);
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_Open(int nIndex, HWND hWnd, TCHAR * tcPort, int nBaud);
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_Clear(int nIndex);
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_Send(int nIndex, unsigned char *outbuf, int len);
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_Close(int nIndex);
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_Reset(int nIndex);
+//
+//extern "C"  __declspec(dllimport) BOOL WINAPI Serial_IsOpen(int nIndex);

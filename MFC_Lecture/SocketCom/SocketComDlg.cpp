@@ -1,8 +1,4 @@
-﻿
-// SocketComDlg.cpp: 구현 파일
-//
-
-#include "pch.h"
+﻿#include "pch.h"
 #include "framework.h"
 #include "SocketCom.h"
 #include "SocketComDlg.h"
@@ -13,20 +9,45 @@
 #endif
 
 CSocketComDlg::CSocketComDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_SOCKETCOM_DIALOG, pParent)
+	: CDialogEx(IDD_SOCKETCOM_DIALOG, pParent),
+	m_port(new SerialPort())
 {
+	if (m_port->OpenPort(L"COM7"))
+	{
+		m_port->ConfigurePort(38400, 8, 0, 0, 1);
+	}
+}
 
+CSocketComDlg::~CSocketComDlg()
+{
+	m_port->ClosePort();
+	delete m_port;
 }
 
 void CSocketComDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Control(pDX, IDC_BTN_CONNECT_LIGHT, m_btnConnect);
+	DDX_Control(pDX, IDC_CHECK_LIGHTCONNECT, m_cxLightConnect);
+	DDX_Control(pDX, IDC_CMB_LIGHT_TYPE, m_cmbLightType);
+}
+
+BOOL CSocketComDlg::ConnectToComPort(ENUM_COMM_SET commType)
+{
+	
+	return 0;
+}
+
+BOOL CSocketComDlg::DisconnectToComPort(ENUM_COMM_SET commType)
+{
+	return 0;
 }
 
 BEGIN_MESSAGE_MAP(CSocketComDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_EN_CHANGE(IDC_EDIT_LIGHT_INTENSITY, &CSocketComDlg::OnEnChangeEditLightIntensity)
+	ON_BN_CLICKED(IDC_BTN_CONNECT_LIGHT, &CSocketComDlg::OnBnClickedBtnConnectLight)
+	ON_CBN_SELCHANGE(IDC_CMB_LIGHT_TYPE, &CSocketComDlg::OnCbnSelchangeCmbLightType)
 END_MESSAGE_MAP()
 
 
@@ -34,7 +55,20 @@ BOOL CSocketComDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
+	m_cmbLightType.SetCurSel(0);
 
+	m_btnConnect.EnableWindow(!m_port->IsPortReady());
+	m_cxLightConnect.SetCheck(m_port->IsPortReady());
+
+	//TEST
+	m_msg.SetType(LightMessage::L_4CH_38mA);
+	m_msg.SetBrightness(20);
+
+	unsigned char * msg = nullptr;
+	DWORD size;
+	m_msg.Serialize(&msg, size);
+
+	m_port->WriteByte(msg, size);
 	return TRUE;
 }
 
@@ -43,14 +77,21 @@ void CSocketComDlg::OnPaint()
 	CDialogEx::OnPaint();
 }
 
-
-
-void CSocketComDlg::OnEnChangeEditLightIntensity()
+void CSocketComDlg::OnBnClickedBtnConnectLight()
 {
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
+	if (m_port->OpenPort(L"COM7"))
+	{
+		m_port->ConfigurePort(38400, 8, 0, 0, 1);
+	}
+	else
+	{
+		AfxMessageBox(_T("직렬 포트를 여는데 실패 했습니다.", MB_ICONWARNING | MB_OK));
+	}
+}
 
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+void CSocketComDlg::OnCbnSelchangeCmbLightType()
+{
+	static int lastType = -1;
+	int curType = m_cmbLightType.GetCurSel();
 }

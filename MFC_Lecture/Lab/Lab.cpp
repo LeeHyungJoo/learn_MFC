@@ -26,12 +26,19 @@ const int& Test()
 
 int main()
 {
-	CString showA;
-	showA.Format(false ? L"%+.0fx" : L"%+.3fx", 0.4);
-	CString formatA;
-	formatA.Format(_T("%s"), true ? "%+.0fx" : "%+.3fx");
+	//CString showA;
+	//showA.Format(false ? L"%+.0fx" : L"%+.3fx", 0.4);
+	//CString formatA;
+	//formatA.Format(_T("%s"), true ? "%+.0fx" : "%+.3fx");
 
-	CString format;
-	format.Format(_T("%s"), formatA, 0.0f);
+	//CString format;
+	//format.Format(_T("%s"), formatA, 0.0f);
+
+
+	std::string m_strMsg;
+	m_strMsg.resize(23, '0');
+	m_strMsg[0] = '!';
+	m_strMsg[23 - 1] = '@';
+	m_strMsg.replace( 1, 4, "U000");
 	return 0;
 }
