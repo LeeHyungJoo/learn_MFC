@@ -44,7 +44,8 @@ BEGIN_MESSAGE_MAP(CSocketComDlg, CDialogEx)
 	ON_CBN_SELCHANGE(IDC_CMB_LIGHT_TYPE, &CSocketComDlg::OnCbnSelchangeCmbLightType)
 	ON_BN_CLICKED(IDC_BTN_LIGHT_SEND, &CSocketComDlg::OnBnClickedBtnLightSend)
 	ON_BN_CLICKED(IDC_BTN_LIGHT_STOP, &CSocketComDlg::OnBnClickedBtnLightStop)
-	ON_EN_KILLFOCUS(IDC_EDIT_LIGHT_INTENSITY, &CSocketComDlg::OnEnKillfocusEditLightIntensity)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_LIGHT_INTENSITY, &CSocketComDlg::OnDeltaposSpinLightIntensity)
+	ON_EN_UPDATE(IDC_EDIT_LIGHT_INTENSITY, &CSocketComDlg::OnEnUpdateEditLightIntensity)
 END_MESSAGE_MAP()
 
 BOOL CSocketComDlg::OnInitDialog()
@@ -82,6 +83,8 @@ void CSocketComDlg::OnCbnSelchangeCmbLightType()
 	if (lastType == curType)
 		return;
 
+	lastType = curType;
+
 	switch (curType)
 	{
 	case 0:
@@ -118,7 +121,42 @@ void CSocketComDlg::OnBnClickedBtnLightStop()
 	m_port->WriteByte(msg, size);
 }
 
-void CSocketComDlg::OnEnKillfocusEditLightIntensity()
+void CSocketComDlg::OnEnUpdateEditLightIntensity()
 {
 	UpdateData();
+
+	static int lastIntensity = 0;
+
+	if (m_lightIntensity > 99 || m_lightIntensity < 0)
+	{
+		if(m_lightIntensity > 99)
+			m_lightIntensity = lastIntensity;
+		if (m_lightIntensity < 0)
+			m_lightIntensity = lastIntensity;
+
+		CString show;
+		show.Format(L"%d", m_lightIntensity);
+		GetDlgItem(IDC_EDIT_LIGHT_INTENSITY)->SetWindowText(show);
+	}
+
+	if (lastIntensity == m_lightIntensity)
+		return;
+
+	lastIntensity = m_lightIntensity;
+
+	CString show;
+	show.Format(L"%d", m_lightIntensity);
+	GetDlgItem(IDC_EDIT_LIGHT_INTENSITY)->SetWindowText(show);
+}
+
+void CSocketComDlg::OnDeltaposSpinLightIntensity(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	m_lightIntensity += (-pNMUpDown->iDelta);
+
+	CString show;
+	show.Format(L"%d", m_lightIntensity);
+	GetDlgItem(IDC_EDIT_LIGHT_INTENSITY)->SetWindowText(show);
+
+	*pResult = 0;
 }

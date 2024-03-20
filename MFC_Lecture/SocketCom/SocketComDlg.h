@@ -17,11 +17,12 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
 
 public:
-
 	afx_msg void OnBnClickedBtnConnectLight();
 	afx_msg void OnCbnSelchangeCmbLightType();
 	afx_msg void OnBnClickedBtnLightSend();
 	afx_msg void OnBnClickedBtnLightStop();
+	afx_msg void OnEnUpdateEditLightIntensity();
+	afx_msg void OnDeltaposSpinLightIntensity(NMHDR *pNMHDR, LRESULT *pResult);
 
 protected:
 	virtual BOOL OnInitDialog();
@@ -40,5 +41,4 @@ public:
 	CButton m_cxLightConnect;
 	CButton m_btnLightSend;
 	CButton m_btnLightStop;
-	afx_msg void OnEnKillfocusEditLightIntensity();
 };
