@@ -15,6 +15,8 @@ CSocketComDlg::CSocketComDlg(CWnd* pParent /*=nullptr*/)
 {
 	if (m_port->OpenPort(L"COM7"))
 	{
+
+		//TODO : 설정 파일 필요 : 임시로 우선 지정해두었음.
 		m_port->ConfigurePort(38400, 8, 0, 0, 1);
 	}
 }
@@ -85,6 +87,7 @@ void CSocketComDlg::OnCbnSelchangeCmbLightType()
 
 	lastType = curType;
 
+	//TODO : 매핑 문제 : 데이터를 읽어서 처리해야 함. 무결성을 위함.
 	switch (curType)
 	{
 	case 0:
