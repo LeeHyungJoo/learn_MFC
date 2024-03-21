@@ -150,6 +150,14 @@ void CSocketComDlg::OnEnUpdateEditLightIntensity()
 	CString show;
 	show.Format(L"%d", m_lightIntensity);
 	GetDlgItem(IDC_EDIT_LIGHT_INTENSITY)->SetWindowText(show);
+
+	m_msg.SetBrightness(m_lightIntensity);
+
+	unsigned char * msg = nullptr;
+	DWORD size;
+
+	m_msg.Serialize(&msg, size);
+	m_port->WriteByte(msg, size);
 }
 
 void CSocketComDlg::OnDeltaposSpinLightIntensity(NMHDR *pNMHDR, LRESULT *pResult)
