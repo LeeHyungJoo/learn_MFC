@@ -1,16 +1,18 @@
 ﻿#include "stdafx.h"
 #include <afx.h>
 #include <iostream>
+#include <fstream>
 #include <thread>
 #include <chrono>
 #include <tchar.h>
 #include <Windows.h>
+
 #include <algorithm>
 
 using namespace std;
 
 #define BUFFER_SIZE 1024
-#define STREAM_MODE
+//#define STREAM_MODE
 
 #define PATH_DISKLOCK (_T("D:\\TestRead\\disklock.ini"))
 
@@ -180,101 +182,65 @@ void Scenario_5()
 			{
 
 #ifdef STREAM_MODE
+				std::ifstream input(strPath.GetString(), std::ios::binary);
+				if (!input)
+				{
+					std::wcerr << _T("Scenario_5::Failed to open source file: ") << strPath.GetString() << std::endl;
+					continue;
+				}
 
+				std::ofstream output(strMigrationPath.GetString(), std::ios::binary);
+				if (!output)
+				{
+					std::wcerr << _T("Scenario_5::Failed to create Migration file: ") << strMigrationPath.GetString() << std::endl;
+					continue;
+				}
 
+				WCHAR bom = 0xFEFF;
+				output.write(reinterpret_cast<const char*>(&bom), sizeof(WCHAR));
+				output << input.rdbuf();
+				output.flush();
 #else
-				CFile iniFile;
-				if (iniFile.Open(strPath, CFile::modeRead | CFile::shareExclusive))
-				{
-					wcout << _T("Scenario_5::Open") << endl;
-					ULONGLONG nFileSize = iniFile.GetLength();
+				CString strUnicodeTest = _T("C:\\Users\\Public\\Documents\\😀_이모지폴더\\파일.txt");
+				CStdioFile iniFile;
+				if (!iniFile.Open(strPath, CFile::modeRead | CFile::shareExclusive | CFile::typeText))
+					return;
 
-					// 파일 전체 내용을 담을 버퍼 할당
-					CHAR strBuffer[BUFFER_SIZE] = { 0 };
-					iniFile.Read(strBuffer, BUFFER_SIZE);
-					int t1 = strBuffer[0];
-					int t2 = strBuffer[1];
-					int t3 = strBuffer[2];
+				wcout << _T("Scenario_5::Open") << endl;
 
-					CFile iniMigrationFile;
-					if (iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive))
-					{
-						wcout << _T("Scenario_5::Create migration") << endl;
-						iniMigrationFile.SeekToBegin();
-						WCHAR	szUnicodeBOM = 0xFEFF;
-						iniMigrationFile.Write(&szUnicodeBOM, sizeof(WCHAR));
-						iniMigrationFile.SeekToEnd();
-						iniMigrationFile.Write(strBuffer, BUFFER_SIZE);
+				CStdioFile iniMigrationFile;
+				if (!iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeUnicode))
+					return;
 
-						//CString strUnicodeTest = _T("C:\\Users\\Public\\Documents\\😀_이모지폴더\\파일.txt");
-						//iniMigrationFile.Write(strUnicodeTest.GetBuffer(BUFFER_SIZE), BUFFER_SIZE);
-						iniMigrationFile.Flush();
+				//iniMigrationFile.SeekToBegin();
+				WCHAR wch = 0xFEFF;
+				iniMigrationFile.Write(&wch, sizeof(WCHAR));
 
-						wcout << _T("Scenario_5::Copy Success") << endl;
+				wcout << _T("Scenario_5::Create migration") << endl;
 
-						iniMigrationFile.Close();
-						iniFile.Close();
-						CFile::Remove(strPath);
-						wcout << _T("Scenario_5::Remove Success ") << strPath.GetString() << endl;
-						CFile::Rename(strMigrationPath, strPath);
+				CString strLine;
+				while (iniFile.ReadString(strLine))
+					iniMigrationFile.WriteString(strLine + _T('\n'));
 
-						WritePrivateProfileString(_T("VersionInfo"), _T("Version"), _T("ver1.1"), strPath);
-						wcout << _T("Scenario_5::Rename Success ") << strMigrationPath.GetString() << _T(" to ") << strPath.GetString() << endl;
-					}
-					else
-					{
-						wcerr << _T("Scenario_5::Fail create migration") << endl;
-					}
-				}
-				else
-				{
-					wcerr << _T("Scenario_5::Fail open errno ") << GetLastError() << endl;
-				}
+				wcout << _T("Scenario_5::Copy Success") << endl;
+
+				iniMigrationFile.Close();
+				iniFile.Close();
+				CFile::Remove(strPath);
+				wcout << _T("Scenario_5::Remove Success ") << strPath.GetString() << endl;
+				CFile::Rename(strMigrationPath, strPath);
+
+				WritePrivateProfileString(_T("VersionInfo"), _T("Version"), _T("ver1.1"), strPath);
+				wcout << _T("Scenario_5::Rename Success ") << strMigrationPath.GetString() << _T(" to ") << strPath.GetString() << endl;
+				WritePrivateProfileString(_T("VersionInfo"), _T("TestField"), strUnicodeTest, strPath);
+
 			}
 			else
 			{
-				wcout << _T("Scenario_5::No need to migrate only copy") << endl;
-
-				CFile iniFile;
-				if (iniFile.Open(strPath, CFile::modeRead | CFile::shareExclusive))
-				{
-					wcout << _T("Scenario_5::Open") << endl;
-					ULONGLONG nFileSize = iniFile.GetLength();
-
-					// 파일 전체 내용을 담을 버퍼 할당
-					BYTE* pBuffer = new BYTE[(size_t)nFileSize];
-					iniFile.Read(pBuffer, (UINT)nFileSize);
-
-
-					CFile iniMigrationFile;
-					if (iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive))
-					{
-						wcout << _T("Scenario_5::Create temp file") << endl;
-
-						iniMigrationFile.Write(pBuffer, (UINT)nFileSize);
-						iniMigrationFile.Close();
-						iniMigrationFile.Flush();
-						delete[] pBuffer;
-
-						wcout << _T("Scenario_5::Copy to Temp Success") << endl;
-
-						iniFile.Close();
-						DeleteFile(strPath);
-						CFile::Rename(strMigrationPath, strPath);
-					}
-					else
-					{
-						wcerr << _T("Scenario_5::Fail create temp file") << endl;
-					}
-				}
-				else
-				{
-					wcerr << _T("Scenario_5::Fail open errno ") << GetLastError() << endl;
-				}
+			}
 #endif // STREAM_MODE
 
-
-			}
+			break;
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
