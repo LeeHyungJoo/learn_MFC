@@ -42,3 +42,4 @@
 Debug/
 Data/
 x64/
+*.opendb

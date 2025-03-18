@@ -10,6 +10,7 @@
 using namespace std;
 
 #define BUFFER_SIZE 1024
+#define STREAM_MODE
 
 #define PATH_DISKLOCK (_T("D:\\TestRead\\disklock.ini"))
 
@@ -177,6 +178,11 @@ void Scenario_5()
 
 			if (bNeedToConvert)
 			{
+
+#ifdef STREAM_MODE
+
+
+#else
 				CFile iniFile;
 				if (iniFile.Open(strPath, CFile::modeRead | CFile::shareExclusive))
 				{
@@ -184,7 +190,7 @@ void Scenario_5()
 					ULONGLONG nFileSize = iniFile.GetLength();
 
 					// 파일 전체 내용을 담을 버퍼 할당
-					CHAR strBuffer[BUFFER_SIZE] = {0};
+					CHAR strBuffer[BUFFER_SIZE] = { 0 };
 					iniFile.Read(strBuffer, BUFFER_SIZE);
 					int t1 = strBuffer[0];
 					int t2 = strBuffer[1];
@@ -265,8 +271,10 @@ void Scenario_5()
 				{
 					wcerr << _T("Scenario_5::Fail open errno ") << GetLastError() << endl;
 				}
+#endif // STREAM_MODE
+
+
 			}
-			break;
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
