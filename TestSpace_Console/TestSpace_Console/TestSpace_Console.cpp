@@ -28,7 +28,7 @@ void Scenario_1()
 		while (TRUE)
 		{
 			CFile file;
-			if (file.Open(PATH_DISKLOCK, CFile::modeRead | CFile::shareExclusive))
+			if (file.Open(PATH_DISKLOCK, CFile::modeRead))
 			{
 				std::this_thread::sleep_for(std::chrono::milliseconds(300));
 				wcout << _T("Scenario_1::Exclusive open") << endl;
