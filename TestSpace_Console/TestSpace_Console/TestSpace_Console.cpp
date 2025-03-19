@@ -12,6 +12,7 @@
 using namespace std;
 
 #define BUFFER_SIZE 1024
+#define BUFFER_SIZE_SECTION 4096
 //#define STREAM_MODE
 
 #define PATH_DISKLOCK (_T("D:\\TestRead\\disklock.ini"))
@@ -29,7 +30,7 @@ void Scenario_1()
 			CFile file;
 			if (file.Open(PATH_DISKLOCK, CFile::modeRead | CFile::shareExclusive))
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+				std::this_thread::sleep_for(std::chrono::milliseconds(300));
 				wcout << _T("Scenario_1::Exclusive open") << endl;
 				file.Close();
 			}
@@ -62,7 +63,7 @@ void Scenario_2()
 			TCHAR buffer[BUFFER_SIZE] = { 0 };
 			GetPrivateProfileString(_T("Section"), _T("Key"), _T("Default"), buffer, BUFFER_SIZE, PATH_DISKLOCK);
 			wcout << _T("Scenario_2::GetPrivateProfileString : ") << buffer << _T("\n");
-			std::this_thread::sleep_for(std::chrono::milliseconds(700));
+			std::this_thread::sleep_for(std::chrono::milliseconds(300));
 		}
 	}
 	catch (CFileException* e) {
@@ -85,8 +86,8 @@ void Scenario_3()
 			CFile file;
 			if (file.Open(PATH_DISKLOCK, CFile::modeRead | CFile::shareDenyNone))
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(800));
-				wcout << _T("Scenario_3::Exclusive open") << endl;
+				std::this_thread::sleep_for(std::chrono::milliseconds(300));
+				wcout << _T("Scenario_3::share open") << endl;
 				file.Close();
 			}
 			else
@@ -159,7 +160,7 @@ void Scenario_5()
 			if (_taccess(strPath, 0) == -1)
 			{
 				wcerr << _T("Scenario_5::No File") << endl;
-				std::this_thread::sleep_for(std::chrono::seconds(500));
+				std::this_thread::sleep_for(std::chrono::milliseconds(500));
 				continue;
 			}
 			else
@@ -178,76 +179,93 @@ void Scenario_5()
 					bNeedToConvert = TRUE;
 			}
 
-			if (bNeedToConvert)
-			{
 
 #ifdef STREAM_MODE
-				std::ifstream input(strPath.GetString(), std::ios::binary);
-				if (!input)
-				{
-					std::wcerr << _T("Scenario_5::Failed to open source file: ") << strPath.GetString() << std::endl;
-					continue;
-				}
-
-				std::ofstream output(strMigrationPath.GetString(), std::ios::binary);
-				if (!output)
-				{
-					std::wcerr << _T("Scenario_5::Failed to create Migration file: ") << strMigrationPath.GetString() << std::endl;
-					continue;
-				}
-
-				WCHAR bom = 0xFEFF;
-				output.write(reinterpret_cast<const char*>(&bom), sizeof(WCHAR));
-				output << input.rdbuf();
-				output.flush();
-#else
-				CString strUnicodeTest = _T("C:\\Users\\Public\\Documents\\😀_이모지폴더\\파일.txt");
-				CStdioFile iniFile;
-				if (!iniFile.Open(strPath, CFile::modeRead | CFile::shareExclusive | CFile::typeText))
-					return;
-
-				wcout << _T("Scenario_5::Open") << endl;
-
-				CStdioFile iniMigrationFile;
-				if (!iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite | CFile::shareExclusive | CFile::typeUnicode))
-					return;
-
-				//iniMigrationFile.SeekToBegin();
-				WCHAR wch = 0xFEFF;
-				iniMigrationFile.Write(&wch, sizeof(WCHAR));
-
-				wcout << _T("Scenario_5::Create migration") << endl;
-
-				CString strLine;
-				while (iniFile.ReadString(strLine))
-					iniMigrationFile.WriteString(strLine + _T('\n'));
-
-				wcout << _T("Scenario_5::Copy Success") << endl;
-
-				iniMigrationFile.Close();
-				iniFile.Close();
-				CFile::Remove(strPath);
-				wcout << _T("Scenario_5::Remove Success ") << strPath.GetString() << endl;
-				CFile::Rename(strMigrationPath, strPath);
-
-				WritePrivateProfileString(_T("VersionInfo"), _T("Version"), _T("ver1.1"), strPath);
-				wcout << _T("Scenario_5::Rename Success ") << strMigrationPath.GetString() << _T(" to ") << strPath.GetString() << endl;
-				WritePrivateProfileString(_T("VersionInfo"), _T("TestField"), strUnicodeTest, strPath);
-
-			}
-			else
+			std::ifstream input(strPath.GetString(), std::ios::binary);
+			if (!input)
 			{
+				std::wcerr << _T("Scenario_5::Failed to open source file: ") << strPath.GetString() << std::endl;
+				continue;
 			}
+
+			std::ofstream output(strMigrationPath.GetString(), std::ios::binary);
+			if (!output)
+			{
+				std::wcerr << _T("Scenario_5::Failed to create Migration file: ") << strMigrationPath.GetString() << std::endl;
+				continue;
+			}
+
+			WCHAR bom = 0xFEFF;
+			output.write(reinterpret_cast<const char*>(&bom), sizeof(WCHAR));
+			output << input.rdbuf();
+			output.flush();
+#else
+			CString strUnicodeTest = _T("C:\\Users\\Public\\Documents\\😀_이모지폴더\\파일.txt");
+
+			TCHAR arrSections[BUFFER_SIZE_SECTION] = { 0 };
+			DWORD dwSize = GetPrivateProfileSectionNames(arrSections, BUFFER_SIZE_SECTION, strPath);
+			if (dwSize == 0)
+			{
+				std::wcerr << _T("Scenario_5:: no Section in ini") << strPath.GetString() << std::endl;
+				continue;
+			}
+
+			CFile iniMigrationFile;
+			if (!iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite))
+				continue;
+
+			WCHAR bom = 0xFEFF;
+			iniMigrationFile.Write(&bom, sizeof(bom));
+			iniMigrationFile.Close();
+
+			TCHAR* pSection = arrSections;
+			while (*pSection != _T('\0'))
+			{
+				CString strSection = pSection;
+
+				TCHAR arrKeys[BUFFER_SIZE_SECTION] = { 0 };
+				DWORD dwKeySize = GetPrivateProfileSection(strSection, arrKeys, BUFFER_SIZE_SECTION, strPath);
+				if (dwKeySize > 0)
+				{
+					TCHAR* pKeyValue = arrKeys;
+					while (*pKeyValue != _T('\0'))
+					{
+						CString strKeyValue = pKeyValue;
+
+						int nPos = strKeyValue.Find(_T('='));
+						if (nPos != -1)
+						{
+							CString strKey = strKeyValue.Left(nPos);
+							CString strValue = strKeyValue.Mid(nPos + 1);
+							WritePrivateProfileString(strSection, strKey, strValue, strMigrationPath);
+						}
+
+						pKeyValue += lstrlen(pKeyValue) + 1;
+					}
+				}
+				pSection += lstrlen(pSection) + 1;
+			}
+
+
+			CopyFile(strMigrationPath, strPath, FALSE);
+			wcout << _T("Scenario_5::Remove Success ") << strPath.GetString() << endl;
+			DeleteFile(strMigrationPath);
+
+			WritePrivateProfileString(_T("VersionInfo"), _T("Version"), _T("ver1.1"), strPath);
+			wcout << _T("Scenario_5::Rename Success ") << strMigrationPath.GetString() << _T(" to ") << strPath.GetString() << endl;
+			WritePrivateProfileString(_T("VersionInfo"), _T("TestField"), strUnicodeTest, strPath);
+
 #endif // STREAM_MODE
 
-			break;
+			//system("pause");
+			//break;
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
 	}
 	catch (CFileException* e)
 	{
-		TCHAR szError[BUFFER_SIZE];
-		e->GetErrorMessage(szError, BUFFER_SIZE);
+		TCHAR szError[256];
+		e->GetErrorMessage(szError, 256);
 		wcerr << _T("Scenario_5::Exception ") << szError << endl;
 		e->Delete();
 	}
