@@ -247,9 +247,7 @@ void Scenario_5()
 			}
 
 
-			CopyFile(strMigrationPath, strPath, FALSE);
-			wcout << _T("Scenario_5::Remove Success ") << strPath.GetString() << endl;
-			DeleteFile(strMigrationPath);
+	
 
 			WritePrivateProfileString(_T("VersionInfo"), _T("Version"), _T("ver1.1"), strPath);
 			wcout << _T("Scenario_5::Rename Success ") << strMigrationPath.GetString() << _T(" to ") << strPath.GetString() << endl;
