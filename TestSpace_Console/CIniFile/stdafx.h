@@ -3,8 +3,6 @@
 // are changed infrequently
 //
 
-#pragma once
-#define _AFXDLL
 #include "targetver.h"
 #include <afx.h>
 #include <iostream>
@@ -17,7 +15,8 @@
 #include <algorithm>
 #include <stdio.h>
 #include <tchar.h>
-
-
+#include <afxwin.h>
+#include <atlbase.h>
+#include <functional>
 
 // TODO: reference additional headers your program requires here

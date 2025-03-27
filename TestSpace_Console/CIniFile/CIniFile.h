@@ -1,15 +1,5 @@
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
-
-
-#undef	AFX_EXT_CLASS
-#ifdef	_NPCTL32_IMPL
-#define	AFX_EXT_CLASS	AFX_CLASS_EXPORT
-#else
-#define	AFX_EXT_CLASS	AFX_CLASS_IMPORT
-#endif
 
 #define BUFFER_SIZE_SECTION		(1024 * 8)
 #define BUFFER_SIZE_VALUE		(1024 * 4)
@@ -53,6 +43,7 @@ public:
 };
 
 
+
 enum INI_TYPE
 {
 	INI_TYPE_POLICY_INFO,
@@ -71,14 +62,22 @@ enum INI_TYPE
 	INI_TYPE_EXPORT_INFO,
 	INI_TYPE_RECYCLE_BIN,
 	INI_TYPE_LOCAL_APP_CATEGORY,
-	INI_TYPE_LANG
+	//INI_TYPE_LANG
 };
 
 enum INI_MODE
 {
-	INI_MODE_READ,		// 읽기 전용
-	INI_MODE_WRITE,		// 읽기 쓰기 생성 마이그레이션
-	INI_MODE_MIGRATE,	// 마이그레이션 전용
+	INI_MODE_READ,
+	INI_MODE_WRITE,
+	INI_MODE_MIGRATION,
+};
+
+enum RESULT_MIGRATION
+{
+	RESULT_MIGRATION_SUCCESS,
+	RESULT_MIGRATION_FAILED,
+	RESULT_MIGRATION_NOT_FOUND,
+	RESULT_MIGRATION_NOT_REQUIRED,
 };
 
 class CIniFile
@@ -94,6 +93,11 @@ public:
 		IN LPCTSTR lpszParam1 = nullptr
 	);
 
+	CIniFile(
+		IN LPCTSTR lpszIniPath,
+		INI_MODE eMode
+	);
+
 	virtual ~CIniFile();
 
 public:
@@ -105,13 +109,25 @@ public:
 		IN const USER_INFO* pUserInfo = nullptr,
 		IN LPCTSTR lpszParam1 = nullptr
 	);
+
+	void Open(
+		IN LPCTSTR lpszIniPath,
+		INI_MODE eMode
+	);
+
 	void Close();
 
-	void Write(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszValue) const;
-	void Write(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nValue) const;
+	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszValue) const;
+	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nValue) const;
 
 	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString& strValue) const;
 	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue, OUT INT& nValue) const;
+
+public:
+	RESULT_MIGRATION Migrate() const;
+
+	static BOOL MigrateAll();
+	static BOOL IsIniFile(const CString& strFileName);
 
 private:
 	void _CheckParams(
@@ -131,10 +147,9 @@ private:
 	);
 
 	BOOL _IsOpen() const;
-	void _Migrate() const;
 
-	void _WriteVersion(INT nVersion) const;
-	INT _ReadVersion() const;
+	BOOL _WriteVersion(INT nVersion) const;
+	INT  _ReadVersion() const;
 
 	BOOL _ConvertToUnicode() const;
 	void _Create() const;
@@ -143,6 +158,3 @@ private:
 	INI_MODE m_eMode;
 	CString m_strIniPath;
 };
-
-#undef	AFX_EXT_CLASS
-#define	AFX_EXT_CLASS
