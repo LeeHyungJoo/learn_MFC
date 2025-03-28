@@ -127,7 +127,7 @@ public:
 	RESULT_MIGRATION Migrate() const;
 
 	static BOOL MigrateAll();
-	static BOOL IsIniFile(const CString& strFileName);
+	static BOOL IsIniFile(const CString& strFilePath);
 
 private:
 	void _CheckParams(

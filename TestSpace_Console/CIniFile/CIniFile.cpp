@@ -183,7 +183,7 @@ void CIniFile::_SetIniPath(
 		if (!GetWindowsDirectory(strHeadPath.GetBuffer(MAX_PATH), MAX_PATH))
 		{
 			strHeadPath.ReleaseBuffer();
-			wprintf( _T("CIniFile::_SetIniPath - Failed to get windows directory path [%s] Error [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
+			TRACE( _T("CIniFile::_SetIniPath - Failed to get windows directory path [%s] Error [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
 			return;
 		}
 
@@ -200,7 +200,7 @@ void CIniFile::_SetIniPath(
 		if (!SHGetSpecialFolderPath(NULL, strHeadPath.GetBuffer(MAX_PATH), CSIDL_LOCAL_APPDATA, FALSE))
 		{
 			strHeadPath.ReleaseBuffer();
-			wprintf( _T("CIniFile::_SetIniPath - Failed to get localappdata path [%s] Error [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
+			TRACE( _T("CIniFile::_SetIniPath - Failed to get localappdata path [%s] Error [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
 			return;
 		}
 
@@ -350,7 +350,7 @@ void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT dwDefaultValue, OU
 
 BOOL CIniFile::MigrateAll()
 {
-	wprintf( _T("CIniFile::MigrateAll Start\r\n"));
+	TRACE( _T("CIniFile::MigrateAll Start\r\n"));
 
 	// REGISTRY 검사. 
 	LPCTSTR lpszKey = _T("Software\\NetID\\Migration");
@@ -361,44 +361,50 @@ BOOL CIniFile::MigrateAll()
 		ret = reg.Create(HKEY_CURRENT_USER, lpszKey);
 		if (ret != ERROR_SUCCESS)
 		{
-			wprintf( _T("CIniFile::MigrateAll - Failed to Create Registry - key [%s], reg error [%ld]\r\n"), lpszKey, ret);
+			TRACE( _T("CIniFile::MigrateAll - Failed to Create Registry - key [%s], reg error [%ld]\r\n"), lpszKey, ret);
 			return FALSE;
 		}
 	}
 
-	DWORD dwVersion = 0;
-	ret = reg.QueryDWORDValue(_T("dwIniVersion"), dwVersion);
-	if (ret == ERROR_SUCCESS && dwVersion >= (DWORD)LATEST_VERSION)
-		return TRUE;
+	//DWORD dwVersion = 0;
+	//ret = reg.QueryDWORDValue(_T("dwIniVersion"), dwVersion);
+	//if (ret == ERROR_SUCCESS && dwVersion >= (DWORD)LATEST_VERSION)
+	//{
+	//	TRACE(_T("CIniFile::MigrateAll - Already Migration All \r\n"), lpszKey, ret);
+	//	return TRUE;
+	//}
 
 	CStringArray arrBasePath;
 	CString strAddPath;
 	if (!GetWindowsDirectory(strAddPath.GetBuffer(MAX_PATH), MAX_PATH))
 	{
 		strAddPath.ReleaseBuffer();
-		wprintf( _T("CIniFile::MigrateAll - Failed to get windows directory Error [%x]\r\n"), GetLastError());
+		TRACE( _T("CIniFile::MigrateAll - Failed to get windows directory Error [%x]\r\n"), GetLastError());
 		return FALSE;
 	}
 
 	strAddPath.ReleaseBuffer();
 	strAddPath = strAddPath.Left(strAddPath.Find(_T(':')) + 1);
+	strAddPath.Append(_T("\\DiskLock"));
 	arrBasePath.Add(strAddPath);
 
 	if (!SHGetSpecialFolderPath(NULL, strAddPath.GetBuffer(MAX_PATH), CSIDL_LOCAL_APPDATA, FALSE))
 	{
 		strAddPath.ReleaseBuffer();
-		wprintf( _T("CIniFile::MigrateAll - Failed to get localappdata Error [%x]\r\n"), GetLastError());
+		TRACE( _T("CIniFile::MigrateAll - Failed to get localappdata Error [%x]\r\n"), GetLastError());
 		return FALSE;
 	}
 
 	strAddPath.ReleaseBuffer();
+	strAddPath.Append(_T("\\NetID"));
 	arrBasePath.Add(strAddPath);
 
 	BOOL bResult = TRUE;
 	for (int i = 0; i < arrBasePath.GetSize(); i++)
 	{
 		CStringList listPath;
-		listPath.AddTail(arrBasePath.GetAt(0));
+		auto temp = arrBasePath.GetAt(i);
+		listPath.AddTail(arrBasePath.GetAt(i));
 
 		while (!listPath.IsEmpty())
 		{
@@ -412,11 +418,9 @@ BOOL CIniFile::MigrateAll()
 			CString strPattern;
 			strPattern.Format(_T("%s\\*"), curPath);
 
-			if (!finder.FindFile(strPattern))
-				continue;
-
-			while (finder.FindNextFile())
+			for (BOOL bFind = finder.FindFile(strPattern); bFind;)
 			{
+				bFind = finder.FindNextFile();
 				if (finder.IsDots())
 					continue;
 
@@ -426,22 +430,22 @@ BOOL CIniFile::MigrateAll()
 					continue;
 				}
 
-				CString strFileName = finder.GetFileName();
-				auto t = strFileName.Right(strFileName.ReverseFind(_T('.')));
+				CString strFilePath = finder.GetFilePath();
+				auto t = strFilePath.Right(strFilePath.ReverseFind(_T('.')));
 
-				if (!IsIniFile(strFileName))
+				if (!IsIniFile(strFilePath))
 					continue;
 
-				CIniFile iniFile(strFileName, INI_MODE_WRITE);
+				CIniFile iniFile(strFilePath, INI_MODE_WRITE);
 				RESULT_MIGRATION eResult = iniFile.Migrate();
 				if (eResult == RESULT_MIGRATION_FAILED)
 				{
 					bResult = FALSE;
-					wprintf( _T("CIniFile::MigrateAll - Failed to Migrate - path[%s], [%x]\r\n"), strFileName.GetString(), GetLastError());
+					TRACE(_T("CIniFile::MigrateAll - Failed to Migrate - path[%s], [%x]\r\n"), strFilePath, GetLastError());
 					continue;
 				}
 
-				wprintf(_T("CIniFile::MigrateAll - Pass  - path[%s], migration result[%d]"), strFileName.GetString(), (int)eResult);
+				TRACE(_T("CIniFile::MigrateAll - Pass  - path[%s], migration result[%d]"), strFilePath, (int)eResult);
 			}
 		}
 	} // for end
@@ -451,21 +455,21 @@ BOOL CIniFile::MigrateAll()
 		ret = reg.SetDWORDValue(_T("dwIniVersion"), (DWORD)LATEST_VERSION);
 		if (ret != ERROR_SUCCESS)
 		{
-			wprintf( _T("CIniFile::MigrateAll - Failed to write ini version reg - key[%s], reg error[%ld]\r\n"), lpszKey, ret);
+			TRACE( _T("CIniFile::MigrateAll - Failed to write ini version reg - key[%s], reg error[%ld]\r\n"), lpszKey, ret);
 			return FALSE;
 		}
 
 		//reg.SetStringValue(_T("IniTimeStamp"), COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d %H:%M:%S")));
 	}
 
-	wprintf( _T("CIniFile::MigrateAll End\r\n"));
+	TRACE( _T("CIniFile::MigrateAll End\r\n"));
 	return TRUE;
 }
 
 
-BOOL CIniFile::IsIniFile(const CString& strFileName)
+BOOL CIniFile::IsIniFile(const CString& strFilePath)
 {
-	return strFileName.Right(strFileName.ReverseFind(_T('.'))) == _T(".ini");
+	return strFilePath.Mid(strFilePath.ReverseFind(_T('.'))) == _T(".ini");
 }
 
 
@@ -483,10 +487,14 @@ RESULT_MIGRATION CIniFile::Migrate() const
 		return RESULT_MIGRATION_NOT_FOUND;
 
 	int nCurVersion = _ReadVersion();
-	if (LATEST_VERSION <= nCurVersion)
-		return RESULT_MIGRATION_NOT_REQUIRED;
+	//if (LATEST_VERSION <= nCurVersion)
+	//{
+	//	TRACE(_T("CIniFile::Migrate - Not Required!! path [%s]\r\n"), m_strIniPath.GetString());
 
-	for (int nVersion = nCurVersion + 1; nVersion <= LATEST_VERSION; nVersion++)
+	//	return RESULT_MIGRATION_NOT_REQUIRED;
+	//}
+
+	for (int nVersion = 1/*nCurVersion + 1*/; nVersion <= LATEST_VERSION; nVersion++)
 	{
 		BOOL bSuccess = FALSE;
 		switch (nVersion)
@@ -503,17 +511,18 @@ RESULT_MIGRATION CIniFile::Migrate() const
 
 		if (!bSuccess)
 		{
-			wprintf( _T("CIniFile::Migrate - Failed to migrate path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath.GetString(), nCurVersion, nVersion, LATEST_VERSION, GetLastError());
+			TRACE( _T("CIniFile::Migrate - Failed to migrate path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath.GetString(), nCurVersion, nVersion, LATEST_VERSION, GetLastError());
 			return RESULT_MIGRATION_FAILED;
 		}
 
 		if (!_WriteVersion(nVersion))
 		{
-			wprintf( _T("CIniFile::Migrate - Failed to Write Version path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath.GetString(), nCurVersion, nVersion, LATEST_VERSION, GetLastError());
+			TRACE(_T("CIniFile::Migrate - Failed to Write Version path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath.GetString(), nCurVersion, nVersion, LATEST_VERSION, GetLastError());
 			return RESULT_MIGRATION_FAILED;
 		}
 	}
 
+	TRACE(_T("CIniFile::Migrate - SUCCESS!! path [%s]\r\n"), m_strIniPath.GetString());
 	return RESULT_MIGRATION_SUCCESS;
 }
 
@@ -532,7 +541,7 @@ BOOL CIniFile::_ConvertToUnicode() const
 	CFile iniMigrationFile;
 	if (!iniMigrationFile.Open(strMigrationPath, CFile::modeCreate | CFile::modeWrite))
 	{
-		wprintf( _T("CIniFile::_ConvertToUnicode - Failed to Create Migration Ini - path[%s], [%x]\r\n"), strMigrationPath.GetString(), GetLastError());
+		TRACE( _T("CIniFile::_ConvertToUnicode - Failed to Create Migration Ini - path[%s], [%x]\r\n"), strMigrationPath.GetString(), GetLastError());
 		return FALSE;
 	}
 
@@ -567,7 +576,7 @@ BOOL CIniFile::_ConvertToUnicode() const
 					CString strValue = strKeyValue.Mid(nPos + 1);
 					if (!WritePrivateProfileString(strSection, strKey, strValue, strMigrationPath))
 					{
-						wprintf( _T("CIniFile::_ConvertToUnicode - Failed to Write In MigrationFile - path[%s], section[%s], key[%s], value[%s], [%x]\r\n"), m_strIniPath.GetString(), strSection.GetString(), strKey.GetString(), strValue.GetString(), GetLastError());
+						TRACE( _T("CIniFile::_ConvertToUnicode - Failed to Write In MigrationFile - path[%s], section[%s], key[%s], value[%s], [%x]\r\n"), m_strIniPath.GetString(), strSection.GetString(), strKey.GetString(), strValue.GetString(), GetLastError());
 						bSuccess = FALSE;
 					}
 				}
@@ -583,13 +592,13 @@ BOOL CIniFile::_ConvertToUnicode() const
 
 	if (!CopyFile(strMigrationPath, m_strIniPath, FALSE))
 	{
-		wprintf( _T("CIniFile::_ConvertToUnicode - Failed to Copy Migration To Origin - migration path[%s], origin path[%s], [%x]\r\n"), strMigrationPath.GetString(), m_strIniPath.GetString(), GetLastError());
+		TRACE( _T("CIniFile::_ConvertToUnicode - Failed to Copy Migration To Origin - migration path[%s], origin path[%s], [%x]\r\n"), strMigrationPath.GetString(), m_strIniPath.GetString(), GetLastError());
 		return FALSE;
 	}
 
 	if (!DeleteFile(strMigrationPath))
 	{
-		wprintf(_T("CIniFile::_ConvertToUnicode - Failed to Delete Migration - migration path[%s], [%x]\r\n"), strMigrationPath.GetString(), GetLastError());
+		TRACE(_T("CIniFile::_ConvertToUnicode - Failed to Delete Migration - migration path[%s], [%x]\r\n"), strMigrationPath.GetString(), GetLastError());
 		// 삭제 실패는 실패로 처리하지 않음. 
 	}
 
@@ -605,7 +614,7 @@ void CIniFile::_Create() const
 	CFile iniFile;
 	if (!iniFile.Open(m_strIniPath, CFile::modeCreate | CFile::modeWrite))
 	{
-		wprintf( _T("CIniFile::_Create - Failed to Create Ini - path[%s], [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
+		TRACE( _T("CIniFile::_Create - Failed to Create Ini - path[%s], [%x]\r\n"), m_strIniPath.GetString(), GetLastError());
 		return;
 	}
 
@@ -614,7 +623,7 @@ void CIniFile::_Create() const
 	iniFile.Close();
 
 	if (!_WriteVersion(LATEST_VERSION))
-		wprintf( _T("CIniFile::_Create - Failed to WriteVersion Ini - path[%s], version[%d], [%x]\r\n"), m_strIniPath.GetString(), LATEST_VERSION, GetLastError());
+		TRACE( _T("CIniFile::_Create - Failed to WriteVersion Ini - path[%s], version[%d], [%x]\r\n"), m_strIniPath.GetString(), LATEST_VERSION, GetLastError());
 
 	return;
 }
