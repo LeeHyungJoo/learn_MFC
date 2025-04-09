@@ -1,47 +1,10 @@
 
+#if _MSC_VER > 1000
 #pragma once
-
-#define BUFFER_SIZE_SECTION		(1024 * 8)
-#define BUFFER_SIZE_VALUE		(1024 * 4)
+#endif // _MSC_VER > 1000
 
 #define LATEST_VERSION	(1)
-
-struct SITE_INFO
-{
-public:
-	SITE_INFO() {};
-	SITE_INFO(const SITE_INFO& src) { _Copy(src); };
-	SITE_INFO& operator=(const SITE_INFO& src) { _Copy(src); return *this; };
-
-	void _Copy(const SITE_INFO& src)
-	{
-		strSiteID = src.strSiteID;
-		strDomainID = src.strDomainID;
-	};
-
-public:
-	CString			strSiteID;
-	CString			strDomainID;	// 사용하지 않는 값 - USERINFO의 strDomainID 사용
-};
-
-struct USER_INFO
-{
-public:
-	USER_INFO() {};
-	USER_INFO(const USER_INFO& src) { _Copy(src); };
-	USER_INFO& operator=(const USER_INFO& src) { _Copy(src); return *this; };
-
-	void _Copy(const USER_INFO& src)
-	{
-		strUserID = src.strUserID;
-		strDomainID = src.strDomainID;
-	};
-
-public:
-	CString			strUserID;
-	CString			strDomainID;
-};
-
+#define GetSID 
 
 
 enum INI_TYPE
@@ -65,96 +28,85 @@ enum INI_TYPE
 	//INI_TYPE_LANG
 };
 
-enum INI_MODE
-{
-	INI_MODE_READ,
-	INI_MODE_WRITE,
-	INI_MODE_MIGRATION,
-};
-
-enum RESULT_MIGRATION
-{
-	RESULT_MIGRATION_SUCCESS,
-	RESULT_MIGRATION_FAILED,
-	RESULT_MIGRATION_NOT_FOUND,
-	RESULT_MIGRATION_NOT_REQUIRED,
-};
-
-class CIniFile
+class AFX_EXT_CLASS CIniFile
 {
 public:
 	CIniFile();
 	CIniFile(
 		INI_TYPE eIniFile,
-		INI_MODE eMode,
+		BOOL bReadOnly = TRUE,
 		IN LPCTSTR lpszSID = nullptr,
-		IN const SITE_INFO* pSiteInfo = nullptr,
-		IN const USER_INFO* pUserInfo = nullptr,
+		IN LPCTSTR lpszSiteID = nullptr,
+		IN LPCTSTR lpszUserID = nullptr,
 		IN LPCTSTR lpszParam1 = nullptr
 	);
 
 	CIniFile(
 		IN LPCTSTR lpszIniPath,
-		INI_MODE eMode
+		BOOL bReadOnly = TRUE
 	);
 
 	virtual ~CIniFile();
 
 public:
-	void Open(
+	BOOL Open(
 		INI_TYPE eIniFile,
-		INI_MODE eMode,
+		BOOL bReadOnly = TRUE,
 		IN LPCTSTR lpszSID = nullptr,
-		IN const SITE_INFO* pSiteInfo = nullptr,
-		IN const USER_INFO* pUserInfo = nullptr,
+		IN LPCTSTR lpszSiteID = nullptr,
+		IN LPCTSTR lpszUserID = nullptr,
 		IN LPCTSTR lpszParam1 = nullptr
 	);
 
-	void Open(
+	BOOL Open(
 		IN LPCTSTR lpszIniPath,
-		INI_MODE eMode
+		BOOL bReadOnly = TRUE
 	);
 
 	void Close();
 
 	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszValue) const;
+	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwValue) const;
 	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nValue) const;
 
+	//void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, DWORD dwSize, OUT CString&  strValue) const;
 	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString& strValue) const;
+	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwDefaultValue, OUT DWORD& dwValue) const;
 	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue, OUT INT& nValue) const;
 
 public:
-	RESULT_MIGRATION Migrate() const;
-
-	static BOOL MigrateAll();
+	static void MigrateAll();
 	static BOOL IsIniFile(const CString& strFilePath);
 
 private:
-	void _CheckParams(
+	BOOL _Migrate() const;
+	void _MakeIniPath(
 		INI_TYPE eIniFile,
-		IN LPCTSTR lpszSID,
-		IN const SITE_INFO* pSiteInfo,
-		IN const USER_INFO* pUserInfo,
-		IN LPCTSTR lpszParam1
+		IN	LPCTSTR lpszSID,
+		IN	LPCTSTR lpszSiteID,
+		IN	LPCTSTR lpszUserID,
+		IN	LPCTSTR lpszParam1,
+		OUT CString& strIniPath
 	) const;
-
-	void _SetIniPath(
-		INI_TYPE eIniFile,
-		IN LPCTSTR lpszSID,
-		IN const SITE_INFO* pSiteInfo,
-		IN const USER_INFO* pUserInfo,
-		IN LPCTSTR lpszParam1
-	);
-
-	BOOL _IsOpen() const;
 
 	BOOL _WriteVersion(INT nVersion) const;
 	INT  _ReadVersion() const;
 
+	BOOL _Create() const;
 	BOOL _ConvertToUnicode() const;
-	void _Create() const;
 
 private:
-	INI_MODE m_eMode;
+	BOOL m_bReadOnly;
 	CString m_strIniPath;
+
+#ifdef DEBUG
+private:
+	void _AssertParams(
+		INI_TYPE eIniFile,
+		IN LPCTSTR lpszSID,
+		IN LPCTSTR lpszSiteID,
+		IN LPCTSTR lpszUserID,
+		IN LPCTSTR lpszParam1
+	) const;
+#endif // DEBUG
 };
