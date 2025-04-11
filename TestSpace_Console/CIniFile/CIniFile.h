@@ -7,11 +7,13 @@
 #define GetSID 
 
 
+
 enum INI_TYPE
 {
 	INI_TYPE_POLICY_INFO,
 	INI_TYPE_TOTAL_BASE_POLICY_INFO,
 	INI_TYPE_TOTAL_ID_POLICY_INFO,
+	INI_TYPE_SECUREDISK_INFO,
 	INI_TYPE_COMMON,
 	INI_TYPE_DISKLOCK,
 	INI_TYPE_POLICY,
@@ -69,10 +71,16 @@ public:
 	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwValue) const;
 	BOOL Write(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nValue) const;
 
-	//void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, DWORD dwSize, OUT CString&  strValue) const;
+	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT LPTSTR strValue, DWORD dwSize) const;
+	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString& lpszValue, DWORD dwSize) const;
 	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString& strValue) const;
-	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwDefaultValue, OUT DWORD& dwValue) const;
-	void Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue, OUT INT& nValue) const;
+	DWORD Read(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwDefaultValue) const;
+	INT	Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue) const;
+
+	void DeleteKey(LPCTSTR lpszSection, LPCTSTR lpszKey) const;
+	void DeleteSection(LPCTSTR lpszSection) const;
+
+	LPCTSTR GetPath() const { return m_strIniPath; };
 
 public:
 	static void MigrateAll();
@@ -93,7 +101,6 @@ private:
 	INT  _ReadVersion() const;
 
 	BOOL _Create() const;
-	BOOL _ConvertToUnicode() const;
 
 private:
 	BOOL m_bReadOnly;

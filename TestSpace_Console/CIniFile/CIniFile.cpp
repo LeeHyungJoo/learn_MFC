@@ -1,12 +1,105 @@
 #include "stdafx.h"
 #include "CIniFile.h"
 
+BOOL npConvertFileToUnicode(LPCTSTR lpszSrcPath, int nCodePage = CP_ACP)
+{
+	CFile fileSrc;
+	if (!fileSrc.Open(lpszSrcPath, CFile::modeRead))
+	{
+		TRACE( _T("npConvertFileToUnicode - Failed to open src - path[%s], errno[%d]\r\n"), lpszSrcPath, GetLastError());
+		return FALSE;
+	}
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
-#endif
+	WCHAR wch;
+	// 파일 시작에 BOM 이 있으면 이미 유니코드 파일로 판단하고 변환 생략 -> 성공 처리
+	if (fileSrc.Read(&wch, sizeof(WCHAR)) && wch == 0xFEFF)
+		return TRUE;
+
+	fileSrc.SeekToBegin();
+
+	// 임시 파일 경로 생성 ex) disklock.ini → disklock.ini.unicode
+	CString strDstPath;
+	strDstPath.Format(_T("%s.unicode"), lpszSrcPath);
+
+	CFile fileDst;
+	if (!fileDst.Open(strDstPath, CFile::modeCreate | CFile::modeWrite))
+	{
+		TRACE( _T("npConvertFileToUnicode - Failed to create dst - path[%s], errno[%d]\r\n"), strDstPath, GetLastError());
+		return FALSE;
+	}
+
+	TRY
+	{
+		// 유니코드 BOM 쓰기.
+		WCHAR bom = 0xFEFF;
+	fileDst.Write(&bom, sizeof(bom));
+
+	// 파일을 줄 단위(라인 단위)로 끝까지 읽으며 변환 수행
+	while (TRUE)
+	{
+		CByteArray arrByte;
+		BYTE byte;
+
+		// 한 줄 읽기 0x0A(\n)을 만날 때까지 1바이트씩 읽음
+		while (fileSrc.Read(&byte, 1))
+		{
+			arrByte.Add(byte);
+			if (byte == 0x0A) break;
+		}
+
+		// 읽은 데이터가 없다면 종료
+		if (arrByte.IsEmpty())
+			break;
+
+		// 유니코드로 변환할 버퍼 크기 계산
+		int	nLen = ::MultiByteToWideChar(nCodePage, 0, (LPCSTR)arrByte.GetData(), (int)arrByte.GetSize(), NULL, 0);
+		if (nLen == 0)
+		{
+			// 변환할 데이터는 있는데 버퍼 크기를 산정할 수 없는 상황.
+			TRACE( _T("npConvertFileToUnicode - Failed to get buffer length (zero) - path[%s], byte array size[%d], errno[%d]\r\n"), strDstPath, (int)arrByte.GetSize(), GetLastError());
+			continue;
+		}
+
+		// 변환 수행
+		CArray<WCHAR, WCHAR> arrWch;
+		arrWch.SetSize(nLen);
+		::MultiByteToWideChar(nCodePage, 0, (LPCSTR)arrByte.GetData(), (int)arrByte.GetSize(), arrWch.GetData(), nLen);
+
+		// 변환된 유니코드 문자열을 출력 파일에 쓰기
+		fileDst.Write(arrWch.GetData(), nLen * sizeof(WCHAR));
+	}
+
+	// 삭제 및 이름 변경 전에 파일 닫기
+	fileSrc.Close();
+	fileDst.Close();
+	}
+		CATCH(CFileException, e)
+	{
+		TCHAR szErr[MAX_PATH] = { 0 };
+		e->GetErrorMessage(szErr, MAX_PATH);
+		TRACE( _T("npConvertFileToUnicode - Failed to write data - [%s], path[%s], errno[%d]\r\n"), szErr, strDstPath, GetLastError());
+		e->Delete();
+		return FALSE;
+	}
+	END_CATCH
+
+		// 기존 파일 삭제
+		if (!DeleteFile(lpszSrcPath))
+		{
+			TRACE( _T("npConvertFileToUnicode - Failed to delete dst - path[%s], errno[%d]\r\n"), strDstPath, GetLastError());
+			return FALSE;
+		}
+
+	// 유니코드로 변환된 파일을 기존 파일로 대체 (이름 변경)
+	if (!MoveFile(strDstPath, lpszSrcPath))
+	{
+		TRACE( _T("npConvertFileToUnicode - Failed to rename - dst path[%s], src path[%s], errno[%d]\r\n"), strDstPath, lpszSrcPath, GetLastError());
+		return FALSE;
+	}
+
+	//성공
+	return TRUE;
+}
 
 /// <summary>
 ///  기본 생성자
@@ -149,6 +242,7 @@ void CIniFile::_MakeIniPath(
 	case INI_TYPE_POLICY_INFO:
 	case INI_TYPE_TOTAL_BASE_POLICY_INFO:
 	case INI_TYPE_TOTAL_ID_POLICY_INFO:
+	case INI_TYPE_SECUREDISK_INFO:
 	case INI_TYPE_POLICY:
 	case INI_TYPE_SECUREDISK_BACKUP:
 	case INI_TYPE_PC_BACKUP:
@@ -158,14 +252,17 @@ void CIniFile::_MakeIniPath(
 	case INI_TYPE_SHARED_WORKDRIVE_INFO:
 	{
 		TCHAR szPath[MAX_PATH] = { 0 };
-		if (!GetWindowsDirectory(szPath, MAX_PATH))
+		if (GetWindowsDirectory(szPath, MAX_PATH))
 		{
-			TRACE(_T("CIniFile::_SetIniPath - Failed to get windows directory path [%s] Error [%x]\r\n"), m_strIniPath, GetLastError());
-			return;
+			strHeadPath = szPath;
+			strHeadPath = strHeadPath.Left(strHeadPath.Find(_T(':')) + 1);
+		}
+		else
+		{
+			TRACE( _T("CIniFile::_SetIniPath - Failed to get windows directory - path[%s] errno[%d]\r\n"), m_strIniPath, GetLastError());
+			strHeadPath = _T('C');
 		}
 
-		strHeadPath = szPath;
-		strHeadPath = strHeadPath.Left(strHeadPath.Find(_T(':')) + 1);
 		break;
 	}
 
@@ -177,7 +274,7 @@ void CIniFile::_MakeIniPath(
 		if (!SHGetSpecialFolderPath(NULL, strHeadPath.GetBuffer(MAX_PATH), CSIDL_LOCAL_APPDATA, FALSE))
 		{
 			strHeadPath.ReleaseBuffer();
-			TRACE(_T("CIniFile::_SetIniPath - Failed to get localappdata path [%s] Error [%x]\r\n"), m_strIniPath, GetLastError());
+			TRACE( _T("CIniFile::_SetIniPath - Failed to get localappdata - path[%s] errno[%d]\r\n"), m_strIniPath, GetLastError());
 			return;
 		}
 
@@ -214,6 +311,10 @@ void CIniFile::_MakeIniPath(
 
 	case INI_TYPE_TOTAL_ID_POLICY_INFO:
 		strIniPath.Format(_T("%s\\DiskLock\\%s\\TotalPolicy\\%s\\PolicyInfo.ini"), strHeadPath, lpszSID, lpszParam1);
+		break;
+
+	case INI_TYPE_SECUREDISK_INFO:
+		strIniPath.Format(_T("%s\\DiskLock\\%s%s_SecreDisk.ini"), strHeadPath, lpszSiteID, lpszUserID);
 		break;
 
 	case INI_TYPE_COMMON:
@@ -289,7 +390,6 @@ BOOL CIniFile::_WriteVersion(INT nVersion) const
 
 	BOOL bResult = TRUE;
 	bResult &= WritePrivateProfileString(_T("VersionInfo"), _T("Version"), strVersion, m_strIniPath);
-	//bResult &= WritePrivateProfileString(_T("VersionInfo"), _T("Timestamp"), COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d %H:%M:%S")), m_strIniPath);
 
 	return bResult;
 }
@@ -347,7 +447,24 @@ BOOL CIniFile::Write(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nValue) const
 }
 
 /// <summary>
-///  ini 파일에서 문자열 값을 읽음
+///  ini 파일에서 문자열 값을 읽음 (버퍼 크기 수동)
+/// </summary>
+void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT LPTSTR lpszValue, DWORD dwSize) const
+{
+	GetPrivateProfileString(lpszSection, lpszKey, lpszDefaultValue, lpszValue, dwSize, m_strIniPath);
+}
+
+/// <summary>
+///  ini 파일에서 문자열 값을 읽음 (버퍼 크기 수동)
+/// </summary>
+void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString & strValue, DWORD dwSize) const
+{
+	GetPrivateProfileString(lpszSection, lpszKey, lpszDefaultValue, strValue.GetBuffer(dwSize), dwSize, m_strIniPath);
+	strValue.ReleaseBuffer();
+}
+
+/// <summary>
+///  ini 파일에서 문자열 값을 읽음 (버프 크기 자동)
 /// </summary>
 void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, OUT CString & strValue) const
 {
@@ -382,27 +499,31 @@ void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultVal
 	}
 }
 
-//void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, LPCTSTR lpszDefaultValue, DWORD dwSize, OUT CString & strValue) const
-//{
-//	GetPrivateProfileString(lpszSection, lpszKey, lpszDefaultValue, strValue.GetBuffer(dwSize), dwSize, m_strIniPath);
-//	strValue.ReleaseBuffer();
-//}
-
 /// <summary>
 ///  ini 파일에서 정수 값을 읽음
 /// </summary>
-void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwDefaultValue, OUT DWORD & dwValue) const
+DWORD CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, DWORD dwDefaultValue) const
 {
 	ASSERT(!m_strIniPath.IsEmpty());
 
-	dwValue = GetPrivateProfileInt(lpszSection, lpszKey, (INT)dwDefaultValue, m_strIniPath);
+	return GetPrivateProfileInt(lpszSection, lpszKey, (INT)dwDefaultValue, m_strIniPath);
 }
 
-void CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue, OUT INT & nValue) const
+INT CIniFile::Read(LPCTSTR lpszSection, LPCTSTR lpszKey, INT nDefaultValue) const
 {
 	ASSERT(!m_strIniPath.IsEmpty());
 
-	nValue = (INT)GetPrivateProfileInt(lpszSection, lpszKey, nDefaultValue, m_strIniPath);
+	return (INT)GetPrivateProfileInt(lpszSection, lpszKey, nDefaultValue, m_strIniPath);
+}
+
+void CIniFile::DeleteKey(LPCTSTR lpszSection, LPCTSTR lpszKey) const
+{
+	WritePrivateProfileString(lpszSection, lpszKey, NULL, m_strIniPath);
+}
+
+void CIniFile::DeleteSection(LPCTSTR lpszSection) const
+{
+	WritePrivateProfileString(lpszSection, NULL, NULL, m_strIniPath);
 }
 
 /// <summary>
@@ -426,41 +547,41 @@ void CIniFile::MigrateAll()
 		ret = reg.QueryDWORDValue(_T("dwIniVersion"), dwVersion);
 		if (ret == ERROR_SUCCESS && dwVersion >= (DWORD)LATEST_VERSION)
 		{
-			TRACE(_T("CIniFile::MigrateAll - Version does not require migration, so skipping - Latest Version [%d], Current Version [%d]\r\n"), LATEST_VERSION, (int)dwVersion);
+			TRACE( _T("CIniFile::MigrateAll - Version does not require migration, so skipping - Latest Version [%d], Current Version [%d]\r\n"), LATEST_VERSION, (int)dwVersion);
 			return;
 		}
 	}
 
 	// 순회 대상 Path 큐에 추가
 	CStringList listPath;
-	//CString strAddPath;
+	CString strAddPath;
 
-	//{
-	//	TCHAR szPath[MAX_PATH] = { 0 };
-	//	// 윈도우 Directory 기반 Path 확보 (C:\DiskLock)
-	//	if (!GetWindowsDirectory(szPath, MAX_PATH))
-	//	{
-	//		TRACE(_T("CIniFile::MigrateAll - Failed to get windows directory Error [%x]\r\n"), GetLastError());
-	//		return;
-	//	}
+	{
+		TCHAR szPath[MAX_PATH] = { 0 };
+		// 윈도우 Directory 기반 Path 확보 (C:\DiskLock)
+		if (!GetWindowsDirectory(szPath, MAX_PATH))
+		{
+			TRACE( _T("CIniFile::MigrateAll - Failed to get windows directory - errno[%d]\r\n"), GetLastError());
+			return;
+		}
 
-	//	strAddPath = szPath;
-	//	strAddPath = strAddPath.Left(strAddPath.Find(_T(':')) + 1);
-	//	strAddPath.Append(_T("\\DiskLock"));
-	//	listPath.AddHead(strAddPath);
-	//}
+		strAddPath = szPath;
+		strAddPath = strAddPath.Left(strAddPath.Find(_T(':')) + 1);
+		strAddPath.Append(_T("\\DiskLock"));
+		listPath.AddHead(strAddPath);
+	}
 
-	//// local app data Path 확보 (C:\Users\<userid>\AppData\Local\NetID)
-	//if (!SHGetSpecialFolderPath(NULL, strAddPath.GetBuffer(MAX_PATH), CSIDL_LOCAL_APPDATA, FALSE))
-	//{
-	//	strAddPath.ReleaseBuffer();
-	//	TRACE(_T("CIniFile::MigrateAll - Failed to get localappdata Error [%x]\r\n"), GetLastError());
-	//	return;
-	//}
+	// local app data Path 확보 (C:\Users\<userid>\AppData\Local\NetID)
+	if (!SHGetSpecialFolderPath(NULL, strAddPath.GetBuffer(MAX_PATH), CSIDL_LOCAL_APPDATA, FALSE))
+	{
+		strAddPath.ReleaseBuffer();
+		TRACE( _T("CIniFile::MigrateAll - Failed to get localappdata - errno[%d]\r\n"), GetLastError());
+		return;
+	}
 
-	//strAddPath.ReleaseBuffer();
-	//strAddPath.Append(_T("\\NetID"));
-	listPath.AddHead(_T("D:\\TestRead"));
+	strAddPath.ReleaseBuffer();
+	strAddPath.Append(_T("\\NetID"));
+	listPath.AddHead(strAddPath);
 
 	BOOL bResult = TRUE;
 
@@ -497,7 +618,7 @@ void CIniFile::MigrateAll()
 			if (!iniFile._Migrate())
 			{
 				bResult = FALSE;
-				TRACE(_T("CIniFile::MigrateAll - Failed to Migrate - path[%s], [%x]\r\n"), strFilePath, GetLastError());
+				TRACE( _T("CIniFile::MigrateAll - Failed to Migrate - path[%s], errno[%d]\r\n"), strFilePath, GetLastError());
 			}
 		}
 	}
@@ -511,7 +632,7 @@ void CIniFile::MigrateAll()
 		ret = reg.Create(HKEY_CURRENT_USER, lpszKey);
 		if (ret != ERROR_SUCCESS)
 		{
-			TRACE(_T("CIniFile::MigrateAll - Failed to Create Registry - key [%s], reg error [%ld]\r\n"), lpszKey, ret);
+			TRACE( _T("CIniFile::MigrateAll - Failed to Create Registry - key[%s], errno(reg)[%d]\r\n"), lpszKey, ret);
 			return;
 		}
 	}
@@ -519,11 +640,10 @@ void CIniFile::MigrateAll()
 	// 전체 Migrate 성공 시 레지스트리에 버전과 타임스탬프 기록
 	if (reg.SetDWORDValue(_T("dwIniVersion"), (DWORD)LATEST_VERSION) != ERROR_SUCCESS)
 	{
-		TRACE(_T("CIniFile::MigrateAll - Failed to write ini version reg - key[%s], reg error [%ld]\r\n"), lpszKey, ret);
+		TRACE( _T("CIniFile::MigrateAll - Failed to write ini version reg - key[%s], errno(reg)[%d]\r\n"), lpszKey, ret);
 		return;
 	}
 
-	//reg.SetStringValue(_T("IniTimeStamp"), COleDateTime::GetCurrentTime().Format(_T("%Y-%m-%d %H:%M:%S")));
 }
 
 /// <summary>
@@ -564,7 +684,7 @@ BOOL CIniFile::_Migrate() const
 		case 1:
 		{
 			// ini 파일 유니코드화
-			bSuccess = _ConvertToUnicode();
+			bSuccess = npConvertFileToUnicode(m_strIniPath);
 			break;
 		}
 		default:
@@ -574,13 +694,13 @@ BOOL CIniFile::_Migrate() const
 
 		if (!bSuccess)
 		{
-			TRACE(_T("CIniFile::Migrate - Failed to migrate path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath, nCurVersion, nVersion, LATEST_VERSION, GetLastError());
+			TRACE( _T("CIniFile::Migrate - Failed to migrate - path[%s] version[%d] -> [%d], LATEST_VERSION[%d] errno[%d]\r\n"), m_strIniPath, nCurVersion, nVersion, LATEST_VERSION, GetLastError());
 			return FALSE;
 		}
 
 		if (!_WriteVersion(nVersion))
 		{
-			TRACE(_T("CIniFile::Migrate - Failed to Write Version path [%s] version [%d] -> [%d], LATEST_VERSION [%d] Error [%x]\r\n"), m_strIniPath, nCurVersion, nVersion, LATEST_VERSION, GetLastError());
+			TRACE( _T("CIniFile::Migrate - Failed to Write Version - path[%s] version[%d] -> [%d], LATEST_VERSION[%d] errno[%d]\r\n"), m_strIniPath, nCurVersion, nVersion, LATEST_VERSION, GetLastError());
 			return FALSE;
 		}
 	}
@@ -600,7 +720,7 @@ BOOL CIniFile::_Create() const
 	CFile iniFile;
 	if (!iniFile.Open(m_strIniPath, CFile::modeCreate | CFile::modeWrite))
 	{
-		TRACE(_T("CIniFile::_Create - Failed to Create Ini - path[%s], [%x]\r\n"), m_strIniPath, GetLastError());
+		TRACE( _T("CIniFile::_Create - Failed to Create Ini - path[%s], errno[%d]\r\n"), m_strIniPath, GetLastError());
 		return FALSE;
 	}
 
@@ -610,82 +730,13 @@ BOOL CIniFile::_Create() const
 
 	if (!_WriteVersion(LATEST_VERSION))
 	{
-		TRACE(_T("CIniFile::_Create - Failed to WriteVersion Ini - path[%s], version[%d], [%x]\r\n"), m_strIniPath, LATEST_VERSION, GetLastError());
+		TRACE( _T("CIniFile::_Create - Failed to WriteVersion Ini - path[%s], version[%d], errno[%d]\r\n"), m_strIniPath, LATEST_VERSION, GetLastError());
 		return FALSE;
 	}
 
 	return TRUE;
 }
 
-BOOL CIniFile::_ConvertToUnicode() const
-{
-	CFile srcFile;
-	if (!srcFile.Open(m_strIniPath, CFile::modeRead))
-	{
-		TRACE(_T("CIniFile::_ConvertToUnicode - Failed to Open src - path[%s], [%x]\r\n"), m_strIniPath, GetLastError());
-		return FALSE;
-	}
-
-	WCHAR wch;
-	if (srcFile.Read(&wch, sizeof(WCHAR)) && wch == 0xFEFF)
-		return TRUE;
-
-	srcFile.SeekToBegin();
-
-	CString dstPath;
-	dstPath.Format(_T("%s.unicode"), m_strIniPath);
-
-	CFile dstFile;
-	if (!dstFile.Open(dstPath, CFile::modeCreate | CFile::modeWrite))
-	{
-		TRACE(_T("CIniFile::_ConvertToUnicode - Failed to Create dst - path[%s], [%x]\r\n"), dstPath, GetLastError());
-		return FALSE;
-	}
-
-	WCHAR bom = 0xFEFF;
-	dstFile.Write(&bom, sizeof(bom));
-
-	while (TRUE)
-	{
-		CByteArray arrByte;
-		BYTE byte = NULL;
-
-		while (srcFile.Read(&byte, 1))
-		{
-			arrByte.Add(byte);
-			if (byte == 0x0A)	// '\n'
-				break;
-		}
-
-		if (arrByte.IsEmpty())
-			break;
-
-		int	nLen = ::MultiByteToWideChar(CP_ACP, 0, (LPCSTR)arrByte.GetData(), (int)arrByte.GetSize(), NULL, 0);
-
-		CArray<WCHAR, WCHAR> arrWch;
-		arrWch.SetSize(nLen);
-
-		::MultiByteToWideChar(CP_ACP, 0, (LPCSTR)arrByte.GetData(), (int)arrByte.GetSize(), arrWch.GetData(), nLen);
-		dstFile.Write(arrWch.GetData(), nLen * sizeof(WCHAR));
-	} 
-
-	srcFile.Close();
-	dstFile.Close();
-
-	if (!DeleteFile(m_strIniPath))
-	{
-		TRACE(_T("CIniFile::_ConvertToUnicode - Failed to Delete dst - path[%s], [%x]\r\n"), dstPath, GetLastError());
-		return FALSE;
-	}
-
-	if (!MoveFile(dstPath, m_strIniPath))
-	{
-		TRACE(_T("CIniFile::_ConvertToUnicode - Failed to Rename - dst path[%s], src path[%s], [%x]\r\n"), dstPath, m_strIniPath, GetLastError());
-		return FALSE;
-	}
-
-	return TRUE;
-}
 
 #ifdef DEBUG
 
@@ -716,6 +767,11 @@ void CIniFile::_AssertParams(
 	case INI_TYPE_TOTAL_ID_POLICY_INFO:
 		ASSERT(lpszSID != nullptr);
 		ASSERT(lpszParam1 != nullptr);	// Policy ID 
+		break;
+
+	case INI_TYPE_SECUREDISK_INFO:
+		ASSERT(lpszSiteID != nullptr);
+		ASSERT(lpszSiteID != nullptr);	// Policy ID 
 		break;
 
 	case INI_TYPE_ALARM_INFO:
