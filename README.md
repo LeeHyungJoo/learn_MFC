@@ -1,4 +1,4 @@
-# AaronMathViewer
+# MathViewer
 
 ### Perpendicular
 ![GIFMaker_me (3)](https://github.com/LeeHyungJoo/learn_MFC/assets/18459652/5f990b44-0ee4-42cf-9c1e-008262555fb6)
